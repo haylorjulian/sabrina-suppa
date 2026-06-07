@@ -89,7 +89,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: loading ? 0 : 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
-          className="absolute bottom-14 right-6 z-10 flex flex-col items-center gap-[10px] md:right-[52px]"
+          className="absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-[10px] md:left-auto md:right-[52px] md:translate-x-0"
         >
           <span className="vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
             {c.scroll}
