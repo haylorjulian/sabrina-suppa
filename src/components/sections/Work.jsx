@@ -110,7 +110,7 @@ export default function Work() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[clamp(13px,1.2vw,18px)] font-light leading-[1.6] text-oxidized-graphite/80"
+            className="text-[15px] font-light leading-[1.7] text-oxidized-graphite/80 md:text-[clamp(13px,1.2vw,18px)] md:leading-[1.6]"
           >
             {part}
           </motion.p>
@@ -137,14 +137,45 @@ export default function Work() {
       ref={ref}
       data-nav-theme="light"
       aria-label="Work"
-      className="relative h-full w-full overflow-hidden bg-bone-porcelain"
+      className="relative flex h-full w-full flex-col overflow-hidden bg-bone-porcelain"
     >
-      {/* ── Images — vertically centred on the screen ── */}
+      {/* ── Header: project name (top-left, replacing the SS logo on desktop),
+           with the active description part underneath ── */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate={isInView ? 'visible' : 'hidden'}
+        className="relative z-20 px-4 pt-[84px] md:absolute md:inset-x-0 md:top-0 md:px-[52px] md:pt-[26px]"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-surgical-taupe">
+            {activeProjectCopy.title}
+          </h2>
+          {/* Mobile: Next Project aligned with the project name */}
+          <NextProject className="md:hidden" />
+        </div>
+        {/* Category description — underneath the project name */}
+        <Desc className="mt-3 max-w-xl md:mt-4 md:max-w-2xl" />
+      </motion.div>
+
+      {/* ── Images — flow on mobile (sits low, below the header), centred on the
+           screen on desktop ── */}
       <div
-        className="absolute inset-0 flex items-center justify-center px-4 md:px-24"
+        className="relative flex min-h-0 flex-1 items-end justify-center px-4 pb-2 md:absolute md:inset-0 md:items-center md:px-24 md:pb-0"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
+        {/* Desktop: up/down arrows with the page count between them */}
+        {hasPaging && (
+          <div className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
+            <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
+            <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
+              {currentPage} / {totalPages}
+            </span>
+            <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={mediaKey}
@@ -152,7 +183,7 @@ export default function Work() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="flex h-full max-h-[54svh] w-full items-center justify-center gap-6 md:max-h-[64svh] md:gap-8"
+            className="flex h-full max-h-[52svh] w-full items-center justify-center gap-6 md:max-h-[64svh] md:gap-8"
           >
             {pageItems.map((item, i) => (
               <div
@@ -173,50 +204,16 @@ export default function Work() {
         </AnimatePresence>
       </div>
 
-      {/* ── Header: project name (top-left, replacing the SS logo on desktop),
-           with the active description part underneath ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        className="absolute inset-x-0 top-0 z-20 px-4 pt-[84px] md:px-[52px] md:pt-[26px]"
-      >
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-surgical-taupe">
-            {activeProjectCopy.title}
-          </h2>
-          {/* Mobile: Next Project aligned with the project name */}
-          <NextProject className="md:hidden" />
-        </div>
-        {/* Category description — underneath the project name */}
-        <Desc className="mt-3 max-w-xl md:mt-4 md:max-w-2xl" />
-      </motion.div>
-
-      {/* ── Desktop: up/down arrows with the page count between them ── */}
+      {/* ── Mobile: arrows underneath the image, horizontally centred ── */}
       {hasPaging && (
-        <div className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
-          <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
-          <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
-            {currentPage} / {totalPages}
-          </span>
-          <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
-        </div>
-      )}
-
-      {/* ── Mobile: arrows on either side of the image, vertically centred ── */}
-      {hasPaging && (
-        <div className="md:hidden">
-          <div className="absolute left-1 top-1/2 z-20 -translate-y-1/2">
-            <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />
-          </div>
-          <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2">
-            <ArrowButton glyph="→" onClick={nextImage} label={c.nextImageLabel} />
-          </div>
+        <div className="flex items-center justify-center gap-5 pb-3 md:hidden">
+          <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />
+          <ArrowButton glyph="→" onClick={nextImage} label={c.nextImageLabel} />
         </div>
       )}
 
       {/* ── Footer: pill nav (+ desktop Next Project aligned with it) ── */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-center px-4 pb-9 md:px-[52px]">
+      <div className="relative z-20 flex items-center justify-center px-4 pb-9 md:absolute md:inset-x-0 md:bottom-0 md:px-[52px]">
         <nav
           aria-label="Work categories"
           className="flex max-w-[92vw] items-center gap-1.5 overflow-x-auto"

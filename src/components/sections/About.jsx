@@ -39,37 +39,38 @@ export default function About() {
       <div className="absolute inset-0 bg-oxidized-graphite/45 md:bg-transparent" />
       <div className="absolute inset-0 bg-gradient-to-b from-oxidized-graphite/30 via-transparent to-oxidized-graphite/40" />
 
-      {/* Text column — right-aligned, vertically centred, sized to ~3/4 height */}
+      {/* Text column — right-aligned on desktop (vertically centred); on mobile it
+          fills the full height and scrolls if the copy runs long. */}
       <div className="relative z-10 mx-auto flex h-full max-w-[1400px] items-center justify-end px-6 md:px-[52px]">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="max-h-[78svh] w-full md:w-[48%]"
+          className="h-full w-full overflow-y-auto py-24 md:h-auto md:max-h-[78svh] md:w-[48%] md:overflow-visible md:py-0"
         >
           <motion.p
             variants={lineReveal}
-            className="mb-3 text-[11px] uppercase tracking-[0.35em] text-synthetic-flesh"
+            className="mb-4 text-[12px] uppercase tracking-[0.35em] text-synthetic-flesh"
           >
             {c.sectionLabel}
           </motion.p>
 
           <motion.p
             variants={lineReveal}
-            className="text-[clamp(14px,1.45vw,21px)] font-light leading-[1.42] tracking-[0.01em] text-bone-porcelain"
+            className="text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42]"
           >
             {c.bio}
           </motion.p>
 
           <motion.p
             variants={lineReveal}
-            className="mb-2.5 mt-6 text-[11px] uppercase tracking-[0.35em] text-synthetic-flesh"
+            className="mb-3 mt-9 text-[12px] uppercase tracking-[0.35em] text-synthetic-flesh"
           >
             {c.statementLabel}
           </motion.p>
           <motion.p
             variants={lineReveal}
-            className="text-[clamp(11px,0.92vw,13px)] font-light leading-[1.55] tracking-[0.01em] text-bone-porcelain/80"
+            className="text-[14px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain/85 md:text-[clamp(11px,0.92vw,13px)] md:leading-[1.55]"
           >
             {c.statement}
           </motion.p>
@@ -77,7 +78,7 @@ export default function About() {
           {/* Social links — below the copy */}
           <motion.ul
             variants={lineReveal}
-            className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-3"
+            className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3 md:mt-6"
           >
             {c.social.map((link) => (
               <li key={link.label}>
@@ -85,7 +86,7 @@ export default function About() {
                   href={link.href}
                   target={link.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel="noreferrer"
-                  className="group inline-flex items-center text-[12px] uppercase tracking-[0.22em] text-bone-porcelain/80 transition-colors duration-300 hover:text-synthetic-flesh"
+                  className="group inline-flex items-center text-[13px] uppercase tracking-[0.22em] text-bone-porcelain/80 transition-colors duration-300 hover:text-synthetic-flesh md:text-[12px]"
                 >
                   {link.label}
                   <span className="ml-2 inline-block h-px w-4 bg-current opacity-50 transition-all duration-300 group-hover:w-6 group-hover:opacity-90" />

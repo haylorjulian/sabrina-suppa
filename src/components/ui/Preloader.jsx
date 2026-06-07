@@ -22,11 +22,11 @@ export default function Preloader({ loading }) {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center gap-4"
           >
-            <span className="h-px w-8 bg-synthetic-flesh/45" />
-            <span className="text-xl italic font-extralight tracking-[0.08em] text-bone-porcelain">
+            <span className="h-px w-10 bg-synthetic-flesh/45" />
+            <span className="text-3xl italic font-extralight tracking-[0.08em] text-bone-porcelain md:text-4xl">
               {t.preloader.name}
             </span>
-            <span className="text-[9px] uppercase tracking-[0.32em] text-synthetic-flesh/85">
+            <span className="text-[12px] uppercase tracking-[0.32em] text-synthetic-flesh/85">
               {t.preloader.descriptor}
             </span>
           </motion.div>
