@@ -23,6 +23,7 @@ export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
   const [theme, setTheme] = useState('dark')
+  const [activeSection, setActiveSection] = useState('home')
 
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll('[data-nav-theme]'))
@@ -33,6 +34,7 @@ export default function Nav() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setTheme(entry.target.getAttribute('data-nav-theme') || 'dark')
+            setActiveSection(entry.target.id)
           }
         })
       },
@@ -67,7 +69,10 @@ export default function Nav() {
         <a
           href="#home"
           onClick={closeMenu}
-          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
+          // On desktop the Work section shows the project name in this spot, so hide the logo there.
+          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor} ${
+            activeSection === 'work' && !open ? 'md:invisible' : ''
+          }`}
         >
           {t.nav.logo}
         </a>

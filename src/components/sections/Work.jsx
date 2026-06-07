@@ -110,7 +110,7 @@ export default function Work() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[clamp(11px,0.95vw,14px)] font-light leading-[1.6] text-oxidized-graphite/75"
+            className="text-[clamp(13px,1.2vw,18px)] font-light leading-[1.6] text-oxidized-graphite/80"
           >
             {part}
           </motion.p>
@@ -173,24 +173,23 @@ export default function Work() {
         </AnimatePresence>
       </div>
 
-      {/* ── Header: project title, with the active description part ── */}
+      {/* ── Header: project name (top-left, replacing the SS logo on desktop),
+           with the active description part underneath ── */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
-        className="absolute inset-x-0 top-0 z-20 px-4 pt-[84px] md:px-[52px] md:pt-[104px]"
+        className="absolute inset-x-0 top-0 z-20 px-4 pt-[84px] md:px-[52px] md:pt-[26px]"
       >
-        <div className="flex items-start justify-between gap-4 md:gap-16">
-          <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-oxidized-graphite md:shrink-0">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-surgical-taupe">
             {activeProjectCopy.title}
           </h2>
-          {/* Desktop: description part starts level with the title, spreading to the right padding */}
-          <Desc className="hidden md:block md:flex-1" />
           {/* Mobile: Next Project aligned with the project name */}
-          <NextProject className="mt-1 md:hidden" />
+          <NextProject className="md:hidden" />
         </div>
-        {/* Mobile: description part below the title */}
-        <Desc className="mt-3 md:hidden" />
+        {/* Category description — underneath the project name */}
+        <Desc className="mt-3 max-w-xl md:mt-4 md:max-w-2xl" />
       </motion.div>
 
       {/* ── Desktop: up/down arrows with the page count between them ── */}
