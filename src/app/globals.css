@@ -13,6 +13,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Gentle full-section snapping: rest states land on a section, the crossfade
+     (SectionFade) handles the transition. Each slide is exactly one viewport. */
+  scroll-snap-type: y mandatory;
 }
 
 body {

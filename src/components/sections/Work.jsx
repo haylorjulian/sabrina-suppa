@@ -5,32 +5,74 @@ import Image from 'next/image'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWorkGallery } from '@/hooks/useWorkGallery'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { fadeInUp, crossfade } from '@/lib/animations'
 import ArrowButton from '@/components/ui/ArrowButton'
 import Pill from '@/components/ui/Pill'
+
+// Renders a single media item at its natural aspect ratio (object-contain, never
+// cropped) and unoptimized so the original resolution is served.
+function MediaItem({ item, alt }) {
+  if (!item || item.type === 'placeholder') {
+    return (
+      <div className="flex h-full w-full items-center justify-center border border-dashed border-oxidized-graphite/20">
+        <span className="text-[10px] uppercase tracking-[0.28em] text-oxidized-graphite/40">
+          {alt}
+        </span>
+      </div>
+    )
+  }
+  if (item.type === 'video') {
+    return (
+      <video
+        src={item.src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden="true"
+        className="h-full w-full object-contain"
+      />
+    )
+  }
+  return (
+    <Image
+      src={item.src}
+      alt={alt}
+      fill
+      unoptimized
+      sizes="(min-width: 768px) 40vw, 80vw"
+      className="object-contain"
+    />
+  )
+}
 
 export default function Work() {
   const { t } = useLanguage()
   const c = t.work
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
+  const isDesktop = useMediaQuery('(min-width: 768px)')
 
   const {
     categoryIndex,
-    imageIndex,
+    pageStart,
     imageCount,
     projectCount,
-    activeMedia,
+    pageItems,
+    hasPaging,
     activeProjectCopy,
     mediaKey,
     selectCategory,
     nextProject,
     nextImage,
     prevImage,
-  } = useWorkGallery(c.categories)
+  } = useWorkGallery(c.categories, isDesktop ? 2 : 1)
 
-  const isPlaceholder = !activeMedia || activeMedia.type === 'placeholder'
-  const isVideo = activeMedia?.type === 'video'
+  const counter =
+    pageItems.length > 1
+      ? `${pageStart + 1}–${pageStart + pageItems.length} ${c.imageOf} ${imageCount}`
+      : `${pageStart + 1} ${c.imageOf} ${imageCount}`
 
   return (
     <section
@@ -38,48 +80,38 @@ export default function Work() {
       ref={ref}
       data-nav-theme="light"
       aria-label="Work"
-      className="relative h-screen min-h-[600px] w-full overflow-hidden bg-bone-porcelain"
+      className="relative h-full w-full overflow-hidden bg-bone-porcelain"
     >
-      {/* ── Full-screen media (crossfades on category/project/image change) ── */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={mediaKey}
-          variants={crossfade}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="absolute inset-0"
-        >
-          {isPlaceholder ? (
-            <div className="flex h-full w-full items-center justify-center bg-bone-porcelain">
-              <span className="text-[10px] uppercase tracking-[0.28em] text-oxidized-graphite/40">
-                {activeProjectCopy.comingSoon}
-              </span>
-            </div>
-          ) : isVideo ? (
-            <video
-              src={activeMedia.src}
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden="true"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <Image
-              src={activeMedia.src}
-              alt={activeProjectCopy.title}
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Cream vignette so overlays read cleanly */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bone-porcelain/20 via-transparent to-bone-porcelain/55" />
+      {/* ── Centred media frame — images keep their natural dimensions, up to
+           two side-by-side on desktop. Crossfades on category/project/page change. ── */}
+      <div className="absolute inset-0 flex items-center justify-center px-16 pb-24 pt-24 md:px-24">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mediaKey}
+            variants={crossfade}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="flex h-full w-full items-center justify-center gap-6 md:gap-8"
+          >
+            {pageItems.map((item, i) => (
+              <div
+                key={`${mediaKey}-${i}`}
+                className="relative h-full max-h-[62svh] w-full max-w-[560px] flex-1"
+              >
+                <MediaItem
+                  item={item}
+                  alt={
+                    item?.type === 'placeholder'
+                      ? activeProjectCopy.comingSoon
+                      : `${activeProjectCopy.title} — ${pageStart + i + 1}`
+                  }
+                />
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* ── Project meta — top-left, below nav ── */}
       <motion.div
@@ -96,8 +128,8 @@ export default function Work() {
         </h2>
       </motion.div>
 
-      {/* ── Left arrows — navigate images within a project ── */}
-      {imageCount > 1 && (
+      {/* ── Left arrows — page through images within a project ── */}
+      {hasPaging && (
         <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-3">
           <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
           <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
@@ -107,7 +139,7 @@ export default function Work() {
       {/* ── Image counter ── */}
       {imageCount > 1 && (
         <div className="absolute bottom-[120px] left-6 z-10 text-[10px] tracking-[0.18em] text-oxidized-graphite">
-          {imageIndex + 1} {c.imageOf} {imageCount}
+          {counter}
         </div>
       )}
 

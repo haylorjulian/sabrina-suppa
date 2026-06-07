@@ -53,7 +53,12 @@
       "bio": "Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery — porcelain whites, oxidized graphite, silicone skin tones — building forms that feel at once clinical and intimate.",
       "statementLabel": "Artist Statement",
       "statement": "I am interested in the seam where the body meets its replacements. Each work is a study of transformation through pain and repair — marble emerging from rough stone, cracks glowing with golden light. The surgical and the sacred are not opposites; they are the same gesture seen from different distances.",
-      "bgAlt": "Sculptural form behind layered vertical blur bands"
+      "bgAlt": "Sculptural form lit with golden fracture light, fading into darkness",
+      "social": [
+        { "label": "Email", "href": "mailto:[PLACEHOLDER: hello@sabrinasuppa.com]" },
+        { "label": "Instagram", "href": "[PLACEHOLDER: https://instagram.com/handle]" },
+        { "label": "X / Twitter", "href": "[PLACEHOLDER: https://x.com/handle]" }
+      ]
     }
   },
   "it": {
@@ -110,7 +115,12 @@
       "bio": "[TRANSLATE: Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery — porcelain whites, oxidized graphite, silicone skin tones — building forms that feel at once clinical and intimate.]",
       "statementLabel": "[TRANSLATE: Artist Statement]",
       "statement": "[TRANSLATE: I am interested in the seam where the body meets its replacements. Each work is a study of transformation through pain and repair — marble emerging from rough stone, cracks glowing with golden light. The surgical and the sacred are not opposites; they are the same gesture seen from different distances.]",
-      "bgAlt": "[TRANSLATE: Sculptural form behind layered vertical blur bands]"
+      "bgAlt": "[TRANSLATE: Sculptural form lit with golden fracture light, fading into darkness]",
+      "social": [
+        { "label": "Email", "href": "mailto:[PLACEHOLDER: hello@sabrinasuppa.com]" },
+        { "label": "Instagram", "href": "[PLACEHOLDER: https://instagram.com/handle]" },
+        { "label": "X / Twitter", "href": "[PLACEHOLDER: https://x.com/handle]" }
+      ]
     }
   }
 }

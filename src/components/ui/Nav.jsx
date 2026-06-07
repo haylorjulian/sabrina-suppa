@@ -4,12 +4,22 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
-import { mobileMenu } from '@/lib/animations'
 import LangToggle from './LangToggle'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
 // section currently under the bar — sections declare data-nav-theme="dark|light"
 // (dark bg → light text, light bg → dark text).
+const overlayContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+  exit: {},
+}
+const overlayItem = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+}
+
 export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
@@ -35,12 +45,22 @@ export default function Nav() {
     return () => observer.disconnect()
   }, [])
 
+  // Lock page scroll while the full-screen menu is open.
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
   const isDark = theme === 'dark'
-  const linkColor = isDark
+  // While the (dark) overlay is open, force the bar to its light-on-dark treatment.
+  const barDark = isDark || open
+  const linkColor = barDark
     ? 'text-bone-porcelain/65 hover:text-bone-porcelain'
     : 'text-oxidized-graphite/55 hover:text-oxidized-graphite'
-  const logoColor = isDark ? 'text-bone-porcelain/55' : 'text-oxidized-graphite/45'
-  const barColor = isDark ? 'bg-bone-porcelain' : 'bg-oxidized-graphite'
+  const logoColor = barDark ? 'text-bone-porcelain/55' : 'text-oxidized-graphite/45'
+  const hamColor = barDark ? 'bg-bone-porcelain' : 'bg-oxidized-graphite'
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -73,34 +93,37 @@ export default function Nav() {
           onClick={toggleMenu}
           aria-label={open ? t.nav.closeLabel : t.nav.menuLabel}
           aria-expanded={open}
-          className="flex h-5 w-6 flex-col justify-center gap-[5px] md:hidden"
+          className="relative z-50 flex h-5 w-6 flex-col justify-center gap-[5px] md:hidden"
         >
-          <span className={`block h-px w-full transition-transform duration-300 ${barColor} ${open ? 'translate-y-[3px] rotate-45' : ''}`} />
-          <span className={`block h-px w-full transition-transform duration-300 ${barColor} ${open ? '-translate-y-[3px] -rotate-45' : ''}`} />
+          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? 'translate-y-[3px] rotate-45' : ''}`} />
+          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? '-translate-y-[3px] -rotate-45' : ''}`} />
         </button>
       </nav>
 
-      {/* Mobile overlay menu */}
+      {/* Full-screen mobile menu */}
       <AnimatePresence>
         {open && (
           <motion.div
-            variants={mobileMenu}
+            variants={overlayContainer}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute inset-x-0 top-full mx-6 flex flex-col items-start gap-6 border-t border-bone-porcelain/10 bg-oxidized-graphite/95 px-6 py-8 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-9 bg-oxidized-graphite md:hidden"
           >
             {t.nav.links.map((link) => (
-              <a
+              <motion.a
                 key={link.href}
+                variants={overlayItem}
                 href={link.href}
                 onClick={closeMenu}
-                className="text-sm uppercase tracking-[0.22em] text-bone-porcelain/80"
+                className="text-3xl font-extralight italic tracking-[0.04em] text-bone-porcelain/85"
               >
                 {link.label}
-              </a>
+              </motion.a>
             ))}
-            <LangToggle theme="dark" className="pl-0 border-l-0" />
+            <motion.div variants={overlayItem} className="mt-2">
+              <LangToggle theme="dark" className="border-l-0 pl-0 text-xs" />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

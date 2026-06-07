@@ -56,6 +56,7 @@ Notes (not defects):
 - [ ] Replace `[PLACEHOLDER: ...]` project titles in `src/content/copy.json` (Work section, both `en` and `it`)
 - [ ] Replace all `[TRANSLATE: ...]` values in `src/content/copy.json` with real Italian copy
 - [ ] Supply the **Physical** category image and add it to `src/lib/assets.js` (`workMedia.physical[0].media`), replacing the placeholder
+- [ ] Fill in the **About social links** — `about.social` in `src/content/copy.json` (Email / Instagram / X handles, both `en` and `it`), currently `[PLACEHOLDER: ...]` hrefs
 - [ ] Swap the Hero background for the final MP4 video when ready (currently `homePage.jpg`)
 - [ ] Rename asset files containing spaces (see SUMMARY.md) and update the encoded paths in `assets.js`
 - [ ] Confirm final EN/IT bio + artist statement copy

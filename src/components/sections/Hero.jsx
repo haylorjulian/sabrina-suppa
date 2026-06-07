@@ -21,7 +21,7 @@ export default function Hero() {
         id="home"
         data-nav-theme="dark"
         aria-label="Hero"
-        className="relative h-screen min-h-[600px] w-full overflow-hidden bg-wet-petroleum"
+        className="relative h-full w-full overflow-hidden bg-wet-petroleum"
       >
         {/* Full-bleed background (upgrade to MP4 when supplied) */}
         <Image
@@ -57,7 +57,7 @@ export default function Hero() {
           </motion.p>
         </motion.div>
 
-        {/* Scroll indicator — bottom-right */}
+        {/* Scroll indicator — bottom-right, with a light travelling down the line */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: loading ? 0 : 1 }}
@@ -67,7 +67,13 @@ export default function Hero() {
           <span className="vertical-text text-[9px] uppercase tracking-[0.28em] text-bone-porcelain/30">
             {c.scroll}
           </span>
-          <span className="h-12 w-px bg-gradient-to-b from-bone-porcelain/25 to-transparent" />
+          <div className="relative h-12 w-px overflow-hidden bg-bone-porcelain/15">
+            <motion.span
+              className="absolute left-0 top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-bone-porcelain/80 to-transparent"
+              animate={{ y: ['-110%', '210%'] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.3 }}
+            />
+          </div>
         </motion.div>
       </section>
     </>
