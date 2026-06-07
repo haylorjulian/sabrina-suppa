@@ -9,9 +9,12 @@ import { useLanguage } from '@/hooks/useLanguage'
 // section currently under the bar — sections declare data-nav-theme="dark|light"
 // (dark bg → light text, light bg → dark text).
 const overlayContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-  exit: {},
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.08, delayChildren: 0.12 },
+  },
+  exit: { opacity: 0, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } },
 }
 const overlayItem = {
   hidden: { opacity: 0, y: 16 },
@@ -111,19 +114,41 @@ export default function Nav() {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-9 bg-oxidized-graphite md:hidden"
+            className="fixed inset-0 z-40 flex flex-col bg-oxidized-graphite md:hidden"
           >
-            {t.nav.links.map((link) => (
-              <motion.a
-                key={link.href}
-                variants={overlayItem}
-                href={link.href}
-                onClick={closeMenu}
-                className="text-3xl font-extralight italic tracking-[0.04em] text-bone-porcelain/85"
-              >
-                {link.label}
-              </motion.a>
-            ))}
+            <div className="flex flex-1 flex-col items-center justify-center gap-9">
+              {t.nav.links.map((link) => (
+                <motion.a
+                  key={link.href}
+                  variants={overlayItem}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className="text-3xl font-extralight italic tracking-[0.04em] text-bone-porcelain/85"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Socials — towards the bottom */}
+            <motion.ul
+              variants={overlayItem}
+              className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 pb-14"
+            >
+              {t.about.social.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+                    rel="noreferrer"
+                    onClick={closeMenu}
+                    className="text-[12px] uppercase tracking-[0.22em] text-bone-porcelain/60 transition-colors duration-300 hover:text-synthetic-flesh"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </motion.ul>
           </motion.div>
         )}
       </AnimatePresence>

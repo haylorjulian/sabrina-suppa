@@ -73,6 +73,7 @@ export default function Work() {
   const activeCategory = c.categories[categoryIndex]
   const totalPages = Math.max(1, Math.ceil(imageCount / perPage))
   const currentPage = Math.floor(pageStart / perPage) + 1
+  const isFirstPage = pageStart === 0
 
   // Next Project CTA — top-right (aligned with the title) on mobile, bottom-right
   // (aligned with the pills) on desktop.
@@ -98,9 +99,10 @@ export default function Work() {
   // images. Shows the part for the current page (wrapping if there are more
   // pages than parts).
   function Desc({ className }) {
-    const parts = activeCategory.description
-    if (!parts || !parts.length) return null
-    const part = parts[(currentPage - 1) % parts.length]
+    // Show the description part for the current slide; if there's no part for
+    // this slide number, render nothing.
+    const part = activeCategory.description?.[currentPage - 1]
+    if (!part) return null
     return (
       <div className={className}>
         <AnimatePresence mode="wait">
@@ -155,7 +157,7 @@ export default function Work() {
           <NextProject className="md:hidden" />
         </div>
         {/* Category description — underneath the project name */}
-        <Desc className="mt-3 max-w-xl md:mt-4 md:max-w-2xl" />
+        <Desc className="mt-8 md:mt-4" />
       </motion.div>
 
       {/* ── Images — flow on mobile (sits low, below the header), centred on the
@@ -165,10 +167,13 @@ export default function Work() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* Desktop: up/down arrows with the page count between them */}
+        {/* Desktop: up/down arrows with the page count between them.
+            On the first slide only the forward arrow shows. */}
         {hasPaging && (
           <div className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
-            <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
+            {!isFirstPage && (
+              <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
+            )}
             <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
               {currentPage} / {totalPages}
             </span>
@@ -204,10 +209,13 @@ export default function Work() {
         </AnimatePresence>
       </div>
 
-      {/* ── Mobile: arrows underneath the image, horizontally centred ── */}
+      {/* ── Mobile: arrows underneath the image, horizontally centred (shifted up).
+           On the first slide only the forward arrow shows. ── */}
       {hasPaging && (
-        <div className="flex items-center justify-center gap-5 pb-3 md:hidden">
-          <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />
+        <div className="mb-[10svh] flex items-center justify-center gap-5 pb-3 md:hidden">
+          {!isFirstPage && (
+            <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />
+          )}
           <ArrowButton glyph="→" onClick={nextImage} label={c.nextImageLabel} />
         </div>
       )}
