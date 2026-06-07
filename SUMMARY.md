@@ -65,9 +65,9 @@ Installed: `framer-motion`, `@react-spring/web`
 ## Complexity Notes
 
 - **Stale image references.** The mockups pointed at `../../assets/ds1-sculpture-*.jpg`, which no longer exist. Per direction, Hero → `homePage.jpg` and About → `b_3/aboutPage.jpg`. Work uses the real project folders.
-- **Work taxonomy reshaped per direction.** Two categories instead of the mockup's four pills:
-  - **Adaptive Flesh** — 3 projects: `b_1`, `b_2`, `b_3` (b_2 leads with its `.mp4` motion study).
-  - **Physical** — 1 project, single image, supplied later (renders a "Coming soon" placeholder state).
+- **Work taxonomy reshaped per direction.** Two categories instead of the mockup's four pills, mirroring the source folders `assets/adaptiveFlesh/` and `assets/physicalworks/`:
+  - **Adaptive Flesh** — 3 projects: `adaptiveFlesh/b_1`, `b_2`, `b_3` (b_2 leads with its `.mp4` motion study).
+  - **Physical** — 1 project (`physicalworks/misc`) with 4 images. (A "Coming soon" placeholder state still exists in code for any project whose media is a `placeholder` item, but Physical now has real images.)
 - **About redesigned (revision).** The original blur-band treatment (and `useBlurBands`) was removed. About is now a left-image / right-text split per the supplied reference: `aboutPage.jpg` anchored left (`object-left`) dissolving into the dark text field via a token gradient (`from-transparent ... to-oxidized-graphite to-[58%]` on desktop), with ABOUT label → large bio → ARTIST STATEMENT label → statement → social links. Social links (Email / Instagram / X) live in `copy.json` under `about.social` with placeholder hrefs.
 - **Full-viewport sections + scroll snap (revision).** Sections now fill exactly one viewport using `100svh` (small-viewport units — fixes mobile overflow caused by `100vh` + browser chrome; `min-h-[600px]` was removed). `html` uses `scroll-snap-type: y mandatory`; each section is wrapped in `SectionFade` (`snap-start`) which both provides the `100svh` height and applies the scroll-linked opacity crossfade. Mandatory snap guarantees rest states land centred (opacity 1), so sections never sit dimmed.
 - **Section crossfade.** `SectionFade` uses `useScroll` + `useTransform` mapping scroll progress → opacity `[0.15, 1, 1, 0.15]`. Opacity only (no transform) so the hero's `fixed` preloader and the `fixed` nav stay viewport-fixed (transform on an ancestor would have re-anchored them).
@@ -83,16 +83,18 @@ Installed: `framer-motion`, `@react-spring/web`
 
 These source files contain spaces. They are **URL-encoded** in `assets.js` and work as-is, but should be renamed before launch (then update the encoded paths):
 
-| Current path                         | Suggested rename                |
-|--------------------------------------|---------------------------------|
-| `b_2/top_01_B copy.jpg`              | `b_2/top_01_B_copy.jpg`         |
-| `b_3/full body_02.jpg`               | `b_3/full_body_02.jpg`          |
-| `b_3/full body_04.jpg`               | `b_3/full_body_04.jpg`          |
+| Current path                                  | Suggested rename                         |
+|-----------------------------------------------|------------------------------------------|
+| `adaptiveFlesh/b_2/top_01_B copy.jpg`         | `adaptiveFlesh/b_2/top_01_B_copy.jpg`    |
+| `adaptiveFlesh/b_3/full body_02.jpg`          | `adaptiveFlesh/b_3/full_body_02.jpg`     |
+| `adaptiveFlesh/b_3/full body_04.jpg`          | `adaptiveFlesh/b_3/full_body_04.jpg`     |
+
+The Physical Works images use an uppercase `.JPG` extension (`physicalworks/misc/IMG_*.JPG`); the paths in `assets.js` match that case exactly. Lowercasing the extensions is optional but tidier — update `assets.js` if you do.
 
 ## Assumptions
 
 - **Project titles unknown** — every Work project title is a `[PLACEHOLDER: ...]` in `copy.json` (the mockup showed a sample "Untitled Form 02"). Replace before launch.
 - **Italian copy** — all `it` strings are `[TRANSLATE: ...]` mirrors of the English; the language toggle is fully wired and will swap them live once filled in.
 - **Image ordering within projects** — folders had no explicit order, so images are ordered sensibly (hero/full-body shots first, close-ups/sides after; `b_2` leads with its video). Reorder in `assets.js` if the artist prefers a different sequence.
-- **`b_3/aboutPage.jpg`** is treated as the About background and excluded from the `b_3` Work gallery.
+- **`adaptiveFlesh/b_3/aboutPage.jpg`** is treated as the About background and excluded from the `b_3` Work gallery.
 - **Preloader duration** assumed at 2.2s (no value given in the mockup) — adjustable in `usePreloader`.

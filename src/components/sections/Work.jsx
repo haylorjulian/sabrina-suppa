@@ -53,6 +53,7 @@ export default function Work() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
   const isDesktop = useMediaQuery('(min-width: 768px)')
+  const perPage = isDesktop ? 2 : 1
 
   const {
     categoryIndex,
@@ -67,12 +68,10 @@ export default function Work() {
     nextProject,
     nextImage,
     prevImage,
-  } = useWorkGallery(c.categories, isDesktop ? 2 : 1)
+  } = useWorkGallery(c.categories, perPage)
 
-  const counter =
-    pageItems.length > 1
-      ? `${pageStart + 1}–${pageStart + pageItems.length} ${c.imageOf} ${imageCount}`
-      : `${pageStart + 1} ${c.imageOf} ${imageCount}`
+  const totalPages = Math.max(1, Math.ceil(imageCount / perPage))
+  const currentPage = Math.floor(pageStart / perPage) + 1
 
   return (
     <section
@@ -128,27 +127,23 @@ export default function Work() {
         </h2>
       </motion.div>
 
-      {/* ── Left arrows — page through images within a project ── */}
+      {/* ── Left arrows — page through images, with the page count between them ── */}
       {hasPaging && (
-        <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-3">
+        <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-3">
           <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
+          <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
+            {currentPage} / {totalPages}
+          </span>
           <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
         </div>
       )}
 
-      {/* ── Image counter ── */}
-      {imageCount > 1 && (
-        <div className="absolute bottom-[120px] left-6 z-10 text-[10px] tracking-[0.18em] text-oxidized-graphite">
-          {counter}
-        </div>
-      )}
-
-      {/* ── Next Project CTA — bottom-right, boxed arrow ── */}
+      {/* ── Next Project CTA — aligned with the pill nav at the bottom ── */}
       {projectCount > 1 && (
         <button
           type="button"
           onClick={nextProject}
-          className="group absolute bottom-[108px] right-8 z-10 flex items-center gap-[14px] md:right-[90px]"
+          className="group absolute bottom-[88px] right-8 z-20 flex items-center gap-[14px] md:bottom-9 md:right-[52px]"
         >
           <span className="text-[10px] uppercase tracking-[0.26em] text-oxidized-graphite">
             {c.nextProject}

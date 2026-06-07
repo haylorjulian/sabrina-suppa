@@ -68,18 +68,18 @@ export default function Nav() {
         <a
           href="#home"
           onClick={closeMenu}
-          className={`text-[11px] uppercase tracking-[0.30em] transition-colors duration-300 ${logoColor}`}
+          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
         >
           {t.nav.logo}
         </a>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-9 md:flex">
           {t.nav.links.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className={`text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${linkColor}`}
+              className={`text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
             </a>

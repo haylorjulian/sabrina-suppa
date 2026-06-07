@@ -15,7 +15,7 @@ export default function LangToggle({ theme = 'dark', className = '' }) {
       type="button"
       onClick={toggle}
       aria-label="Toggle language"
-      className={`border-l pl-[18px] text-[10px] uppercase tracking-[0.22em] transition-colors duration-300 ${palette} ${className}`}
+      className={`border-l pl-[18px] text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${palette} ${className}`}
     >
       {t.nav.lang}
     </button>

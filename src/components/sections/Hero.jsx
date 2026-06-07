@@ -51,7 +51,7 @@ export default function Hero() {
           </motion.h1>
           <motion.p
             variants={fadeInUp}
-            className="text-[10px] uppercase tracking-[0.32em] text-synthetic-flesh/85"
+            className="text-[12px] uppercase tracking-[0.34em] text-bone-porcelain [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]"
           >
             {c.descriptor}
           </motion.p>
@@ -64,12 +64,12 @@ export default function Hero() {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="absolute bottom-14 right-6 z-10 flex flex-col items-center gap-[10px] md:right-[52px]"
         >
-          <span className="vertical-text text-[9px] uppercase tracking-[0.28em] text-bone-porcelain/30">
+          <span className="vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
             {c.scroll}
           </span>
-          <div className="relative h-12 w-px overflow-hidden bg-bone-porcelain/15">
+          <div className="relative h-16 w-[1.5px] overflow-hidden bg-bone-porcelain/40">
             <motion.span
-              className="absolute left-0 top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-bone-porcelain/80 to-transparent"
+              className="absolute left-0 top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-bone-porcelain to-transparent"
               animate={{ y: ['-110%', '210%'] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.3 }}
             />
