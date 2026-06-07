@@ -63,7 +63,7 @@ export default function Nav() {
   const linkColor = barDark
     ? 'text-bone-porcelain/65 hover:text-bone-porcelain'
     : 'text-oxidized-graphite/55 hover:text-oxidized-graphite'
-  const logoColor = barDark ? 'text-bone-porcelain/55' : 'text-oxidized-graphite/45'
+  const logoColor = barDark ? 'text-bone-porcelain/80' : 'text-oxidized-graphite/75'
   const hamColor = barDark ? 'bg-bone-porcelain' : 'bg-oxidized-graphite'
 
   return (
