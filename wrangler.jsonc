@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sabrina-suppa",
+  "compatibility_date": "2025-06-01",
+  // Static-assets-only deployment (no Worker script / no OpenNext).
+  // `npm run build` produces ./out via Next.js static export; these files are served directly.
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
