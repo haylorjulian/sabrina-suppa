@@ -95,6 +95,36 @@ export default function Work() {
     )
   }
 
+  // Category description — reused in two spots (right of the title on desktop,
+  // below it on mobile).
+  function Desc({ className }) {
+    if (!activeCategory.description) return null
+    return (
+      <div className={className}>
+        {activeCategory.description.map((para, i) => (
+          <p
+            key={i}
+            className="text-[clamp(10px,0.8vw,12px)] font-light leading-[1.55] text-oxidized-graphite/70"
+          >
+            {para}
+          </p>
+        ))}
+      </div>
+    )
+  }
+
+  // Touch swipe (mobile) — left/right to page through images.
+  const touchStartX = useRef(null)
+  const onTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+  const onTouchEnd = (e) => {
+    if (touchStartX.current == null || !hasPaging) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (Math.abs(dx) > 40) (dx < 0 ? nextImage : prevImage)()
+  }
+
   return (
     <section
       id="work"
@@ -103,42 +133,33 @@ export default function Work() {
       aria-label="Work"
       className="relative flex h-full w-full flex-col overflow-hidden bg-bone-porcelain"
     >
-      {/* ── Header: category label, project title, then the category description ── */}
+      {/* ── Header: project title, with the category description aligned beside it
+           (desktop) or below it (mobile) ── */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
         className="px-4 pt-[84px] md:px-[52px] md:pt-[104px]"
       >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="mb-2 text-[9px] uppercase tracking-[0.28em] text-synthetic-flesh">
-              {activeCategory.label}
-            </p>
-            <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-oxidized-graphite">
-              {activeProjectCopy.title}
-            </h2>
-          </div>
-          {/* Mobile-only: aligned with the project name */}
+        <div className="flex items-start justify-between gap-4 md:gap-16">
+          <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-oxidized-graphite md:shrink-0">
+            {activeProjectCopy.title}
+          </h2>
+          {/* Desktop: description starts level with the title, spreading to the right padding */}
+          <Desc className="hidden space-y-2 md:block md:flex-1" />
+          {/* Mobile: Next Project aligned with the project name */}
           <NextProject className="mt-1 md:hidden" />
         </div>
-
-        {activeCategory.description && (
-          <div className="mt-3 max-w-2xl space-y-2">
-            {activeCategory.description.map((para, i) => (
-              <p
-                key={i}
-                className="text-[clamp(10px,0.8vw,12px)] font-light leading-[1.55] text-oxidized-graphite/70"
-              >
-                {para}
-              </p>
-            ))}
-          </div>
-        )}
+        {/* Mobile: description below the title */}
+        <Desc className="mt-3 space-y-2 md:hidden" />
       </motion.div>
 
       {/* ── Image area — pushed below the header, sits just above the controls ── */}
-      <div className="relative flex min-h-0 flex-1 items-end justify-center px-4 pb-2 md:items-center md:px-24 md:pb-4">
+      <div
+        className="relative flex min-h-0 flex-1 items-end justify-center px-4 pb-2 md:items-center md:px-24 md:pb-4"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {/* Desktop: up/down arrows with the page count between them */}
         {hasPaging && (
           <div className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
@@ -176,25 +197,25 @@ export default function Work() {
             ))}
           </motion.div>
         </AnimatePresence>
-      </div>
 
-      {/* ── Mobile carousel dots ── */}
-      {hasPaging && (
-        <div className="flex justify-center gap-2 pb-3 md:hidden">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => goToPage(i)}
-              aria-label={`${c.goToImageLabel} ${i + 1}`}
-              aria-current={i === currentPage - 1}
-              className={`h-2 w-2 rounded-full border border-oxidized-graphite transition-all duration-300 ${
-                i === currentPage - 1 ? 'bg-oxidized-graphite' : 'bg-transparent'
-              }`}
-            />
-          ))}
-        </div>
-      )}
+        {/* Mobile carousel dots — overlaid near the bottom of the image */}
+        {hasPaging && (
+          <div className="absolute bottom-3 left-1/2 z-10 flex max-w-[90vw] -translate-x-1/2 flex-wrap justify-center gap-2 md:hidden">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goToPage(i)}
+                aria-label={`${c.goToImageLabel} ${i + 1}`}
+                aria-current={i === currentPage - 1}
+                className={`h-2 w-2 rounded-full border border-oxidized-graphite transition-all duration-300 ${
+                  i === currentPage - 1 ? 'bg-oxidized-graphite' : 'bg-bone-porcelain/40'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* ── Footer: pill nav (+ desktop Next Project aligned with it) ── */}
       <div className="relative flex items-center justify-center px-4 pb-9 md:px-[52px]">

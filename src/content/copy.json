@@ -39,9 +39,9 @@
             "Through a series of experimental artefacts, wearable structures, and material investigations, the aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
           ],
           "projects": [
-            { "title": "[PLACEHOLDER: Project 1 title]" },
-            { "title": "[PLACEHOLDER: Project 2 title]" },
-            { "title": "[PLACEHOLDER: Project 3 title]" }
+            { "title": "Transfiguration, 2026" },
+            { "title": "Pressure Calibration, 2026" },
+            { "title": "Force Matrix, 2026" }
           ]
         },
         {
@@ -55,7 +55,7 @@
             "3D printed sculptural wearable in elastic TPU"
           ],
           "projects": [
-            { "title": "[PLACEHOLDER: Physical project title]", "comingSoon": "Coming soon" }
+            { "title": "Past Traces, 2026", "comingSoon": "Coming soon" }
           ]
         }
       ]

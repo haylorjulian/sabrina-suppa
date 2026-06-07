@@ -12,6 +12,9 @@ export default function Hero() {
   const { t } = useLanguage()
   const { loading } = usePreloader()
   const c = t.hero
+  // "Body Architect · Exploring Adaptive Morphologies" → two lines on mobile
+  const descParts = c.descriptor.split(' · ')
+  const shadow = '[text-shadow:0_1px_8px_rgba(26,26,28,0.7)]'
 
   return (
     <>
@@ -35,12 +38,36 @@ export default function Hero() {
         {/* Tonal overlay (mockup linear-gradient, token-approximated) */}
         <div className="absolute inset-0 bg-gradient-to-br from-oxidized-graphite/55 via-wet-petroleum/10 to-oxidized-graphite/75" />
 
-        {/* Text block — off-axis, bottom-left. Gated on preloader completion. */}
+        {/* Mobile: centred name + descriptor on three lines */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute bottom-14 left-6 z-10 md:left-[52px]"
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center md:hidden"
+        >
+          <motion.h1
+            variants={fadeInUp}
+            className={`mb-5 text-[clamp(34px,9vw,52px)] font-extralight italic leading-[1.05] tracking-[0.08em] text-bone-porcelain ${shadow}`}
+          >
+            {c.name}
+          </motion.h1>
+          {descParts.map((part, i) => (
+            <motion.p
+              key={i}
+              variants={fadeInUp}
+              className={`text-[12px] uppercase tracking-[0.30em] text-bone-porcelain ${i > 0 ? 'mt-1.5' : ''} ${shadow}`}
+            >
+              {part}
+            </motion.p>
+          ))}
+        </motion.div>
+
+        {/* Desktop: off-axis, bottom-left. Gated on preloader completion. */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate={loading ? 'hidden' : 'visible'}
+          className="absolute bottom-14 left-[52px] z-10 hidden md:block"
         >
           <motion.div variants={fadeInUp} className="mb-[18px] h-px w-8 bg-synthetic-flesh/45" />
           <motion.h1
@@ -51,7 +78,7 @@ export default function Hero() {
           </motion.h1>
           <motion.p
             variants={fadeInUp}
-            className="text-[12px] uppercase tracking-[0.34em] text-bone-porcelain [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]"
+            className={`text-[12px] uppercase tracking-[0.34em] text-bone-porcelain ${shadow}`}
           >
             {c.descriptor}
           </motion.p>
