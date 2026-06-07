@@ -6,6 +6,7 @@ import { motion, useInView } from 'framer-motion'
 import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
 import { staggerContainer, lineReveal } from '@/lib/animations'
+import { SocialIcon } from '@/components/ui/icons'
 
 export default function About() {
   const { t } = useLanguage()
@@ -55,30 +56,24 @@ export default function About() {
             {c.sectionLabel}
           </motion.p>
 
+          {/* Bio + (merged) statement — same styling, shown together */}
           <motion.p
             variants={lineReveal}
             className="text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42]"
           >
             {c.bio}
           </motion.p>
-
           <motion.p
             variants={lineReveal}
-            className="mb-3 mt-9 text-[12px] uppercase tracking-[0.35em] text-synthetic-flesh"
-          >
-            {c.statementLabel}
-          </motion.p>
-          <motion.p
-            variants={lineReveal}
-            className="text-[14px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain/85 md:text-[clamp(11px,0.92vw,13px)] md:leading-[1.55]"
+            className="mt-5 text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain md:mt-4 md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42]"
           >
             {c.statement}
           </motion.p>
 
-          {/* Social links — below the copy */}
+          {/* Social icons — below the copy */}
           <motion.ul
             variants={lineReveal}
-            className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3 md:mt-6"
+            className="mt-10 flex flex-wrap items-center gap-6 md:mt-8"
           >
             {c.social.map((link) => (
               <li key={link.label}>
@@ -86,10 +81,10 @@ export default function About() {
                   href={link.href}
                   target={link.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel="noreferrer"
-                  className="group inline-flex items-center text-[13px] uppercase tracking-[0.22em] text-bone-porcelain/80 transition-colors duration-300 hover:text-synthetic-flesh md:text-[12px]"
+                  aria-label={link.label}
+                  className="block text-bone-porcelain/75 transition-colors duration-300 hover:text-synthetic-flesh"
                 >
-                  {link.label}
-                  <span className="ml-2 inline-block h-px w-4 bg-current opacity-50 transition-all duration-300 group-hover:w-6 group-hover:opacity-90" />
+                  <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
                 </a>
               </li>
             ))}

@@ -35,8 +35,6 @@ export default function Hero() {
           sizes="100vw"
           className="object-cover"
         />
-        {/* Tonal overlay (mockup linear-gradient, token-approximated) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-oxidized-graphite/55 via-wet-petroleum/10 to-oxidized-graphite/75" />
 
         {/* Mobile: centred name + descriptor on three lines */}
         <motion.div
@@ -72,7 +70,7 @@ export default function Hero() {
           <motion.div variants={fadeInUp} className="mb-[18px] h-px w-8 bg-synthetic-flesh/45" />
           <motion.h1
             variants={fadeInUp}
-            className="mb-[14px] text-[clamp(28px,3.8vw,58px)] font-extralight italic leading-[1.05] tracking-[0.08em] text-bone-porcelain"
+            className={`mb-[14px] text-[clamp(28px,3.8vw,58px)] font-extralight italic leading-[1.05] tracking-[0.08em] text-bone-porcelain ${shadow}`}
           >
             {c.name}
           </motion.h1>

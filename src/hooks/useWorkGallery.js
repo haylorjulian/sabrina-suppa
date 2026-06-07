@@ -1,88 +1,54 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { workMedia } from '@/lib/assets'
 
-// Manages the three nested levels of the Work gallery:
-//   category (pill nav)  →  project (Next Project CTA)  →  image page (up/down arrows)
-//
-// `categories` is the copy-driven array for the active language (labels + titles);
-// media paths are looked up from workMedia by category slug. `perPage` is how many
-// images show at once (2 side-by-side on desktop, 1 on mobile) — the up/down
-// arrows page through the project in steps of perPage.
-export function useWorkGallery(categories, perPage = 1) {
-  const [categoryIndex, setCategoryIndex] = useState(0)
+// Flat gallery model: a single ordered list of projects (each with its category
+// label, full description, and media). One image shows at a time; the bottom
+// project nav selects a project, the arrows page through that project's images.
+export function useWorkGallery(projects) {
   const [projectIndex, setProjectIndex] = useState(0)
-  const [pageStart, setPageStart] = useState(0)
-  // Direction (1 = forward, -1 = back) for crossfade enter/exit choreography.
+  const [imageIndex, setImageIndex] = useState(0)
+  // Direction (1 = forward, -1 = back) for crossfade choreography.
   const [direction, setDirection] = useState(1)
 
-  const activeCategory = categories[categoryIndex]
-  const categoryProjects = workMedia[activeCategory.slug] || []
-  const projectCount = categoryProjects.length
-  const media = categoryProjects[projectIndex]?.media || []
+  const activeProject = projects[projectIndex] || { media: [], description: [] }
+  const media = activeProject.media || []
   const imageCount = media.length
-  const activeProjectCopy = activeCategory.projects[projectIndex] || {}
+  const safeImage = imageCount ? Math.min(imageIndex, imageCount - 1) : 0
+  const activeMedia = media[safeImage] || null
+  const isFirstImage = safeImage === 0
+  const hasPaging = imageCount > 1
 
-  // Clamp the page start to a valid aligned position (handles perPage changing on resize).
-  const lastPageStart = Math.max(0, Math.floor((imageCount - 1) / perPage) * perPage)
-  const safeStart = Math.min(pageStart, lastPageStart)
-  const pageItems = media.slice(safeStart, safeStart + perPage)
-  const hasPaging = imageCount > perPage
-
-  const selectCategory = useCallback((index) => {
+  const selectProject = useCallback((i) => {
     setDirection(1)
-    setCategoryIndex(index)
-    setProjectIndex(0)
-    setPageStart(0)
+    setProjectIndex(i)
+    setImageIndex(0)
   }, [])
-
-  const nextProject = useCallback(() => {
-    setDirection(1)
-    setProjectIndex((p) => (p + 1) % projectCount)
-    setPageStart(0)
-  }, [projectCount])
 
   const nextImage = useCallback(() => {
     setDirection(1)
-    setPageStart((s) => (s + perPage > imageCount - 1 ? 0 : s + perPage))
-  }, [perPage, imageCount])
+    setImageIndex((x) => (x + 1) % imageCount)
+  }, [imageCount])
 
   const prevImage = useCallback(() => {
     setDirection(-1)
-    setPageStart((s) => (s - perPage < 0 ? Math.floor((imageCount - 1) / perPage) * perPage : s - perPage))
-  }, [perPage, imageCount])
+    setImageIndex((x) => (x - 1 + imageCount) % imageCount)
+  }, [imageCount])
 
-  // Jump straight to a page (carousel dots).
-  const goToPage = useCallback(
-    (pageIndex) => {
-      setDirection(pageIndex * perPage >= safeStart ? 1 : -1)
-      setPageStart(pageIndex * perPage)
-    },
-    [perPage, safeStart]
-  )
-
-  // Stable key so AnimatePresence crossfades on any of the three levels changing.
-  const mediaKey = useMemo(
-    () => `${categoryIndex}-${projectIndex}-${safeStart}`,
-    [categoryIndex, projectIndex, safeStart]
-  )
+  const mediaKey = useMemo(() => `${projectIndex}-${safeImage}`, [projectIndex, safeImage])
 
   return {
-    categoryIndex,
     projectIndex,
-    pageStart: safeStart,
+    imageIndex: safeImage,
     imageCount,
-    projectCount,
-    pageItems,
     hasPaging,
-    activeProjectCopy,
+    isFirstImage,
+    activeProject,
+    activeMedia,
     direction,
     mediaKey,
-    selectCategory,
-    nextProject,
+    selectProject,
     nextImage,
     prevImage,
-    goToPage,
   }
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
+import { InstagramIcon, LinktreeIcon, SocialIcon } from '@/components/ui/icons'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
 // section currently under the bar — sections declare data-nav-theme="dark|light"
@@ -26,7 +27,6 @@ export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
   const [theme, setTheme] = useState('dark')
-  const [activeSection, setActiveSection] = useState('home')
 
   useEffect(() => {
     const sections = Array.from(document.querySelectorAll('[data-nav-theme]'))
@@ -37,11 +37,9 @@ export default function Nav() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setTheme(entry.target.getAttribute('data-nav-theme') || 'dark')
-            setActiveSection(entry.target.id)
           }
         })
       },
-      // Trigger when a section crosses the top band of the viewport.
       { rootMargin: '-10% 0px -85% 0px', threshold: 0 }
     )
 
@@ -58,7 +56,6 @@ export default function Nav() {
   }, [open])
 
   const isDark = theme === 'dark'
-  // While the (dark) overlay is open, force the bar to its light-on-dark treatment.
   const barDark = isDark || open
   const linkColor = barDark
     ? 'text-bone-porcelain/65 hover:text-bone-porcelain'
@@ -66,21 +63,20 @@ export default function Nav() {
   const logoColor = barDark ? 'text-bone-porcelain/80' : 'text-oxidized-graphite/75'
   const hamColor = barDark ? 'bg-bone-porcelain' : 'bg-oxidized-graphite'
 
+  const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <nav className="flex items-center justify-between px-6 py-7 md:px-[52px]">
         <a
           href="#home"
           onClick={closeMenu}
-          // On desktop the Work section shows the project name in this spot, so hide the logo there.
-          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor} ${
-            activeSection === 'work' && !open ? 'md:invisible' : ''
-          }`}
+          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
         >
           {t.nav.logo}
         </a>
 
-        {/* Desktop links */}
+        {/* Desktop links + social icons */}
         <div className="hidden items-center gap-9 md:flex">
           {t.nav.links.map((link) => (
             <a
@@ -91,6 +87,24 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
+          <a
+            href={socialHref('Instagram')}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+            className={`transition-colors duration-300 ${linkColor}`}
+          >
+            <InstagramIcon className="h-[19px] w-[19px]" />
+          </a>
+          <a
+            href={socialHref('Linktree')}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Linktree"
+            className={`transition-colors duration-300 ${linkColor}`}
+          >
+            <LinktreeIcon className="h-[19px] w-[19px]" />
+          </a>
         </div>
 
         {/* Mobile hamburger */}
@@ -130,10 +144,10 @@ export default function Nav() {
               ))}
             </div>
 
-            {/* Socials — towards the bottom */}
+            {/* Social icons — towards the bottom */}
             <motion.ul
               variants={overlayItem}
-              className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 pb-14"
+              className="flex flex-wrap items-center justify-center gap-7 px-6 pb-14"
             >
               {t.about.social.map((link) => (
                 <li key={link.label}>
@@ -142,9 +156,10 @@ export default function Nav() {
                     target={link.href.startsWith('mailto:') ? undefined : '_blank'}
                     rel="noreferrer"
                     onClick={closeMenu}
-                    className="text-[12px] uppercase tracking-[0.22em] text-bone-porcelain/60 transition-colors duration-300 hover:text-synthetic-flesh"
+                    aria-label={link.label}
+                    className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
                   >
-                    {link.label}
+                    <SocialIcon label={link.label} className="h-6 w-6" />
                   </a>
                 </li>
               ))}
