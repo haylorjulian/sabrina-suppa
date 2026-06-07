@@ -53,6 +53,15 @@ export function useWorkGallery(categories, perPage = 1) {
     setPageStart((s) => (s - perPage < 0 ? Math.floor((imageCount - 1) / perPage) * perPage : s - perPage))
   }, [perPage, imageCount])
 
+  // Jump straight to a page (carousel dots).
+  const goToPage = useCallback(
+    (pageIndex) => {
+      setDirection(pageIndex * perPage >= safeStart ? 1 : -1)
+      setPageStart(pageIndex * perPage)
+    },
+    [perPage, safeStart]
+  )
+
   // Stable key so AnimatePresence crossfades on any of the three levels changing.
   const mediaKey = useMemo(
     () => `${categoryIndex}-${projectIndex}-${safeStart}`,
@@ -74,5 +83,6 @@ export function useWorkGallery(categories, perPage = 1) {
     nextProject,
     nextImage,
     prevImage,
+    goToPage,
   }
 }

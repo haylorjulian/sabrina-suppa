@@ -1,8 +1,8 @@
 {
   "en": {
     "meta": {
-      "title": "Sabrina Suppa — Sculptor",
-      "description": "Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery."
+      "title": "Sabrina Suppa — Body Architect",
+      "description": "Sabrina Suppa is a body architect exploring adaptive morphologies — engineered structures that reshape and extend the human silhouette."
     },
     "nav": {
       "logo": "SS",
@@ -10,17 +10,16 @@
         { "label": "Work", "href": "#work" },
         { "label": "About", "href": "#about" }
       ],
-      "lang": "IT",
       "menuLabel": "Menu",
       "closeLabel": "Close"
     },
     "preloader": {
       "name": "Sabrina Suppa",
-      "descriptor": "Sculptor"
+      "descriptor": "Body Architect"
     },
     "hero": {
       "name": "Sabrina Suppa",
-      "descriptor": "Sculptor · Digital & Physical",
+      "descriptor": "Body Architect · Exploring Adaptive Morphologies",
       "scroll": "Scroll",
       "bgAlt": "Sculptural form in dark, cinematic light"
     },
@@ -29,10 +28,16 @@
       "nextProject": "Next Project",
       "prevImageLabel": "Previous image",
       "nextImageLabel": "Next image",
+      "goToImageLabel": "Go to image",
       "categories": [
         {
           "slug": "adaptive-flesh",
           "label": "Adaptive Flesh",
+          "description": [
+            "An ongoing research exploring anatomical architectures designed for bodies in flux.",
+            "We no longer inhabit a singular, coherent reality. Contemporary existence unfolds across overlapping experiences in digital, biological, syntethic environments. Our perception of these realities frequently contradict one another, producing states of instability and cognitive dissonance. Adaptive Flesh emerges as a response to this condition. The project explores how engineered morphologies can augment the body with integrated capacities for protection, calibration and resistance, functioning as adaptive interfaces between these changing landscapes.",
+            "Through a series of experimental artefacts, wearable structures, and material investigations, the aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
+          ],
           "projects": [
             { "title": "[PLACEHOLDER: Project 1 title]" },
             { "title": "[PLACEHOLDER: Project 2 title]" },
@@ -41,7 +46,14 @@
         },
         {
           "slug": "physical",
-          "label": "Physical",
+          "label": "Physical Works",
+          "description": [
+            "Past traces emerges as “ghosts of intentions”, echoing through our present.",
+            "The remains, in this context, are imprints of desires and experiences hardened by time, yet never fully silent.",
+            "They speak to what once was, but also to what was meant to be or could still become.",
+            "An aesthetic of absence, delay and recurrence, where lost memories remain suspended in a perpetual state of becoming.",
+            "3D printed sculptural wearable in elastic TPU"
+          ],
           "projects": [
             { "title": "[PLACEHOLDER: Physical project title]", "comingSoon": "Coming soon" }
           ]
@@ -55,71 +67,10 @@
       "statement": "Defining herself as a Body Architect, Suppa’s work exists at the intersection of fashion, technology, and geometric abstraction, constructing conceptual structures that reshape and extend the human silhouette. Influenced by an early background in classical piano and interior design, her work reflects a fascination with the body in its most unrestrained and transformative forms. Through sculptural wearables and engineered morphologies, she explores ambivalence in perception: forms that mutate in meaning through subtraction or addition, objects that appear delicate or innocent while concealing latent force beneath their surface. Her practice investigates the tension between visibility and concealment, proposing that what is hidden often carries the deepest resonance.",
       "bgAlt": "Sculptural form lit with golden fracture light, fading into darkness",
       "social": [
-        { "label": "Email", "href": "mailto:[PLACEHOLDER: hello@sabrinasuppa.com]" },
-        { "label": "Instagram", "href": "[PLACEHOLDER: https://instagram.com/handle]" },
-        { "label": "X / Twitter", "href": "[PLACEHOLDER: https://x.com/handle]" }
-      ]
-    }
-  },
-  "it": {
-    "meta": {
-      "title": "Sabrina Suppa — Scultrice",
-      "description": "[TRANSLATE: Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery.]"
-    },
-    "nav": {
-      "logo": "SS",
-      "links": [
-        { "label": "[TRANSLATE: Work]", "href": "#work" },
-        { "label": "[TRANSLATE: About]", "href": "#about" }
-      ],
-      "lang": "EN",
-      "menuLabel": "[TRANSLATE: Menu]",
-      "closeLabel": "[TRANSLATE: Close]"
-    },
-    "preloader": {
-      "name": "Sabrina Suppa",
-      "descriptor": "[TRANSLATE: Sculptor]"
-    },
-    "hero": {
-      "name": "Sabrina Suppa",
-      "descriptor": "[TRANSLATE: Sculptor · Digital & Physical]",
-      "scroll": "[TRANSLATE: Scroll]",
-      "bgAlt": "[TRANSLATE: Sculptural form in dark, cinematic light]"
-    },
-    "work": {
-      "imageOf": "[TRANSLATE: of]",
-      "nextProject": "[TRANSLATE: Next Project]",
-      "prevImageLabel": "[TRANSLATE: Previous image]",
-      "nextImageLabel": "[TRANSLATE: Next image]",
-      "categories": [
-        {
-          "slug": "adaptive-flesh",
-          "label": "[TRANSLATE: Adaptive Flesh]",
-          "projects": [
-            { "title": "[TRANSLATE: Project 1 title]" },
-            { "title": "[TRANSLATE: Project 2 title]" },
-            { "title": "[TRANSLATE: Project 3 title]" }
-          ]
-        },
-        {
-          "slug": "physical",
-          "label": "[TRANSLATE: Physical]",
-          "projects": [
-            { "title": "[TRANSLATE: Physical project title]", "comingSoon": "[TRANSLATE: Coming soon]" }
-          ]
-        }
-      ]
-    },
-    "about": {
-      "sectionLabel": "[TRANSLATE: About]",
-      "bio": "[TRANSLATE: Sabrina Suppa is an artist and designer based in London. For the past five years, she has worked as a character artist within the gaming and film industries, where she cultivated her fascination with anatomical studies and the expressive potential of the human body. Alongside her work in the industry, in 2025 she began independently exploring 3D printing and physical fabrication as a personal pursuit, gradually shifting her practice towards a more intimate artistic language.]",
-      "statementLabel": "[TRANSLATE: Artist Statement]",
-      "statement": "[TRANSLATE: Defining herself as a Body Architect, Suppa’s work exists at the intersection of fashion, technology, and geometric abstraction, constructing conceptual structures that reshape and extend the human silhouette. Influenced by an early background in classical piano and interior design, her work reflects a fascination with the body in its most unrestrained and transformative forms. Through sculptural wearables and engineered morphologies, she explores ambivalence in perception: forms that mutate in meaning through subtraction or addition, objects that appear delicate or innocent while concealing latent force beneath their surface. Her practice investigates the tension between visibility and concealment, proposing that what is hidden often carries the deepest resonance.]",
-      "bgAlt": "[TRANSLATE: Sculptural form lit with golden fracture light, fading into darkness]",
-      "social": [
-        { "label": "Email", "href": "mailto:[PLACEHOLDER: hello@sabrinasuppa.com]" },
-        { "label": "Instagram", "href": "[PLACEHOLDER: https://instagram.com/handle]" },
-        { "label": "X / Twitter", "href": "[PLACEHOLDER: https://x.com/handle]" }
+        { "label": "Email", "href": "mailto:info@sabrinasuppa.com" },
+        { "label": "Instagram", "href": "https://instagram.com/sabrinasuppa" },
+        { "label": "Twitter", "href": "https://x.com/suppa_sabrina" },
+        { "label": "Linktree", "href": "https://linktr.ee/sabrinasuppa" }
       ]
     }
   }

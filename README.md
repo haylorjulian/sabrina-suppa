@@ -53,12 +53,10 @@ Notes (not defects):
 
 ## Pre-Launch Checklist
 
-- [ ] Replace `[PLACEHOLDER: ...]` project titles in `src/content/copy.json` (Work section, both `en` and `it`)
-- [ ] Replace all `[TRANSLATE: ...]` values in `src/content/copy.json` with real Italian copy
-- [ ] Replace the **Physical** project title placeholder in `copy.json` (images are now supplied — `physicalworks/misc`, 4 images)
-- [ ] Fill in the **About social links** — `about.social` in `src/content/copy.json` (Email / Instagram / X handles, both `en` and `it`), currently `[PLACEHOLDER: ...]` hrefs
+- [ ] Replace `[PLACEHOLDER: ...]` project titles in `src/content/copy.json` (Work section — Adaptive Flesh ×3 + Physical Works)
 - [ ] Swap the Hero background for the final MP4 video when ready (currently `homePage.jpg`)
 - [ ] Rename asset files containing spaces (see SUMMARY.md) and update the encoded paths in `assets.js`
-- [ ] Confirm final EN/IT bio + artist statement copy
 - [ ] Verify fonts load in production (`npm run build && npm start`)
+
+> Italian (EN/IT) toggle removed for now — `copy.json` is English-only. Social links and category/project descriptions are filled in with real copy.
 - [ ] Run a Lighthouse audit

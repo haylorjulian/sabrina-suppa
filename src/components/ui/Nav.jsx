@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
-import LangToggle from './LangToggle'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
 // section currently under the bar — sections declare data-nav-theme="dark|light"
@@ -84,7 +83,6 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
-          <LangToggle theme={theme} />
         </div>
 
         {/* Mobile hamburger */}
@@ -121,9 +119,6 @@ export default function Nav() {
                 {link.label}
               </motion.a>
             ))}
-            <motion.div variants={overlayItem} className="mt-2">
-              <LangToggle theme="dark" className="border-l-0 pl-0 text-xs" />
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

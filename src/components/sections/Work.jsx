@@ -41,7 +41,7 @@ function MediaItem({ item, alt }) {
       alt={alt}
       fill
       unoptimized
-      sizes="(min-width: 768px) 40vw, 80vw"
+      sizes="(min-width: 768px) 40vw, 92vw"
       className="object-contain"
     />
   )
@@ -68,10 +68,32 @@ export default function Work() {
     nextProject,
     nextImage,
     prevImage,
+    goToPage,
   } = useWorkGallery(c.categories, perPage)
 
+  const activeCategory = c.categories[categoryIndex]
   const totalPages = Math.max(1, Math.ceil(imageCount / perPage))
   const currentPage = Math.floor(pageStart / perPage) + 1
+
+  // Next Project CTA — placed top-right on mobile (aligned with the title) and
+  // bottom-right (aligned with the pills) on desktop.
+  function NextProject({ className }) {
+    if (projectCount <= 1) return null
+    return (
+      <button
+        type="button"
+        onClick={nextProject}
+        className={`group flex items-center gap-[14px] ${className}`}
+      >
+        <span className="whitespace-nowrap text-[10px] uppercase tracking-[0.26em] text-oxidized-graphite">
+          {c.nextProject}
+        </span>
+        <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center border border-oxidized-graphite text-sm text-oxidized-graphite transition-colors duration-200 group-hover:bg-oxidized-graphite group-hover:text-bone-porcelain">
+          <span aria-hidden="true">→</span>
+        </span>
+      </button>
+    )
+  }
 
   return (
     <section
@@ -79,11 +101,55 @@ export default function Work() {
       ref={ref}
       data-nav-theme="light"
       aria-label="Work"
-      className="relative h-full w-full overflow-hidden bg-bone-porcelain"
+      className="relative flex h-full w-full flex-col overflow-hidden bg-bone-porcelain"
     >
-      {/* ── Centred media frame — images keep their natural dimensions, up to
-           two side-by-side on desktop. Crossfades on category/project/page change. ── */}
-      <div className="absolute inset-0 flex items-center justify-center px-16 pb-24 pt-24 md:px-24">
+      {/* ── Header: category label, project title, then the category description ── */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate={isInView ? 'visible' : 'hidden'}
+        className="px-4 pt-[84px] md:px-[52px] md:pt-[104px]"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="mb-2 text-[9px] uppercase tracking-[0.28em] text-synthetic-flesh">
+              {activeCategory.label}
+            </p>
+            <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-oxidized-graphite">
+              {activeProjectCopy.title}
+            </h2>
+          </div>
+          {/* Mobile-only: aligned with the project name */}
+          <NextProject className="mt-1 md:hidden" />
+        </div>
+
+        {activeCategory.description && (
+          <div className="mt-3 max-w-2xl space-y-2">
+            {activeCategory.description.map((para, i) => (
+              <p
+                key={i}
+                className="text-[clamp(10px,0.8vw,12px)] font-light leading-[1.55] text-oxidized-graphite/70"
+              >
+                {para}
+              </p>
+            ))}
+          </div>
+        )}
+      </motion.div>
+
+      {/* ── Image area — pushed below the header, sits just above the controls ── */}
+      <div className="relative flex min-h-0 flex-1 items-end justify-center px-4 pb-2 md:items-center md:px-24 md:pb-4">
+        {/* Desktop: up/down arrows with the page count between them */}
+        {hasPaging && (
+          <div className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
+            <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
+            <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
+              {currentPage} / {totalPages}
+            </span>
+            <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           <motion.div
             key={mediaKey}
@@ -96,7 +162,7 @@ export default function Work() {
             {pageItems.map((item, i) => (
               <div
                 key={`${mediaKey}-${i}`}
-                className="relative h-full max-h-[62svh] w-full max-w-[560px] flex-1"
+                className="relative h-full max-h-[58svh] w-full max-w-[560px] flex-1 md:max-h-[62svh]"
               >
                 <MediaItem
                   item={item}
@@ -112,62 +178,41 @@ export default function Work() {
         </AnimatePresence>
       </div>
 
-      {/* ── Project meta — top-left, below nav ── */}
-      <motion.div
-        variants={fadeInUp}
-        initial="hidden"
-        animate={isInView ? 'visible' : 'hidden'}
-        className="absolute left-6 top-[88px] z-10 md:left-[52px]"
-      >
-        <p className="mb-2 text-[9px] uppercase tracking-[0.28em] text-synthetic-flesh">
-          {c.categories[categoryIndex].label}
-        </p>
-        <h2 className="text-[clamp(18px,2.2vw,32px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-oxidized-graphite">
-          {activeProjectCopy.title}
-        </h2>
-      </motion.div>
-
-      {/* ── Left arrows — page through images, with the page count between them ── */}
+      {/* ── Mobile carousel dots ── */}
       {hasPaging && (
-        <div className="absolute left-6 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-3">
-          <ArrowButton glyph="↑" onClick={prevImage} label={c.prevImageLabel} />
-          <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
-            {currentPage} / {totalPages}
-          </span>
-          <ArrowButton glyph="↓" onClick={nextImage} label={c.nextImageLabel} />
+        <div className="flex justify-center gap-2 pb-3 md:hidden">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goToPage(i)}
+              aria-label={`${c.goToImageLabel} ${i + 1}`}
+              aria-current={i === currentPage - 1}
+              className={`h-2 w-2 rounded-full border border-oxidized-graphite transition-all duration-300 ${
+                i === currentPage - 1 ? 'bg-oxidized-graphite' : 'bg-transparent'
+              }`}
+            />
+          ))}
         </div>
       )}
 
-      {/* ── Next Project CTA — aligned with the pill nav at the bottom ── */}
-      {projectCount > 1 && (
-        <button
-          type="button"
-          onClick={nextProject}
-          className="group absolute bottom-[88px] right-8 z-20 flex items-center gap-[14px] md:bottom-9 md:right-[52px]"
+      {/* ── Footer: pill nav (+ desktop Next Project aligned with it) ── */}
+      <div className="relative flex items-center justify-center px-4 pb-9 md:px-[52px]">
+        <nav
+          aria-label="Work categories"
+          className="flex max-w-[92vw] items-center gap-1.5 overflow-x-auto"
         >
-          <span className="text-[10px] uppercase tracking-[0.26em] text-oxidized-graphite">
-            {c.nextProject}
-          </span>
-          <span className="flex h-[38px] w-[38px] items-center justify-center border border-oxidized-graphite text-sm text-oxidized-graphite transition-colors duration-200 group-hover:bg-oxidized-graphite group-hover:text-bone-porcelain">
-            <span aria-hidden="true">→</span>
-          </span>
-        </button>
-      )}
-
-      {/* ── Bottom pill nav — category tabs ── */}
-      <nav
-        aria-label="Work categories"
-        className="absolute bottom-9 left-1/2 z-20 flex max-w-[92vw] -translate-x-1/2 items-center gap-1.5 overflow-x-auto"
-      >
-        {c.categories.map((cat, i) => (
-          <Pill
-            key={cat.slug}
-            label={cat.label}
-            active={i === categoryIndex}
-            onClick={() => selectCategory(i)}
-          />
-        ))}
-      </nav>
+          {c.categories.map((cat, i) => (
+            <Pill
+              key={cat.slug}
+              label={cat.label}
+              active={i === categoryIndex}
+              onClick={() => selectCategory(i)}
+            />
+          ))}
+        </nav>
+        <NextProject className="absolute right-[52px] hidden md:flex" />
+      </div>
     </section>
   )
 }

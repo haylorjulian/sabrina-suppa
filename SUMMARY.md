@@ -46,7 +46,7 @@ Installed: `framer-motion`, `@react-spring/web`
 
 ## Business Logic Generated
 
-- `hooks/useLanguage.js` — EN/IT language Context + toggle; exposes `t` (active-language copy tree).
+- `hooks/useLanguage.js` — language Context exposing `t` (the copy tree). The EN/IT toggle has been removed for now; `copy.json` is English-only and `LangToggle.jsx` is unused.
 - `hooks/usePreloader.js` — preloader visibility timer + body scroll lock.
 - `hooks/useNav.js` — mobile menu open/close state.
 - `hooks/useWorkGallery.js` — the three nested gallery levels (category → project → image **page**): pill selection, Next Project cycling, and paged image navigation (`perPage` 1 mobile / 2 desktop) with clamp-on-resize, crossfade direction + media key.
@@ -94,7 +94,7 @@ The Physical Works images use an uppercase `.JPG` extension (`physicalworks/misc
 ## Assumptions
 
 - **Project titles unknown** — every Work project title is a `[PLACEHOLDER: ...]` in `copy.json` (the mockup showed a sample "Untitled Form 02"). Replace before launch.
-- **Italian copy** — all `it` strings are `[TRANSLATE: ...]` mirrors of the English; the language toggle is fully wired and will swap them live once filled in.
+- **Italian removed for now** — the EN/IT toggle and the `it` copy block were removed at the client's request; `copy.json` is English-only. `useLanguage`/`LangToggle` remain in place so the toggle can be reinstated later.
 - **Image ordering within projects** — folders had no explicit order, so images are ordered sensibly (hero/full-body shots first, close-ups/sides after; `b_2` leads with its video). Reorder in `assets.js` if the artist prefers a different sequence.
 - **`adaptiveFlesh/b_3/aboutPage.jpg`** is treated as the About background and excluded from the `b_3` Work gallery.
 - **Preloader duration** assumed at 2.2s (no value given in the mockup) — adjustable in `usePreloader`.
