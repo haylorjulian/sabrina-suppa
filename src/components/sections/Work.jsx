@@ -212,7 +212,7 @@ export default function Work() {
       {/* ── Mobile: arrows underneath the image, horizontally centred (shifted up).
            On the first slide only the forward arrow shows. ── */}
       {hasPaging && (
-        <div className="mb-[10svh] flex items-center justify-center gap-5 pb-3 md:hidden">
+        <div className="flex items-center justify-center gap-5 pb-3 md:hidden">
           {!isFirstPage && (
             <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />
           )}
