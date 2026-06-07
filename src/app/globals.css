@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Mirror of mockup CSS custom properties — available for inline-style usage */
+  --bone-porcelain: #f3eee8;
+  --synthetic-flesh: #c9a48f;
+  --surgical-taupe: #8f786c;
+  --oxidized-graphite: #1a1a1c;
+  --wet-petroleum: #22262b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--oxidized-graphite);
+}
+
+/* Vertical scroll-indicator label (writing-mode can't be expressed as a Tailwind class) */
+.vertical-text {
+  writing-mode: vertical-rl;
+}

@@ -1,0 +1,116 @@
+{
+  "en": {
+    "meta": {
+      "title": "Sabrina Suppa — Sculptor",
+      "description": "Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery."
+    },
+    "nav": {
+      "logo": "SS",
+      "links": [
+        { "label": "Work", "href": "#work" },
+        { "label": "About", "href": "#about" }
+      ],
+      "lang": "IT",
+      "menuLabel": "Menu",
+      "closeLabel": "Close"
+    },
+    "preloader": {
+      "name": "Sabrina Suppa",
+      "descriptor": "Sculptor"
+    },
+    "hero": {
+      "name": "Sabrina Suppa",
+      "descriptor": "Sculptor · Digital & Physical",
+      "scroll": "Scroll",
+      "bgAlt": "Sculptural form in dark, cinematic light"
+    },
+    "work": {
+      "imageOf": "of",
+      "nextProject": "Next Project",
+      "prevImageLabel": "Previous image",
+      "nextImageLabel": "Next image",
+      "categories": [
+        {
+          "slug": "adaptive-flesh",
+          "label": "Adaptive Flesh",
+          "projects": [
+            { "title": "[PLACEHOLDER: Project 1 title]" },
+            { "title": "[PLACEHOLDER: Project 2 title]" },
+            { "title": "[PLACEHOLDER: Project 3 title]" }
+          ]
+        },
+        {
+          "slug": "physical",
+          "label": "Physical",
+          "projects": [
+            { "title": "[PLACEHOLDER: Physical project title]", "comingSoon": "Coming soon" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "sectionLabel": "About",
+      "bio": "Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery — porcelain whites, oxidized graphite, silicone skin tones — building forms that feel at once clinical and intimate.",
+      "statementLabel": "Artist Statement",
+      "statement": "I am interested in the seam where the body meets its replacements. Each work is a study of transformation through pain and repair — marble emerging from rough stone, cracks glowing with golden light. The surgical and the sacred are not opposites; they are the same gesture seen from different distances.",
+      "bgAlt": "Sculptural form behind layered vertical blur bands"
+    }
+  },
+  "it": {
+    "meta": {
+      "title": "Sabrina Suppa — Scultrice",
+      "description": "[TRANSLATE: Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery.]"
+    },
+    "nav": {
+      "logo": "SS",
+      "links": [
+        { "label": "[TRANSLATE: Work]", "href": "#work" },
+        { "label": "[TRANSLATE: About]", "href": "#about" }
+      ],
+      "lang": "EN",
+      "menuLabel": "[TRANSLATE: Menu]",
+      "closeLabel": "[TRANSLATE: Close]"
+    },
+    "preloader": {
+      "name": "Sabrina Suppa",
+      "descriptor": "[TRANSLATE: Sculptor]"
+    },
+    "hero": {
+      "name": "Sabrina Suppa",
+      "descriptor": "[TRANSLATE: Sculptor · Digital & Physical]",
+      "scroll": "[TRANSLATE: Scroll]",
+      "bgAlt": "[TRANSLATE: Sculptural form in dark, cinematic light]"
+    },
+    "work": {
+      "imageOf": "[TRANSLATE: of]",
+      "nextProject": "[TRANSLATE: Next Project]",
+      "prevImageLabel": "[TRANSLATE: Previous image]",
+      "nextImageLabel": "[TRANSLATE: Next image]",
+      "categories": [
+        {
+          "slug": "adaptive-flesh",
+          "label": "[TRANSLATE: Adaptive Flesh]",
+          "projects": [
+            { "title": "[TRANSLATE: Project 1 title]" },
+            { "title": "[TRANSLATE: Project 2 title]" },
+            { "title": "[TRANSLATE: Project 3 title]" }
+          ]
+        },
+        {
+          "slug": "physical",
+          "label": "[TRANSLATE: Physical]",
+          "projects": [
+            { "title": "[TRANSLATE: Physical project title]", "comingSoon": "[TRANSLATE: Coming soon]" }
+          ]
+        }
+      ]
+    },
+    "about": {
+      "sectionLabel": "[TRANSLATE: About]",
+      "bio": "[TRANSLATE: Sabrina Suppa is a sculptor working across digital and physical media. Her practice sits at the threshold between flesh and machinery — porcelain whites, oxidized graphite, silicone skin tones — building forms that feel at once clinical and intimate.]",
+      "statementLabel": "[TRANSLATE: Artist Statement]",
+      "statement": "[TRANSLATE: I am interested in the seam where the body meets its replacements. Each work is a study of transformation through pain and repair — marble emerging from rough stone, cracks glowing with golden light. The surgical and the sacred are not opposites; they are the same gesture seen from different distances.]",
+      "bgAlt": "[TRANSLATE: Sculptural form behind layered vertical blur bands]"
+    }
+  }
+}
