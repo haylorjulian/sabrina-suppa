@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { usePreloader } from '@/hooks/usePreloader'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import Preloader from '@/components/ui/Preloader'
+import ShimmerLine from '@/components/ui/ShimmerLine'
 
 export default function Hero() {
   const { t } = useLanguage()
@@ -92,13 +93,7 @@ export default function Hero() {
           <span className="vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
             {c.scroll}
           </span>
-          <div className="relative h-16 w-[1.5px] overflow-hidden bg-bone-porcelain/40">
-            <motion.span
-              className="absolute left-0 top-0 h-1/2 w-full bg-gradient-to-b from-transparent via-bone-porcelain to-transparent"
-              animate={{ y: ['-110%', '210%'] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.3 }}
-            />
-          </div>
+          <ShimmerLine tone="light" className="h-16" />
         </motion.div>
       </section>
     </>

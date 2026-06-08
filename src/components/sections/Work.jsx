@@ -1,13 +1,16 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWorkGallery } from '@/hooks/useWorkGallery'
-import { workMedia } from '@/lib/assets'
 import { staggerContainer, fadeInUp, crossfade } from '@/lib/animations'
-import ArrowButton from '@/components/ui/ArrowButton'
+import ShimmerLine from '@/components/ui/ShimmerLine'
+
+// Approx. fixed-nav height — the Work content is offset by this so it never sits
+// under the navigation items.
+const NAV_OFFSET = 'pt-[88px]'
 
 // One media item at its natural aspect ratio (object-contain, never cropped),
 // unoptimized so the original resolution is served.
@@ -33,37 +36,22 @@ export default function Work() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
 
-  // Flatten categories → a single ordered list of projects, each carrying its
-  // category label + full description + media.
-  const projects = useMemo(() => {
-    const list = []
-    c.categories.forEach((cat) => {
-      ;(cat.projects || []).forEach((proj, pi) => {
-        list.push({
-          name: proj.title,
-          comingSoon: proj.comingSoon,
-          categoryLabel: cat.label,
-          description: cat.description || [],
-          media: workMedia[cat.slug]?.[pi]?.media || [],
-        })
-      })
-    })
-    return list
-  }, [c])
-
   const {
-    projectIndex,
+    categoryIndex,
     imageIndex,
+    projectCount,
     imageCount,
     hasPaging,
     isFirstImage,
-    activeProject,
+    activeCategory,
+    activeProjectCopy,
     activeMedia,
     mediaKey,
-    selectProject,
+    selectCategory,
+    nextProject,
     nextImage,
     prevImage,
-  } = useWorkGallery(projects)
+  } = useWorkGallery(c.categories)
 
   // Touch swipe (mobile) — left/right to page through images.
   const touchStartX = useRef(null)
@@ -85,23 +73,23 @@ export default function Work() {
       aria-label="Work"
       className="relative flex h-full w-full flex-col overflow-hidden bg-bone-porcelain"
     >
-      {/* Main content — scrolls on mobile if long; two columns centred on desktop */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:items-center md:overflow-visible">
+      {/* Main content — offset below the nav; scrolls on mobile, two columns centred on desktop */}
+      <div className={`flex min-h-0 flex-1 flex-col overflow-y-auto ${NAV_OFFSET} md:flex-row md:items-center md:overflow-visible`}>
         {/* LEFT — category name + full description, vertically centred */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="flex shrink-0 flex-col justify-center px-6 pt-[84px] md:w-[44%] md:px-[52px] md:pt-0"
+          className="flex shrink-0 flex-col justify-center px-6 md:w-[44%] md:px-[52px]"
         >
           <motion.h2
             variants={fadeInUp}
             className="text-[clamp(22px,2.6vw,38px)] font-extralight italic leading-[1.1] tracking-[0.06em] text-surgical-taupe"
           >
-            {activeProject.categoryLabel}
+            {activeCategory.label}
           </motion.h2>
           <motion.div variants={fadeInUp} className="mt-5 space-y-3 md:mt-6">
-            {activeProject.description.map((para, i) => (
+            {(activeCategory.description || []).map((para, i) => (
               <p
                 key={i}
                 className="text-[14px] font-light leading-[1.65] text-oxidized-graphite/80 md:text-[clamp(13px,1vw,16px)]"
@@ -112,9 +100,9 @@ export default function Work() {
           </motion.div>
         </motion.div>
 
-        {/* RIGHT — one image, ~80vh */}
+        {/* RIGHT — one image, ~80vh, with shimmer-line arrows inside it */}
         <div
-          className="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-6 md:px-12 md:py-0"
+          className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-6 md:px-12 md:py-0"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -132,48 +120,73 @@ export default function Work() {
                   item={activeMedia}
                   alt={
                     activeMedia?.type === 'placeholder'
-                      ? activeProject.comingSoon
-                      : `${activeProject.name} — ${imageIndex + 1}`
+                      ? activeProjectCopy.comingSoon
+                      : `${activeProjectCopy.title} — ${imageIndex + 1}`
                   }
                 />
               </motion.div>
             </AnimatePresence>
-          </div>
 
-          {/* Image nav — first image shows only the forward arrow */}
-          {hasPaging && (
-            <div className="mt-4 flex items-center gap-4">
-              {!isFirstImage && <ArrowButton glyph="←" onClick={prevImage} label={c.prevImageLabel} />}
-              <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite tabular-nums">
-                {imageIndex + 1} / {imageCount}
-              </span>
-              <ArrowButton glyph="→" onClick={nextImage} label={c.nextImageLabel} />
-            </div>
-          )}
+            {/* Shimmer-line arrows inside the image (first image shows only forward) */}
+            {hasPaging && !isFirstImage && (
+              <button
+                type="button"
+                onClick={prevImage}
+                aria-label={c.prevImageLabel}
+                className="absolute left-1 top-1/2 z-10 -translate-y-1/2 px-3 py-4 md:left-3"
+              >
+                <ShimmerLine tone="dark" className="h-20 md:h-28" />
+              </button>
+            )}
+            {hasPaging && (
+              <button
+                type="button"
+                onClick={nextImage}
+                aria-label={c.nextImageLabel}
+                className="absolute right-1 top-1/2 z-10 -translate-y-1/2 px-3 py-4 md:right-3"
+              >
+                <ShimmerLine tone="dark" className="h-20 md:h-28" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* BOTTOM — project names as plain-text nav */}
-      <nav
-        aria-label="Projects"
-        className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 px-4 pb-9 pt-2 md:px-[52px]"
-      >
-        {projects.map((proj, i) => (
+      {/* BOTTOM — category nav (centre) + Next Project (bottom-right on desktop) */}
+      <div className="relative flex flex-col items-center gap-4 px-4 pb-9 md:px-[52px]">
+        <nav aria-label="Work categories" className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+          {c.categories.map((cat, i) => (
+            <button
+              key={cat.slug}
+              type="button"
+              onClick={() => selectCategory(i)}
+              aria-current={i === categoryIndex}
+              className={`whitespace-nowrap text-[11px] uppercase tracking-[0.22em] transition-colors duration-300 ${
+                i === categoryIndex
+                  ? 'text-oxidized-graphite'
+                  : 'text-oxidized-graphite/40 hover:text-oxidized-graphite/70'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </nav>
+
+        {projectCount > 1 && (
           <button
-            key={proj.name}
             type="button"
-            onClick={() => selectProject(i)}
-            aria-current={i === projectIndex}
-            className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
-              i === projectIndex
-                ? 'text-oxidized-graphite'
-                : 'text-oxidized-graphite/40 hover:text-oxidized-graphite/70'
-            }`}
+            onClick={nextProject}
+            className="group flex items-center gap-[14px] md:absolute md:bottom-9 md:right-[52px]"
           >
-            {proj.name}
+            <span className="whitespace-nowrap text-[10px] uppercase tracking-[0.26em] text-oxidized-graphite">
+              {c.nextProject}
+            </span>
+            <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center border border-oxidized-graphite text-sm text-oxidized-graphite transition-colors duration-200 group-hover:bg-oxidized-graphite group-hover:text-bone-porcelain">
+              <span aria-hidden="true">→</span>
+            </span>
           </button>
-        ))}
-      </nav>
+        )}
+      </div>
     </section>
   )
 }
