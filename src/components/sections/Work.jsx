@@ -117,10 +117,15 @@ export default function Work() {
 
         {/* RIGHT — one image, ~80vh, with shimmer-line arrows inside it */}
         <div
-          className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-6 md:px-12 md:py-0"
+          className="relative flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-6 md:px-12 md:py-0"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
+          {activeProjectCopy.title && (
+            <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-oxidized-graphite/70">
+              {activeProjectCopy.title}
+            </p>
+          )}
           <div className="relative h-[38svh] w-full md:h-[72svh]">
             <AnimatePresence mode="wait">
               <motion.div
