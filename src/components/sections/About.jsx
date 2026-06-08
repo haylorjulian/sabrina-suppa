@@ -56,19 +56,16 @@ export default function About() {
             {c.sectionLabel}
           </motion.p>
 
-          {/* Bio + (merged) statement — same styling, shown together */}
-          <motion.p
-            variants={lineReveal}
-            className="text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42]"
-          >
-            {c.bio}
-          </motion.p>
-          <motion.p
-            variants={lineReveal}
-            className="mt-5 text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain md:mt-4 md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42]"
-          >
-            {c.statement}
-          </motion.p>
+          {/* About copy — paragraphs shown together, same styling */}
+          {c.paragraphs.map((para, i) => (
+            <motion.p
+              key={i}
+              variants={lineReveal}
+              className="whitespace-pre-line text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain first:mt-0 [&:not(:first-child)]:mt-5 md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42] md:[&:not(:first-child)]:mt-4"
+            >
+              {para}
+            </motion.p>
+          ))}
 
           {/* Social icons — below the copy */}
           <motion.ul

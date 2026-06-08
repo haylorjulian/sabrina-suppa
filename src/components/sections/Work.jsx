@@ -107,7 +107,7 @@ export default function Work() {
             {(activeCategory.description || []).map((para, i) => (
               <p
                 key={i}
-                className="text-[14px] font-light leading-[1.65] text-oxidized-graphite/80 md:text-[clamp(13px,1vw,16px)]"
+                className="whitespace-pre-line text-[14px] font-light leading-[1.65] text-oxidized-graphite/80 md:text-[clamp(13px,1vw,16px)]"
               >
                 {para}
               </p>

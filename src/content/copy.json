@@ -37,13 +37,9 @@
           "label": "Adaptive Flesh",
           "description": [
             "An ongoing research exploring anatomical architectures designed for bodies in flux.",
-            "We no longer inhabit a singular, coherent reality.",
-            "Contemporary existence unfolds across overlapping experiences in digital, biological, syntethic environments.",
-            "Our perception of these realities frequently contradict one another, producing states of instability and cognitive dissonance.",
-            "Adaptive Flesh emerges as a response to this condition.",
-            "The project explores how engineered morphologies can augment the body with integrated capacities for protection, calibration and resistance, functioning as adaptive interfaces between these changing landscapes.",
-            "Through a series of experimental artefacts, wearable structures, and material investigations.",
-            "The aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
+            "We no longer inhabit a singular, coherent reality.\nContemporary existence unfolds across overlapping experiences in digital, biological, syntethic environments.\nOur perception of these realities frequently contradict one another, producing states of instability and cognitive dissonance - Adaptive Flesh emerges as a response to this condition.",
+            "This project explores how engineered morphologies can augment the body with integrated capacities for protection, calibration and resistance, functioning as adaptive interfaces between these changing landscapes.",
+            "Through a series of experimental artefacts, wearable structures, and material investigations, the aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
           ],
           "projects": [
             { "title": "Transfiguration, 2026" },
@@ -55,20 +51,23 @@
           "slug": "physical",
           "label": "Physical Works",
           "description": [
-            "Past traces emerges as “ghosts of intentions”, echoing through our present. The remains, in this context, are imprints of desires and experiences hardened by time, yet never fully silent.",
-            "They speak to what once was, but also to what was meant to be or could still become. An aesthetic of absence, delay and recurrence, where lost memories remain suspended in a perpetual state of becoming."
+            "Past traces emerges as “ghosts of intentions”, echoing through our present.",
+            "The remains, in this context, are imprints of desires and experiences hardened by time, yet never fully silent.\nThey speak to what once was, but also to what was meant to be or could still become.\nAn aesthetic of absence, delay and recurrence, where lost memories remain suspended in a perpetual state of becoming.",
+            "3D printed sculptural wearable in elastic TPU."
           ],
           "projects": [
-            { "title": "Past Traces, 2026", "comingSoon": "Coming soon" }
+            { "title": "Remains", "comingSoon": "Coming soon" }
           ]
         }
       ]
     },
     "about": {
       "sectionLabel": "About",
-      "bio": "Sabrina Suppa is an artist and designer based in London. For the past five years, she has worked as a character artist within the gaming and film industries, where she cultivated her fascination with anatomical studies and the expressive potential of the human body. Alongside her work in the industry, in 2025 she began independently exploring 3D printing and physical fabrication as a personal pursuit, gradually shifting her practice towards a more intimate artistic language.",
-      "statementLabel": "Artist Statement",
-      "statement": "Defining herself as a Body Architect, Suppa’s work exists at the intersection of fashion, technology, and geometric abstraction, constructing conceptual structures that reshape and extend the human silhouette. Influenced by an early background in classical piano and interior design, her work reflects a fascination with the body in its most unrestrained and transformative forms. Through sculptural wearables and engineered morphologies, she explores ambivalence in perception: forms that mutate in meaning through subtraction or addition, objects that appear delicate or innocent while concealing latent force beneath their surface. Her practice investigates the tension between visibility and concealment, proposing that what is hidden often carries the deepest resonance.",
+      "paragraphs": [
+        "Sabrina Suppa is an artist and designer based in London. For the past five years, she has worked as a character artist in major studios within the gaming and film industries such as Framestore, DNEG, MPC and Ninja Theory, where she cultivated her fascination with anatomical studies and the expressive potential of the human body.\nAlongside her work in the industry, in 2025 she began independently exploring 3D printing and physical fabrication as a personal pursuit, gradually shifting her practice towards a more intimate artistic language.",
+        "Defining herself as a Body Architect, Suppa’s work exists at the intersection of fashion, technology, and geometric abstraction, constructing conceptual structures that reshape and extend the human silhouette.\nInfluenced by an early background in Classical Piano and Interior Design, her work reflects a fascination with the body in its most unrestrained and transformative forms.",
+        "Through sculptural wearables and engineered morphologies, she explores ambivalence in perception: forms that mutate in meaning through subtraction or addition, objects that appear delicate or innocent while concealing latent force beneath their surface. Her practice investigates the tension between visibility and concealment, suggesting that what is hidden often carries the deepest resonance."
+      ],
       "bgAlt": "Sculptural form lit with golden fracture light, fading into darkness",
       "social": [
         { "label": "Email", "href": "mailto:info@sabrinasuppa.com" },
