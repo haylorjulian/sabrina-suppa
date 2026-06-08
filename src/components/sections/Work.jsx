@@ -121,11 +121,38 @@ export default function Work() {
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          {activeProjectCopy.title && (
-            <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-oxidized-graphite/70">
-              {activeProjectCopy.title}
-            </p>
-          )}
+          {/* Project name flanked by the shimmer-line arrows
+              (first image shows only the forward arrow) */}
+          <div className="mb-4 flex items-center justify-center gap-4 text-oxidized-graphite">
+            {hasPaging && !isFirstImage && (
+              <button
+                type="button"
+                onClick={prevImage}
+                aria-label={c.prevImageLabel}
+                className="flex items-center gap-2 py-1"
+              >
+                <ChevronLeft />
+                <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
+              </button>
+            )}
+            {activeProjectCopy.title && (
+              <p className="whitespace-nowrap text-[11px] uppercase tracking-[0.2em] text-oxidized-graphite/70">
+                {activeProjectCopy.title}
+              </p>
+            )}
+            {hasPaging && (
+              <button
+                type="button"
+                onClick={nextImage}
+                aria-label={c.nextImageLabel}
+                className="flex items-center gap-2 py-1"
+              >
+                <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
+                <ChevronRight />
+              </button>
+            )}
+          </div>
+
           <div className="relative h-[38svh] w-full md:h-[72svh]">
             <AnimatePresence mode="wait">
               <motion.div
@@ -146,33 +173,6 @@ export default function Work() {
                 />
               </motion.div>
             </AnimatePresence>
-
-            {/* Horizontal shimmer-line arrows, grouped and overlapping the image
-                (first image shows only the forward arrow) */}
-            {hasPaging && (
-              <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 text-oxidized-graphite">
-                {!isFirstImage && (
-                  <button
-                    type="button"
-                    onClick={prevImage}
-                    aria-label={c.prevImageLabel}
-                    className="flex items-center gap-2 py-2"
-                  >
-                    <ChevronLeft />
-                    <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={nextImage}
-                  aria-label={c.nextImageLabel}
-                  className="flex items-center gap-2 py-2"
-                >
-                  <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
-                  <ChevronRight />
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
