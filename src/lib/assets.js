@@ -2,18 +2,22 @@
 // public/assets/sabrina-suppa/ (see README) so these paths resolve.
 //
 // Folder layout (mirrors the source assets/ folder):
-//   homePage.jpg
-//   adaptiveFlesh/{b_1,b_2,b_3}/...   ← Adaptive Flesh projects (b_3 also holds aboutPage.jpg)
-//   physicalworks/misc/...            ← Physical Works
-//
-// NOTE: three Adaptive Flesh files contain spaces and are URL-encoded below.
-// Rename them on disk for cleanliness (see SUMMARY.md) — until then the
-// encoded paths work as-is.
+//   homePage.jpg                              ← Hero background
+//   aboutPage.jpg                             ← About background
+//   adaptiveFlesh/Transfiguration/...         ← Adaptive Flesh project 1
+//   adaptiveFlesh/Pressure_Calibration/...    ← Adaptive Flesh project 2
+//   adaptiveFlesh/Force_Matrix/...            ← Adaptive Flesh project 3
+//   physicalworks/Remains/...                 ← Physical Works project
 
 export const ASSET_BASE = '/assets/sabrina-suppa'
 
-const img = (p) => ({ type: 'image', src: `${ASSET_BASE}/${p}` })
-const video = (p) => ({ type: 'video', src: `${ASSET_BASE}/${p}` })
+const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v']
+
+// Build a media item, inferring image vs video from the file extension.
+const m = (p) => {
+  const ext = p.split('.').pop().toLowerCase()
+  return { type: VIDEO_EXT.includes(ext) ? 'video' : 'image', src: `${ASSET_BASE}/${p}` }
+}
 
 // Section backgrounds
 export const assets = {
@@ -21,7 +25,7 @@ export const assets = {
     background: `${ASSET_BASE}/homePage.jpg`,
   },
   about: {
-    background: `${ASSET_BASE}/adaptiveFlesh/b_3/aboutPage.jpg`,
+    background: `${ASSET_BASE}/aboutPage.jpg`,
   },
 }
 
@@ -29,85 +33,83 @@ export const assets = {
 // Each project is an ordered list of media items the gallery cycles through.
 export const workMedia = {
   'adaptive-flesh': [
-    // Project 1 — adaptiveFlesh/b_1
+    // Project 1 — Transfiguration
     {
       media: [
-        img('adaptiveFlesh/b_1/bb2.jpg'),
-        img('adaptiveFlesh/b_1/white_01.jpg'),
-        img('adaptiveFlesh/b_1/white_02.jpg'),
-        img('adaptiveFlesh/b_1/closeUp_01.jpg'),
-        img('adaptiveFlesh/b_1/closeW01.jpg'),
-        img('adaptiveFlesh/b_1/closeW02.jpg'),
-        img('adaptiveFlesh/b_1/full_bg_white_front_01_D.jpg'),
-        img('adaptiveFlesh/b_1/side_02.jpg'),
-        img('adaptiveFlesh/b_1/side_02_B.jpg'),
-        img('adaptiveFlesh/b_1/side_03.jpg'),
-        img('adaptiveFlesh/b_1/side_03_B.jpg'),
-        img('adaptiveFlesh/b_1/side_04.jpg'),
-        img('adaptiveFlesh/b_1/side_05.jpg'),
-        img('adaptiveFlesh/b_1/side_white_01_B.jpg'),
-        img('adaptiveFlesh/b_1/bottom_1.jpg'),
-        img('adaptiveFlesh/b_1/s1.jpg'),
-        img('adaptiveFlesh/b_1/s2.jpg'),
-        img('adaptiveFlesh/b_1/trans_01.jpg'),
+        m('adaptiveFlesh/Transfiguration/1.jpg'),
+        m('adaptiveFlesh/Transfiguration/2.jpg'),
+        m('adaptiveFlesh/Transfiguration/3.jpg'),
+        m('adaptiveFlesh/Transfiguration/4.jpg'),
+        m('adaptiveFlesh/Transfiguration/5.jpg'),
+        m('adaptiveFlesh/Transfiguration/7.jpg'),
+        m('adaptiveFlesh/Transfiguration/8.jpg'),
+        m('adaptiveFlesh/Transfiguration/9.mov'),
+        m('adaptiveFlesh/Transfiguration/10.jpg'),
+        m('adaptiveFlesh/Transfiguration/11.jpg'),
+        m('adaptiveFlesh/Transfiguration/12.jpg'),
+        m('adaptiveFlesh/Transfiguration/13.JPG'),
+        m('adaptiveFlesh/Transfiguration/14.jpg'),
+        m('adaptiveFlesh/Transfiguration/15.jpg'),
+        m('adaptiveFlesh/Transfiguration/16.jpg'),
+        m('adaptiveFlesh/Transfiguration/17.jpg'),
+        m('adaptiveFlesh/Transfiguration/18.jpg'),
+        m('adaptiveFlesh/Transfiguration/19.jpg'),
       ],
     },
-    // Project 2 — adaptiveFlesh/b_2 (leads with the motion study)
+    // Project 2 — Pressure Calibration
     {
       media: [
-        video('adaptiveFlesh/b_2/bodysuit_pressure_02_anim.mp4'),
-        img('adaptiveFlesh/b_2/2.jpg'),
-        img('adaptiveFlesh/b_2/side_01.jpg'),
-        img('adaptiveFlesh/b_2/side_02.jpg'),
-        img('adaptiveFlesh/b_2/side_02_B.jpg'),
-        img('adaptiveFlesh/b_2/side_03.jpg'),
-        img('adaptiveFlesh/b_2/side_05_A.jpg'),
-        img('adaptiveFlesh/b_2/back_01.jpg'),
-        img('adaptiveFlesh/b_2/back_closeUP_01.jpg'),
-        img('adaptiveFlesh/b_2/2side_back_01.jpg'),
-        img('adaptiveFlesh/b_2/side_back_02.jpg'),
-        img('adaptiveFlesh/b_2/side_front_01_B.jpg'),
-        img('adaptiveFlesh/b_2/side_front_01_C.jpg'),
-        img('adaptiveFlesh/b_2/closeUP_03_I.jpg'),
-        img('adaptiveFlesh/b_2/top_01_A.jpg'),
-        img('adaptiveFlesh/b_2/top_01_B.jpg'),
-        img('adaptiveFlesh/b_2/top_01_B%20copy.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/1.mp4'),
+        m('adaptiveFlesh/Pressure_Calibration/2.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/3.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/4.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/5.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/5a.mov'),
+        m('adaptiveFlesh/Pressure_Calibration/6.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/7.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/8.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/9.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/10.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/11.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/12.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/13.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/14.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/15.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/16.jpg'),
+        m('adaptiveFlesh/Pressure_Calibration/2026-03-25%2023-19-55.mov'),
       ],
     },
-    // Project 3 — adaptiveFlesh/b_3 (aboutPage.jpg lives here but is reserved for the About section)
+    // Project 3 — Force Matrix
     {
       media: [
-        img('adaptiveFlesh/b_3/Full_Body_02_v01.jpg'),
-        img('adaptiveFlesh/b_3/Full_Body_02_v02.jpg'),
-        img('adaptiveFlesh/b_3/Full_Body_02_v03.jpg'),
-        img('adaptiveFlesh/b_3/Full_Body_02_v04.jpg'),
-        img('adaptiveFlesh/b_3/full%20body_02.jpg'),
-        img('adaptiveFlesh/b_3/full%20body_04.jpg'),
-        img('adaptiveFlesh/b_3/closeUP_01.jpg'),
-        img('adaptiveFlesh/b_3/closeUP_03.jpg'),
-        img('adaptiveFlesh/b_3/closeUP_04.jpg'),
-        img('adaptiveFlesh/b_3/cocoon_01.jpg'),
-        img('adaptiveFlesh/b_3/cocoon_03.jpg'),
-        img('adaptiveFlesh/b_3/cocoon_04.jpg'),
-        img('adaptiveFlesh/b_3/cocoon_06.jpg'),
-        img('adaptiveFlesh/b_3/cocoon_08.jpg'),
-        img('adaptiveFlesh/b_3/side_03_v04.jpg'),
-        img('adaptiveFlesh/b_3/side_03_v23_NEW.jpg'),
-        img('adaptiveFlesh/b_3/side_03_v24_NEW.jpg'),
-        img('adaptiveFlesh/b_3/side_03_v25_NEW.jpg'),
-        img('adaptiveFlesh/b_3/side_07_v04.jpg'),
-        img('adaptiveFlesh/b_3/zoomed.jpg'),
+        m('adaptiveFlesh/Force_Matrix/1.jpg'),
+        m('adaptiveFlesh/Force_Matrix/2.jpg'),
+        m('adaptiveFlesh/Force_Matrix/3.jpg'),
+        m('adaptiveFlesh/Force_Matrix/4.jpg'),
+        m('adaptiveFlesh/Force_Matrix/4a.mov'),
+        m('adaptiveFlesh/Force_Matrix/5.jpg'),
+        m('adaptiveFlesh/Force_Matrix/6.jpg'),
+        m('adaptiveFlesh/Force_Matrix/7.jpg'),
+        m('adaptiveFlesh/Force_Matrix/8.jpg'),
+        m('adaptiveFlesh/Force_Matrix/9.jpg'),
+        m('adaptiveFlesh/Force_Matrix/10.jpg'),
+        m('adaptiveFlesh/Force_Matrix/11.jpg'),
+        m('adaptiveFlesh/Force_Matrix/12.jpg'),
+        m('adaptiveFlesh/Force_Matrix/13.jpg'),
+        m('adaptiveFlesh/Force_Matrix/14.jpg'),
+        m('adaptiveFlesh/Force_Matrix/15.jpg'),
+        m('adaptiveFlesh/Force_Matrix/16.mov'),
       ],
     },
   ],
   physical: [
-    // Project 1 — physicalworks/misc
+    // Project 1 — Remains
     {
       media: [
-        img('physicalworks/misc/IMG_9591.JPG'),
-        img('physicalworks/misc/IMG_9601.JPG'),
-        img('physicalworks/misc/IMG_9604.JPG'),
-        img('physicalworks/misc/IMG_9699.JPG'),
+        m('physicalworks/Remains/1.JPG'),
+        m('physicalworks/Remains/2.jpg'),
+        m('physicalworks/Remains/3.JPG'),
+        m('physicalworks/Remains/4.jpg'),
       ],
     },
   ],
