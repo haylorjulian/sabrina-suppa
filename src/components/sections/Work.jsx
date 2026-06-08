@@ -142,29 +142,31 @@ export default function Work() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Horizontal shimmer-line arrows overlapping the image, vertically
-                centred and split left/right (first image shows only forward) */}
-            {hasPaging && !isFirstImage && (
-              <button
-                type="button"
-                onClick={prevImage}
-                aria-label={c.prevImageLabel}
-                className="absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 py-2 text-oxidized-graphite md:left-10"
-              >
-                <ChevronLeft />
-                <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
-              </button>
-            )}
+            {/* Horizontal shimmer-line arrows, grouped and overlapping the image
+                (first image shows only the forward arrow) */}
             {hasPaging && (
-              <button
-                type="button"
-                onClick={nextImage}
-                aria-label={c.nextImageLabel}
-                className="absolute right-4 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 py-2 text-oxidized-graphite md:right-10"
-              >
-                <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
-                <ChevronRight />
-              </button>
+              <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 text-oxidized-graphite">
+                {!isFirstImage && (
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    aria-label={c.prevImageLabel}
+                    className="flex items-center gap-2 py-2"
+                  >
+                    <ChevronLeft />
+                    <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  aria-label={c.nextImageLabel}
+                  className="flex items-center gap-2 py-2"
+                >
+                  <ShimmerLine tone="dark" orientation="horizontal" thick className="w-10 md:w-14" />
+                  <ChevronRight />
+                </button>
+              </div>
             )}
           </div>
         </div>
