@@ -30,6 +30,21 @@ function MediaItem({ item, alt }) {
   return <Image src={item.src} alt={alt} fill unoptimized sizes="(min-width: 768px) 55vw, 92vw" className="object-contain" />
 }
 
+function ChevronLeft({ className = 'h-3.5 w-3.5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden="true">
+      <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+function ChevronRight({ className = 'h-3.5 w-3.5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className} aria-hidden="true">
+      <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export default function Work() {
   const { t } = useLanguage()
   const c = t.work
@@ -106,7 +121,7 @@ export default function Work() {
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          <div className="relative h-[42svh] w-full md:h-[80svh]">
+          <div className="relative h-[38svh] w-full md:h-[72svh]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={mediaKey}
@@ -127,26 +142,31 @@ export default function Work() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Shimmer-line arrows inside the image (first image shows only forward) */}
-            {hasPaging && !isFirstImage && (
-              <button
-                type="button"
-                onClick={prevImage}
-                aria-label={c.prevImageLabel}
-                className="absolute left-1 top-1/2 z-10 -translate-y-1/2 px-3 py-4 md:left-3"
-              >
-                <ShimmerLine tone="dark" className="h-20 md:h-28" />
-              </button>
-            )}
+            {/* Horizontal shimmer-line arrows, grouped and overlapping the image
+                (first image shows only the forward arrow) */}
             {hasPaging && (
-              <button
-                type="button"
-                onClick={nextImage}
-                aria-label={c.nextImageLabel}
-                className="absolute right-1 top-1/2 z-10 -translate-y-1/2 px-3 py-4 md:right-3"
-              >
-                <ShimmerLine tone="dark" className="h-20 md:h-28" />
-              </button>
+              <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 text-oxidized-graphite">
+                {!isFirstImage && (
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    aria-label={c.prevImageLabel}
+                    className="flex items-center gap-2 py-2"
+                  >
+                    <ChevronLeft />
+                    <ShimmerLine tone="dark" orientation="horizontal" className="w-10 md:w-14" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  aria-label={c.nextImageLabel}
+                  className="flex items-center gap-2 py-2"
+                >
+                  <ShimmerLine tone="dark" orientation="horizontal" className="w-10 md:w-14" />
+                  <ChevronRight />
+                </button>
+              </div>
             )}
           </div>
         </div>
