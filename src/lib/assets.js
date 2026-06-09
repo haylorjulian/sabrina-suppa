@@ -29,6 +29,19 @@ export const assets = {
   },
 }
 
+// Category landing images, keyed by category slug.
+// landscape = desktop, vertical = mobile.
+export const categoryImages = {
+  'adaptive-flesh': {
+    landscape: `${ASSET_BASE}/categories/adaptive-flesh-landscape.jpg`,
+    vertical: `${ASSET_BASE}/categories/adaptive-flesh-vertical.jpg`,
+  },
+  physical: {
+    landscape: `${ASSET_BASE}/categories/physical-landscape.jpg`,
+    vertical: `${ASSET_BASE}/categories/physical-vertical.jpg`,
+  },
+}
+
 // Work catalog — keyed by category slug, ordered list of projects.
 // Each project is an ordered list of media items the gallery cycles through.
 export const workMedia = {

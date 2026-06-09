@@ -31,6 +31,8 @@
       "prevImageLabel": "Previous image",
       "nextImageLabel": "Next image",
       "goToImageLabel": "Go to image",
+      "seeProjects": "See Projects",
+      "back": "Back",
       "categories": [
         {
           "slug": "adaptive-flesh",
@@ -42,9 +44,9 @@
             "Through a series of experimental artefacts, wearable structures, and material investigations, the aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
           ],
           "projects": [
-            { "title": "Transfiguration, 2026" },
-            { "title": "Pressure Calibration, 2026" },
-            { "title": "Force Matrix, 2026" }
+            { "title": "Transfiguration, 2026", "description": "[PLACEHOLDER: short description for Transfiguration]" },
+            { "title": "Pressure Calibration, 2026", "description": "[PLACEHOLDER: short description for Pressure Calibration]" },
+            { "title": "Force Matrix, 2026", "description": "[PLACEHOLDER: short description for Force Matrix]" }
           ]
         },
         {
@@ -56,7 +58,7 @@
             "3D printed sculptural wearable in elastic TPU."
           ],
           "projects": [
-            { "title": "Remains", "comingSoon": "Coming soon" }
+            { "title": "Remains", "description": "[PLACEHOLDER: short description for Remains]", "comingSoon": "Coming soon" }
           ]
         }
       ]

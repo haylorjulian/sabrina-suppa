@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useNavTheme } from '@/components/NavThemeProvider'
 import { InstagramIcon, LinktreeIcon, SocialIcon } from '@/components/ui/icons'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
@@ -26,26 +27,7 @@ const overlayItem = {
 export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
-  const [theme, setTheme] = useState('dark')
-
-  useEffect(() => {
-    const sections = Array.from(document.querySelectorAll('[data-nav-theme]'))
-    if (!sections.length) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTheme(entry.target.getAttribute('data-nav-theme') || 'dark')
-          }
-        })
-      },
-      { rootMargin: '-10% 0px -85% 0px', threshold: 0 }
-    )
-
-    sections.forEach((s) => observer.observe(s))
-    return () => observer.disconnect()
-  }, [])
+  const { theme } = useNavTheme()
 
   // Lock page scroll while the full-screen menu is open.
   useEffect(() => {
