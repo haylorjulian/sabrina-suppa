@@ -49,6 +49,16 @@ export function useWork(categories, perPage = 3) {
     setPageStart(0)
   }, [])
 
+  const nextProject = useCallback(() => {
+    setProjectIndex((p) => (p + 1) % projectCount)
+    setPageStart(0)
+  }, [projectCount])
+
+  const prevProject = useCallback(() => {
+    setProjectIndex((p) => (p - 1 + projectCount) % projectCount)
+    setPageStart(0)
+  }, [projectCount])
+
   const nextPage = useCallback(() => {
     setPageStart((s) => (s + perPage > imageCount - 1 ? 0 : s + perPage))
   }, [perPage, imageCount])
@@ -81,6 +91,8 @@ export function useWork(categories, perPage = 3) {
     openProjects,
     backToLanding,
     selectProject,
+    nextProject,
+    prevProject,
     nextPage,
     prevPage,
   }

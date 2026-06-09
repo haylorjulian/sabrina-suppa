@@ -63,7 +63,8 @@ export default function Work() {
     selectCategory,
     openProjects,
     backToLanding,
-    selectProject,
+    nextProject,
+    prevProject,
     nextPage,
     prevPage,
   } = useWork(c.categories, perPage)
@@ -195,59 +196,86 @@ export default function Work() {
             transition={{ duration: 0.6, ease: EASE }}
             className="absolute inset-0 flex flex-col bg-bone-porcelain"
           >
-            {/* Top bar: back + category name */}
-            <div className="relative flex items-center px-6 pt-[88px] md:px-[52px]">
-              <button
-                type="button"
-                onClick={backToLanding}
-                className="group flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-oxidized-graphite/60 transition-colors duration-300 hover:text-oxidized-graphite"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                {c.back}
-              </button>
-              <span className="absolute left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-[0.3em] text-synthetic-flesh">
+            {/* Back button — top-left */}
+            <button
+              type="button"
+              onClick={backToLanding}
+              className="absolute left-6 top-[88px] z-20 flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-oxidized-graphite/60 transition-colors duration-300 hover:text-oxidized-graphite md:left-[52px]"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {c.back}
+            </button>
+
+            {/* Header: category name (main) + project name (with arrows) + description */}
+            <div className="mx-auto w-full max-w-3xl px-6 pt-[84px] text-center">
+              <h2 className="text-[clamp(24px,3vw,44px)] font-light uppercase tracking-[0.16em] text-oxidized-graphite">
                 {activeCategory.label}
-              </span>
+              </h2>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`meta-${projectIndex}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                >
+                  <div className="mt-4 flex items-center justify-center gap-5">
+                    {projectCount > 1 && (
+                      <button
+                        type="button"
+                        onClick={prevProject}
+                        aria-label="Previous project"
+                        className="text-oxidized-graphite/50 transition-colors hover:text-oxidized-graphite"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                    )}
+                    <h3 className="text-[clamp(15px,1.5vw,21px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite/85">
+                      {activeProjectCopy.title}
+                    </h3>
+                    {projectCount > 1 && (
+                      <button
+                        type="button"
+                        onClick={nextProject}
+                        aria-label="Next project"
+                        className="text-oxidized-graphite/50 transition-colors hover:text-oxidized-graphite"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {activeProjectCopy.description && (
+                    <p className="mx-auto mt-4 max-w-xl text-[12.5px] font-light leading-[1.65] text-oxidized-graphite/70">
+                      {activeProjectCopy.description}
+                    </p>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Image pager */}
+              {hasPaging && (
+                <div className="mt-5 flex items-center justify-center gap-4 text-oxidized-graphite/60">
+                  <button type="button" onClick={prevPage} aria-label={c.prevImageLabel} className="transition-colors hover:text-oxidized-graphite">
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <span className="text-[11px] tracking-[0.18em] tabular-nums">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button type="button" onClick={nextPage} aria-label={c.nextImageLabel} className="transition-colors hover:text-oxidized-graphite">
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Project name + small description */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`meta-${projectIndex}`}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: EASE }}
-                className="mx-auto mt-6 max-w-2xl px-6 text-center"
-              >
-                <h3 className="text-[clamp(20px,2.4vw,32px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite">
-                  {activeProjectCopy.title}
-                </h3>
-                {activeProjectCopy.description && (
-                  <p className="mx-auto mt-3 max-w-xl text-[13px] font-light leading-[1.6] text-oxidized-graphite/70">
-                    {activeProjectCopy.description}
-                  </p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Image row — full-bleed, 3 across on desktop / 1 on mobile */}
+            {/* Image row — full-bleed, no gaps, flush to the bottom of the screen */}
             <div
-              className="relative mt-6 flex min-h-0 flex-1 items-center"
+              className="mt-8 flex min-h-0 w-full flex-1 items-stretch"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
-              {hasPaging && (
-                <button
-                  type="button"
-                  onClick={prevPage}
-                  aria-label={c.prevImageLabel}
-                  className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-oxidized-graphite/70 transition-colors hover:text-oxidized-graphite md:left-4"
-                >
-                  <ChevronLeft className="h-7 w-7" />
-                </button>
-              )}
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={mediaKey}
@@ -255,7 +283,7 @@ export default function Work() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.45, ease: EASE }}
-                  className="flex h-[56svh] w-full items-stretch gap-2 px-2 md:gap-3 md:px-3"
+                  className="flex h-full w-full items-stretch"
                 >
                   {pageItems.map((item, i) => (
                     <div key={`${mediaKey}-${i}`} className="relative h-full flex-1 overflow-hidden">
@@ -264,45 +292,6 @@ export default function Work() {
                   ))}
                 </motion.div>
               </AnimatePresence>
-
-              {hasPaging && (
-                <button
-                  type="button"
-                  onClick={nextPage}
-                  aria-label={c.nextImageLabel}
-                  className="absolute right-2 top-1/2 z-10 -translate-y-1/2 text-oxidized-graphite/70 transition-colors hover:text-oxidized-graphite md:right-4"
-                >
-                  <ChevronRight className="h-7 w-7" />
-                </button>
-              )}
-            </div>
-
-            {/* Bottom: page indicator + project switcher */}
-            <div className="flex flex-col items-center gap-4 px-4 pb-9 pt-5 md:px-[52px]">
-              {hasPaging && (
-                <span className="text-[11px] tracking-[0.18em] text-oxidized-graphite/60 tabular-nums">
-                  {currentPage} / {totalPages}
-                </span>
-              )}
-              {projectCount > 1 && (
-                <nav aria-label="Projects" className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
-                  {activeCategory.projects.map((proj, i) => (
-                    <button
-                      key={proj.title}
-                      type="button"
-                      onClick={() => selectProject(i)}
-                      aria-current={i === projectIndex}
-                      className={`whitespace-nowrap text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
-                        i === projectIndex
-                          ? 'text-oxidized-graphite'
-                          : 'text-oxidized-graphite/40 hover:text-oxidized-graphite/70'
-                      }`}
-                    >
-                      {proj.title}
-                    </button>
-                  ))}
-                </nav>
-              )}
             </div>
           </motion.div>
         )}
