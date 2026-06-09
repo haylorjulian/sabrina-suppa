@@ -25,19 +25,22 @@ function ChevronRight({ className = 'h-5 w-5' }) {
   )
 }
 
-// One media item, cover-cropped to fill its column (full-bleed gallery look).
+// One media item rendered at its natural aspect ratio (full height, width
+// follows the asset) so it shows in its original, uncropped form.
 function MediaItem({ item, alt }) {
   if (!item || item.type === 'placeholder') {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-bone-porcelain">
+      <div className="flex h-full w-[60vw] items-center justify-center bg-bone-porcelain md:w-[26vw]">
         <span className="text-[10px] uppercase tracking-[0.28em] text-oxidized-graphite/40">{alt}</span>
       </div>
     )
   }
   if (item.type === 'video') {
-    return <video src={item.src} autoPlay muted loop playsInline aria-hidden="true" className="h-full w-full object-cover" />
+    return <video src={item.src} autoPlay muted loop playsInline aria-hidden="true" className="block h-full w-auto" />
   }
-  return <Image src={item.src} alt={alt} fill unoptimized sizes="(min-width: 1024px) 34vw, 100vw" className="object-cover" />
+  // Plain img so the element sizes to the asset's natural aspect ratio.
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={item.src} alt={alt} className="block h-full w-auto" />
 }
 
 export default function Work() {
@@ -270,9 +273,9 @@ export default function Work() {
               )}
             </div>
 
-            {/* Image row — full-bleed, no gaps, flush to the bottom of the screen */}
+            {/* Image row — images at original aspect, no gaps, flush to the bottom */}
             <div
-              className="mt-8 flex min-h-0 w-full flex-1 items-stretch"
+              className="mt-8 flex min-h-0 w-full flex-1 items-end justify-center"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
@@ -283,10 +286,10 @@ export default function Work() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.45, ease: EASE }}
-                  className="flex h-full w-full items-stretch"
+                  className="flex h-full items-end justify-center"
                 >
                   {pageItems.map((item, i) => (
-                    <div key={`${mediaKey}-${i}`} className="relative h-full flex-1 overflow-hidden">
+                    <div key={`${mediaKey}-${i}`} className="relative h-full shrink-0">
                       <MediaItem item={item} alt={`${activeProjectCopy.title} — image`} />
                     </div>
                   ))}
