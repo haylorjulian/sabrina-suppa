@@ -7,5 +7,17 @@
   "assets": {
     "directory": "./out",
     "not_found_handling": "404-page"
+  },
+  // Separate staging environment — a distinct Worker (sabrina-suppa-staging) with
+  // its own URL. Deploy with `wrangler deploy --env staging`; it never touches the
+  // production Worker or the sabrinasuppa.com custom domain.
+  "env": {
+    "staging": {
+      "name": "sabrina-suppa-staging",
+      "assets": {
+        "directory": "./out",
+        "not_found_handling": "404-page"
+      }
+    }
   }
 }
