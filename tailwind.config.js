@@ -14,6 +14,10 @@ module.exports = {
       fontFamily: {
         // Extracted from mockup font declarations
         cormorant: ['var(--font-cormorant)', 'Georgia', 'serif'],
+        // Custom display font (hero name, nav, headers)
+        copperplate: ['var(--font-copperplate)', 'Copperplate', 'Georgia', 'serif'],
+        // Adobe Fonts / Typekit — hero descriptor
+        descriptor: ['"futura-pt"', 'sans-serif'],
       },
     },
   },

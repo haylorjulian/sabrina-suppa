@@ -46,7 +46,7 @@ export default function Hero() {
         >
           <motion.h1
             variants={fadeInUp}
-            className={`mb-5 text-[clamp(34px,9vw,52px)] font-extralight italic leading-[1.05] tracking-[0.08em] text-bone-porcelain ${shadow}`}
+            className={`mb-5 font-copperplate text-[clamp(28px,7.5vw,46px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
           >
             {c.name}
           </motion.h1>
@@ -54,7 +54,7 @@ export default function Hero() {
             <motion.p
               key={i}
               variants={fadeInUp}
-              className={`text-[12px] uppercase tracking-[0.30em] text-bone-porcelain ${i > 0 ? 'mt-1.5' : ''} ${shadow}`}
+              className={`font-descriptor text-[12px] uppercase tracking-[0.30em] text-bone-porcelain ${i > 0 ? 'mt-1.5' : ''} ${shadow}`}
             >
               {part}
             </motion.p>
@@ -71,13 +71,13 @@ export default function Hero() {
           <motion.div variants={fadeInUp} className="mb-[18px] h-px w-8 bg-synthetic-flesh/45" />
           <motion.h1
             variants={fadeInUp}
-            className={`mb-[14px] text-[clamp(28px,3.8vw,58px)] font-extralight italic leading-[1.05] tracking-[0.08em] text-bone-porcelain ${shadow}`}
+            className={`mb-[14px] font-copperplate text-[clamp(24px,3.4vw,50px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
           >
             {c.name}
           </motion.h1>
           <motion.p
             variants={fadeInUp}
-            className={`text-[12px] uppercase tracking-[0.34em] text-bone-porcelain ${shadow}`}
+            className={`font-descriptor text-[12px] uppercase tracking-[0.34em] text-bone-porcelain ${shadow}`}
           >
             {c.descriptor}
           </motion.p>

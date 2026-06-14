@@ -133,7 +133,7 @@ export default function Work() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: EASE }}
-                className="text-[clamp(26px,3.6vw,52px)] font-light uppercase tracking-[0.18em] [text-shadow:0_1px_12px_rgba(26,26,28,0.6)]"
+                className="font-copperplate text-[clamp(26px,3.6vw,52px)] uppercase tracking-[0.18em] [text-shadow:0_1px_12px_rgba(26,26,28,0.6)]"
               >
                 {activeCategory.label}
               </motion.h2>
@@ -180,7 +180,7 @@ export default function Work() {
                   type="button"
                   onClick={() => selectCategory(i)}
                   aria-current={i === categoryIndex}
-                  className={`text-[11px] uppercase tracking-[0.24em] transition-colors duration-300 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)] ${
+                  className={`font-copperplate text-[12px] uppercase tracking-[0.22em] transition-colors duration-300 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)] ${
                     i === categoryIndex ? 'text-bone-porcelain' : 'text-bone-porcelain/45 hover:text-bone-porcelain/75'
                   }`}
                 >
@@ -211,7 +211,7 @@ export default function Work() {
 
             {/* Header: category name (main) + project name (with arrows) + description */}
             <div className="mx-auto w-full max-w-3xl px-6 pt-[84px] text-center">
-              <h2 className="text-[clamp(24px,3vw,44px)] font-light uppercase tracking-[0.16em] text-oxidized-graphite">
+              <h2 className="font-copperplate text-[clamp(24px,3vw,44px)] uppercase tracking-[0.16em] text-oxidized-graphite">
                 {activeCategory.label}
               </h2>
 

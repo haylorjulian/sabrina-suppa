@@ -53,7 +53,7 @@ export default function Nav() {
         <a
           href="#home"
           onClick={closeMenu}
-          className={`text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
+          className={`font-copperplate text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
         >
           {t.nav.logo}
         </a>
@@ -64,7 +64,7 @@ export default function Nav() {
             <a
               key={link.href}
               href={link.href}
-              className={`text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
+              className={`font-copperplate text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
             </a>
@@ -119,7 +119,7 @@ export default function Nav() {
                   variants={overlayItem}
                   href={link.href}
                   onClick={closeMenu}
-                  className="text-3xl font-extralight italic tracking-[0.04em] text-bone-porcelain/85"
+                  className="font-copperplate text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
                 >
                   {link.label}
                 </motion.a>
