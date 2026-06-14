@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useId } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -25,25 +25,50 @@ function ChevronRight({ className = 'h-5 w-5' }) {
   )
 }
 
-// White shimmering navigation arrow, overlaid on the images (left/right,
-// vertically centred). The shimmer is a gentle opacity pulse + soft glow.
-function NavArrow({ dir, onClick, label }) {
-  const Cmp = dir === 'prev' ? ChevronLeft : ChevronRight
+// Chevron with a sweeping light sheen — an animated gradient travels along the
+// stroke (SVG/SMIL, no JS). tone: 'light' (white) | 'dark' (graphite).
+function SheenChevron({ dir, tone = 'light', className = 'h-9 w-9' }) {
+  const id = `sheen-${useId().replace(/:/g, '')}-${dir}`
+  const dPath = dir === 'prev' ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6'
+  const color = tone === 'dark' ? '#1A1A1C' : '#ffffff'
+  const base = tone === 'dark' ? 0.55 : 0.6
+  const peak = 1
   return (
-    <motion.button
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <defs>
+        <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="-10" y1="0" x2="2" y2="0">
+          <stop offset="0" stopColor={color} stopOpacity={base} />
+          <stop offset="0.5" stopColor={color} stopOpacity={peak} />
+          <stop offset="1" stopColor={color} stopOpacity={base} />
+          <animateTransform
+            attributeName="gradientTransform"
+            type="translate"
+            from="0 0"
+            to="34 0"
+            dur="2.8s"
+            repeatCount="indefinite"
+          />
+        </linearGradient>
+      </defs>
+      <path d={dPath} stroke={`url(#${id})`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// White sheen arrow overlaid within the images. Fixed position — no transforms
+// on hover, so it never shifts.
+function NavArrow({ dir, onClick, label }) {
+  return (
+    <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      initial={{ opacity: 0.6 }}
-      animate={{ opacity: [0.55, 1, 0.55] }}
-      transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-      whileHover={{ opacity: 1, scale: 1.1 }}
-      className={`absolute top-1/2 z-10 -translate-y-1/2 text-white [filter:drop-shadow(0_1px_8px_rgba(0,0,0,0.45))] ${
+      className={`absolute top-1/2 z-10 -translate-y-1/2 [filter:drop-shadow(0_1px_8px_rgba(0,0,0,0.5))] ${
         dir === 'prev' ? 'left-3 md:left-6' : 'right-3 md:right-6'
       }`}
     >
-      <Cmp className="h-9 w-9 md:h-12 md:w-12" />
-    </motion.button>
+      <SheenChevron dir={dir} tone="light" className="h-9 w-9 md:h-12 md:w-12" />
+    </button>
   )
 }
 
@@ -86,6 +111,8 @@ export default function Work() {
     selectCategory,
     openProjects,
     backToLanding,
+    nextProject,
+    prevProject,
     nextPage,
     prevPage,
   } = useWork(c.categories, perPage)
@@ -239,11 +266,24 @@ export default function Work() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: EASE }}
                 >
-                  <h3 className="text-[clamp(15px,1.5vw,21px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite/85">
-                    {activeProjectCopy.title}
-                  </h3>
+                  {/* Project name flanked by sheen arrows that switch projects */}
+                  <div className="flex items-center justify-center gap-4">
+                    {projectCount > 1 && (
+                      <button type="button" onClick={prevProject} aria-label="Previous project" className="shrink-0">
+                        <SheenChevron dir="prev" tone="dark" className="h-5 w-5" />
+                      </button>
+                    )}
+                    <h3 className="text-[clamp(15px,1.5vw,21px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite/85">
+                      {activeProjectCopy.title}
+                    </h3>
+                    {projectCount > 1 && (
+                      <button type="button" onClick={nextProject} aria-label="Next project" className="shrink-0">
+                        <SheenChevron dir="next" tone="dark" className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
                   {activeProjectCopy.description && (
-                    <p className="body-copy mx-auto mt-4 max-w-[60ch] font-light text-oxidized-graphite/70">
+                    <p className="body-copy mx-auto mt-4 font-light text-oxidized-graphite/70">
                       {activeProjectCopy.description}
                     </p>
                   )}
