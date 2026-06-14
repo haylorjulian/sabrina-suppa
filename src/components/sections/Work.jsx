@@ -25,6 +25,28 @@ function ChevronRight({ className = 'h-5 w-5' }) {
   )
 }
 
+// White shimmering navigation arrow, overlaid on the images (left/right,
+// vertically centred). The shimmer is a gentle opacity pulse + soft glow.
+function NavArrow({ dir, onClick, label }) {
+  const Cmp = dir === 'prev' ? ChevronLeft : ChevronRight
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      initial={{ opacity: 0.6 }}
+      animate={{ opacity: [0.55, 1, 0.55] }}
+      transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+      whileHover={{ opacity: 1, scale: 1.1 }}
+      className={`absolute top-1/2 z-10 -translate-y-1/2 text-white [filter:drop-shadow(0_1px_8px_rgba(0,0,0,0.45))] ${
+        dir === 'prev' ? 'left-3 md:left-6' : 'right-3 md:right-6'
+      }`}
+    >
+      <Cmp className="h-9 w-9 md:h-12 md:w-12" />
+    </motion.button>
+  )
+}
+
 // One media item rendered at its natural aspect ratio (full height, width
 // follows the asset) so it shows in its original, uncropped form.
 function MediaItem({ item, alt }) {
@@ -58,19 +80,17 @@ export default function Work() {
     activeProjectCopy,
     categoryImage,
     projectCount,
+    imageCount,
     pageItems,
-    totalPages,
-    currentPage,
-    hasPaging,
     mediaKey,
     selectCategory,
     openProjects,
     backToLanding,
-    nextProject,
-    prevProject,
     nextPage,
     prevPage,
   } = useWork(c.categories, perPage)
+
+  const canNavigate = projectCount > 1 || imageCount > perPage
 
   // Keep the nav colour in sync with the active view (dark landing / light projects).
   useEffect(() => {
@@ -209,12 +229,8 @@ export default function Work() {
               {c.back}
             </button>
 
-            {/* Header: category name (main) + project name (with arrows) + description */}
+            {/* Header: project name + description (category header removed) */}
             <div className="mx-auto w-full max-w-3xl px-6 pt-[84px] text-center">
-              <h2 className="font-copperplate text-[clamp(24px,3vw,44px)] uppercase tracking-[0.16em] text-oxidized-graphite">
-                {activeCategory.label}
-              </h2>
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`meta-${projectIndex}`}
@@ -223,32 +239,9 @@ export default function Work() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: EASE }}
                 >
-                  <div className="mt-4 flex items-center justify-center gap-5">
-                    {projectCount > 1 && (
-                      <button
-                        type="button"
-                        onClick={prevProject}
-                        aria-label="Previous project"
-                        className="text-oxidized-graphite/50 transition-colors hover:text-oxidized-graphite"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                    )}
-                    <h3 className="text-[clamp(15px,1.5vw,21px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite/85">
-                      {activeProjectCopy.title}
-                    </h3>
-                    {projectCount > 1 && (
-                      <button
-                        type="button"
-                        onClick={nextProject}
-                        aria-label="Next project"
-                        className="text-oxidized-graphite/50 transition-colors hover:text-oxidized-graphite"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    )}
-                  </div>
-
+                  <h3 className="text-[clamp(15px,1.5vw,21px)] font-extralight italic tracking-[0.04em] text-oxidized-graphite/85">
+                    {activeProjectCopy.title}
+                  </h3>
                   {activeProjectCopy.description && (
                     <p className="body-copy mx-auto mt-4 max-w-[60ch] font-light text-oxidized-graphite/70">
                       {activeProjectCopy.description}
@@ -256,45 +249,40 @@ export default function Work() {
                   )}
                 </motion.div>
               </AnimatePresence>
-
-              {/* Image pager */}
-              {hasPaging && (
-                <div className="mt-5 flex items-center justify-center gap-4 text-oxidized-graphite/60">
-                  <button type="button" onClick={prevPage} aria-label={c.prevImageLabel} className="transition-colors hover:text-oxidized-graphite">
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <span className="text-[11px] tracking-[0.18em] tabular-nums">
-                    {currentPage} / {totalPages}
-                  </span>
-                  <button type="button" onClick={nextPage} aria-label={c.nextImageLabel} className="transition-colors hover:text-oxidized-graphite">
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
             </div>
 
-            {/* Image row — images at original aspect, no gaps, flush to the bottom */}
+            {/* Image row — images at original aspect, no gaps, flush to the bottom,
+                with white shimmering arrows overlaid within the images. */}
             <div
               className="mt-8 flex min-h-0 w-full flex-1 items-end justify-center"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={mediaKey}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.45, ease: EASE }}
-                  className="flex h-full items-end justify-center"
-                >
-                  {pageItems.map((item, i) => (
-                    <div key={`${mediaKey}-${i}`} className="relative h-full shrink-0">
-                      <MediaItem item={item} alt={`${activeProjectCopy.title} — image`} />
-                    </div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
+              <div className="relative flex h-full items-end justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={mediaKey}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.45, ease: EASE }}
+                    className="flex h-full items-end justify-center"
+                  >
+                    {pageItems.map((item, i) => (
+                      <div key={`${mediaKey}-${i}`} className="relative h-full shrink-0">
+                        <MediaItem item={item} alt={`${activeProjectCopy.title} — image`} />
+                      </div>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+
+                {canNavigate && (
+                  <>
+                    <NavArrow dir="prev" onClick={prevPage} label={c.prevImageLabel} />
+                    <NavArrow dir="next" onClick={nextPage} label={c.nextImageLabel} />
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

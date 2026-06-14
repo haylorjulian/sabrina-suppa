@@ -59,13 +59,27 @@ export function useWork(categories, perPage = 3) {
     setPageStart(0)
   }, [projectCount])
 
+  // Page through the current project's images; roll over to the next/previous
+  // project (within the category) at the boundaries.
   const nextPage = useCallback(() => {
-    setPageStart((s) => (s + perPage > imageCount - 1 ? 0 : s + perPage))
-  }, [perPage, imageCount])
+    if (safeStart + perPage < imageCount) {
+      setPageStart(safeStart + perPage)
+    } else {
+      setProjectIndex((p) => (p + 1) % projectCount)
+      setPageStart(0)
+    }
+  }, [safeStart, perPage, imageCount, projectCount])
 
   const prevPage = useCallback(() => {
-    setPageStart((s) => (s - perPage < 0 ? Math.floor(Math.max(0, imageCount - 1) / perPage) * perPage : s - perPage))
-  }, [perPage, imageCount])
+    if (safeStart - perPage >= 0) {
+      setPageStart(safeStart - perPage)
+    } else {
+      const prev = (projectIndex - 1 + projectCount) % projectCount
+      const prevCount = (catMedia[prev]?.media || []).length
+      setProjectIndex(prev)
+      setPageStart(Math.floor(Math.max(0, prevCount - 1) / perPage) * perPage)
+    }
+  }, [safeStart, perPage, projectIndex, projectCount, catMedia])
 
   const mediaKey = useMemo(
     () => `${categoryIndex}-${projectIndex}-${safeStart}`,

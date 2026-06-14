@@ -32,7 +32,7 @@ body {
      it respects user zoom / OS text size), with no breakpoint jumps. Pair with a
      max-width measure (e.g. max-w-[60ch]) on the container for line length. */
   .body-copy {
-    font-size: clamp(0.9rem, 0.82rem + 0.45vw, 1.0625rem); /* ~14.4px → 17px */
+    font-size: clamp(1rem, 0.86rem + 0.7vw, 1rem);
     line-height: 1.7;
     letter-spacing: 0.01em;
     text-wrap: pretty;
@@ -40,7 +40,7 @@ body {
 
   /* Larger feature body (e.g. the About section). */
   .body-copy-lg {
-    font-size: clamp(1rem, 0.86rem + 0.7vw, 1.375rem); /* ~16px → 22px */
+    font-size: clamp(1rem, 0.86rem + 0.7vw, 1rem);
     line-height: 1.6;
     letter-spacing: 0.01em;
     text-wrap: pretty;
