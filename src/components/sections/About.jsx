@@ -61,7 +61,7 @@ export default function About() {
             <motion.p
               key={i}
               variants={lineReveal}
-              className="whitespace-pre-line text-[17px] font-light leading-[1.7] tracking-[0.01em] text-bone-porcelain first:mt-0 [&:not(:first-child)]:mt-5 md:text-[clamp(14px,1.45vw,21px)] md:leading-[1.42] md:[&:not(:first-child)]:mt-4"
+              className="body-copy-lg whitespace-pre-line font-light text-bone-porcelain first:mt-0 [&:not(:first-child)]:mt-5 md:[&:not(:first-child)]:mt-4"
             >
               {para}
             </motion.p>

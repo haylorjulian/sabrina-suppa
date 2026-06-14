@@ -148,7 +148,7 @@ export default function Work() {
                 {(activeCategory.description || []).map((para, i) => (
                   <p
                     key={i}
-                    className="whitespace-pre-line text-[clamp(12px,1vw,15px)] font-light leading-[1.7] text-bone-porcelain/85 [text-shadow:0_1px_10px_rgba(26,26,28,0.7)]"
+                    className="body-copy whitespace-pre-line font-light text-bone-porcelain/85 [text-shadow:0_1px_10px_rgba(26,26,28,0.7)]"
                   >
                     {para}
                   </p>
@@ -250,7 +250,7 @@ export default function Work() {
                   </div>
 
                   {activeProjectCopy.description && (
-                    <p className="mx-auto mt-4 max-w-xl text-[12.5px] font-light leading-[1.65] text-oxidized-graphite/70">
+                    <p className="body-copy mx-auto mt-4 max-w-[60ch] font-light text-oxidized-graphite/70">
                       {activeProjectCopy.description}
                     </p>
                   )}

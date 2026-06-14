@@ -26,3 +26,23 @@ body {
 .vertical-text {
   writing-mode: vertical-rl;
 }
+
+@layer components {
+  /* Fluid body copy — font-size scales smoothly with the viewport (rem-based so
+     it respects user zoom / OS text size), with no breakpoint jumps. Pair with a
+     max-width measure (e.g. max-w-[60ch]) on the container for line length. */
+  .body-copy {
+    font-size: clamp(0.9rem, 0.82rem + 0.45vw, 1.0625rem); /* ~14.4px → 17px */
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    text-wrap: pretty;
+  }
+
+  /* Larger feature body (e.g. the About section). */
+  .body-copy-lg {
+    font-size: clamp(1rem, 0.86rem + 0.7vw, 1.375rem); /* ~16px → 22px */
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    text-wrap: pretty;
+  }
+}
