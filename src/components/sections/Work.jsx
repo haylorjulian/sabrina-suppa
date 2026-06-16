@@ -283,7 +283,7 @@ export default function Work() {
                     )}
                   </div>
                   {activeProjectCopy.description && (
-                    <p className="body-copy mx-auto mt-4 font-light text-oxidized-graphite/70">
+                    <p className="body-copy mx-auto mt-4 whitespace-pre-line font-light text-oxidized-graphite/70">
                       {activeProjectCopy.description}
                     </p>
                   )}
