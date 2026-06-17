@@ -195,7 +195,7 @@ export default function Work() {
                 {(activeCategory.description || []).map((para, i) => (
                   <p
                     key={i}
-                    className="body-copy whitespace-pre-line font-light text-bone-porcelain/85 [text-shadow:0_1px_10px_rgba(26,26,28,0.7)]"
+                    className="body-copy-lg whitespace-pre-line font-light text-bone-porcelain/85 [text-shadow:0_1px_10px_rgba(26,26,28,0.7)]"
                   >
                     {para}
                   </p>
