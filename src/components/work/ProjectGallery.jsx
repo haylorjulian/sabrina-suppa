@@ -7,11 +7,6 @@ import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 
-// Baseline row height for the justified grid — the single density knob. Per-row
-// count falls out of viewport ÷ (aspect × ROW_BASE), so it's dynamic with screen
-// width (more per row on larger monitors). Lower = denser. Tune to taste.
-const ROW_BASE = 360
-
 export default function ProjectGallery({ categoryLabel, project, media, prev, next }) {
   // The home route snaps each section to the viewport (html { scroll-snap-type:
   // y mandatory }). A long gallery must scroll freely — neutralise snap here and
@@ -58,19 +53,13 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         )}
       </motion.header>
 
-      {/* Media — justified full-width grid */}
-      <div className="flex flex-wrap gap-2 px-4 pb-24 sm:px-6 lg:px-10">
+      {/* Media — full-width column grid. Column count is capped per breakpoint:
+          1 on phones, 2 from tablet through laptop, 3 on large monitors, 4 max on
+          very large screens. Each image fills its column and keeps native aspect. */}
+      <div className="grid grid-cols-1 gap-2 px-4 pb-24 sm:grid-cols-2 sm:px-6 lg:px-10 2xl:grid-cols-3 min-[1920px]:grid-cols-4">
         {media.map((it, i) => (
-          <GalleryMedia
-            key={it.src}
-            item={it}
-            alt={`${project.title} — image ${i + 1}`}
-            rowBase={ROW_BASE}
-          />
+          <GalleryMedia key={it.src} item={it} alt={`${project.title} — image ${i + 1}`} />
         ))}
-        {/* Spacer: absorbs leftover space in the final row so its images stay at
-            baseline size (left-aligned) rather than stretching oversized. */}
-        <i aria-hidden="true" style={{ flexGrow: 999, flexBasis: 0 }} />
       </div>
 
       {/* Footer: cycle to sibling projects */}
