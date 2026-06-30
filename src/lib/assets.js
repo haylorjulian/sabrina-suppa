@@ -9,14 +9,25 @@
 //   adaptiveFlesh/Force_Matrix/...            ← Adaptive Flesh project 3
 //   physicalworks/Remains/...                 ← Physical Works project
 
+import dimensions from '@/lib/media-dimensions.json'
+
 export const ASSET_BASE = '/assets/sabrina-suppa'
 
 const VIDEO_EXT = ['mp4', 'mov', 'webm', 'm4v']
 
-// Build a media item, inferring image vs video from the file extension.
+// Build a media item, inferring image vs video from the file extension and
+// attaching intrinsic width/height from the build-time dimension manifest
+// (see scripts/gen-media-manifest.mjs) so galleries can reserve layout space.
 const m = (p) => {
   const ext = p.split('.').pop().toLowerCase()
-  return { type: VIDEO_EXT.includes(ext) ? 'video' : 'image', src: `${ASSET_BASE}/${p}` }
+  const src = `${ASSET_BASE}/${p}`
+  const dim = dimensions[src] || null
+  return {
+    type: VIDEO_EXT.includes(ext) ? 'video' : 'image',
+    src,
+    width: dim?.w ?? null,
+    height: dim?.h ?? null,
+  }
 }
 
 // Section backgrounds
