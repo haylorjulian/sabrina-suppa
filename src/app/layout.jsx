@@ -24,8 +24,26 @@ const copperplate = localFont({
 })
 
 export const metadata = {
+  // Resolves relative og/twitter image paths to absolute URLs. Update if the
+  // production domain changes.
+  metadataBase: new URL('https://sabrinasuppa.com'),
   title: copy.en.meta.title,
   description: copy.en.meta.description,
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'Sabrina Suppa',
+    title: copy.en.meta.title,
+    description: copy.en.meta.description,
+    images: [{ url: '/assets/sabrina-suppa/homePage.jpg', alt: copy.en.hero.bgAlt }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: copy.en.meta.title,
+    description: copy.en.meta.description,
+    images: ['/assets/sabrina-suppa/homePage.jpg'],
+    creator: '@suppa_sabrina',
+  },
 }
 
 export default function RootLayout({ children }) {

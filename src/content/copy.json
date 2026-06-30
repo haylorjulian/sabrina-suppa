@@ -5,6 +5,12 @@
       "description": "Sabrina Suppa is a body architect exploring adaptive morphologies — engineered structures that reshape and extend the human silhouette."
     },
     "mobileNotice": "Mobile version in progress. Please visit this site on a desktop device for now.",
+    "notFound": {
+      "code": "404",
+      "title": "Page not found",
+      "body": "The page you were looking for has shifted out of frame.",
+      "home": "Return home"
+    },
     "nav": {
       "logo": "SS",
       "links": [
