@@ -1,92 +1,103 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect } from 'react'
 import Image from 'next/image'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
-import { staggerContainer, lineReveal } from '@/lib/animations'
+import { useNavTheme } from '@/components/NavThemeProvider'
 import { SocialIcon } from '@/components/ui/icons'
+import FitBox from '@/components/work/FitBox'
 
+const EASE = [0.22, 1, 0.36, 1]
+
+// About section: the Work two-column layout, mirrored. Left = a centred,
+// shrink-to-fit box with the bio + socials; right = full-height image with the
+// section name centred over it.
 export default function About() {
   const { t } = useLanguage()
   const c = t.about
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-15% 0px' })
+  const { setTheme } = useNavTheme()
+
+  useEffect(() => {
+    setTheme('light')
+  }, [setTheme])
 
   return (
     <section
       id="about"
-      ref={ref}
-      data-nav-theme="dark"
+      data-nav-theme="light"
       aria-label="About"
-      className="relative h-full w-full overflow-hidden bg-oxidized-graphite"
+      className="relative h-full w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite"
     >
-      {/* Image — left side on desktop (full-bleed on mobile), dissolving into the
-          dark field on the right so it reads as extending across the screen. */}
-      <div className="absolute inset-y-0 left-0 w-full md:w-[58%]">
-        <Image
-          src={assets.about.background}
-          alt={c.bgAlt}
-          fill
-          sizes="(min-width: 768px) 58vw, 100vw"
-          className="object-cover object-left"
-        />
-        {/* Blend the image's right edge into the section background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-oxidized-graphite" />
-      </div>
+      <div className="grid h-full grid-cols-1 lg:grid-cols-[50%_50%]">
+        {/* Left — content in a centred, shrink-to-fit box (75% of the panel) */}
+        <div className="relative h-full">
+          <FitBox className="absolute left-1/2 top-1/2 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2">
+            <motion.p
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: EASE }}
+              className="font-copperplate text-[11px] uppercase tracking-[0.28em] text-oxidized-graphite/80"
+            >
+              {c.sectionLabel}
+            </motion.p>
 
-      {/* Darken the image on mobile (text sits over it) + soft vignette */}
-      <div className="absolute inset-0 bg-oxidized-graphite/45 md:bg-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-b from-oxidized-graphite/30 via-transparent to-oxidized-graphite/40" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+              className="mt-8 space-y-3"
+            >
+              {c.paragraphs.map((para, i) => (
+                <p key={i} className="body-copy whitespace-pre-line font-light text-oxidized-graphite/70">
+                  {para}
+                </p>
+              ))}
+            </motion.div>
 
-      {/* Text column — right-aligned on desktop (vertically centred); on mobile it
-          fills the full height and scrolls if the copy runs long. */}
-      <div className="relative z-10 mx-auto flex h-full max-w-[1400px] items-center justify-end px-6 md:px-[52px]">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="h-full w-full overflow-y-auto py-24 md:h-auto md:max-h-[78svh] md:w-[48%] md:overflow-visible md:py-0"
-        >
-          <motion.p
-            variants={lineReveal}
-            className="mb-4 text-[12px] uppercase tracking-[0.35em] text-synthetic-flesh"
+            <motion.ul
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+              className="mt-8 flex flex-wrap items-center gap-6"
+            >
+              {c.social.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+                    rel="noreferrer"
+                    aria-label={link.label}
+                    className="block text-oxidized-graphite/60 transition-colors duration-300 hover:text-synthetic-flesh"
+                  >
+                    <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
+                  </a>
+                </li>
+              ))}
+            </motion.ul>
+          </FitBox>
+        </div>
+
+        {/* Right — full-viewport-height image, with the section name centred over
+            it (mirrors the Work category title) */}
+        <div className="relative hidden h-full lg:block">
+          <Image
+            src={assets.about.background}
+            alt={c.bgAlt}
+            fill
+            sizes="50vw"
+            className="object-cover"
+          />
+          <motion.h2
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-copperplate text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[0.08em] text-synthetic-flesh [text-shadow:0_2px_18px_rgba(26,26,28,0.55)]"
           >
             {c.sectionLabel}
-          </motion.p>
-
-          {/* About copy — paragraphs shown together, same styling */}
-          {c.paragraphs.map((para, i) => (
-            <motion.p
-              key={i}
-              variants={lineReveal}
-              className="body-copy-lg whitespace-pre-line font-light text-bone-porcelain first:mt-0 [&:not(:first-child)]:mt-5 md:[&:not(:first-child)]:mt-4"
-            >
-              {para}
-            </motion.p>
-          ))}
-
-          {/* Social icons — below the copy */}
-          <motion.ul
-            variants={lineReveal}
-            className="mt-10 flex flex-wrap items-center gap-6 md:mt-8"
-          >
-            {c.social.map((link) => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel="noreferrer"
-                  aria-label={link.label}
-                  className="block text-bone-porcelain/75 transition-colors duration-300 hover:text-synthetic-flesh"
-                >
-                  <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
-                </a>
-              </li>
-            ))}
-          </motion.ul>
-        </motion.div>
+          </motion.h2>
+        </div>
       </div>
     </section>
   )

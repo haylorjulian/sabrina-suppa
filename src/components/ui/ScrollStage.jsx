@@ -80,15 +80,30 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       if (i >= 0) goTo(i, { force: true })
     }
 
+    // Native scroll is disabled, so in-page #section links (the nav) can't move
+    // the page on their own — drive the stage directly on click.
+    const onClick = (e) => {
+      const a = e.target.closest?.('a[href^="#"]')
+      if (!a) return
+      const id = a.getAttribute('href').slice(1)
+      const i = ids.indexOf(id)
+      if (i < 0) return
+      e.preventDefault()
+      goTo(i, { force: true })
+      history.replaceState(null, '', `#${id}`)
+    }
+
     window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('keydown', onKey)
     window.addEventListener('hashchange', onHash)
+    document.addEventListener('click', onClick)
     onHash() // honour an initial #section in the URL
 
     return () => {
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('hashchange', onHash)
+      document.removeEventListener('click', onClick)
       document.body.style.overflow = prevOverflow
     }
   }, [goTo, ids])
