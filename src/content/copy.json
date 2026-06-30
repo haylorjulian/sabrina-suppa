@@ -39,6 +39,9 @@
       "goToImageLabel": "Go to image",
       "seeProjects": "See Projects",
       "back": "Back",
+      "categoryLabel": "Category",
+      "descriptionLabel": "Description",
+      "projectsLabel": "Projects",
       "categories": [
         {
           "slug": "adaptive-flesh",

@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion'
 import { imageReveal } from '@/lib/animations'
 
-// One grid cell — image or video — shown uncropped at its native aspect ratio,
-// filling the column width. Intrinsic width/height (from the build-time
-// dimension manifest) stay as attributes so the browser reserves space before
-// the asset loads. Soft reveal on scroll into view.
-export default function GalleryMedia({ item, alt }) {
+// One justified-row cell — image or video — shown uncropped at its native aspect
+// ratio. ProjectGallery computes each item's display width (so every item in a
+// row shares the same height); the media fills that width and its height follows
+// the aspect ratio. Intrinsic width/height stay as attributes so the browser
+// reserves space before the asset loads. Soft reveal on scroll into view.
+export default function GalleryMedia({ item, alt, displayWidth }) {
   const { type, src, width, height } = item
   const mediaCls = 'block h-auto w-full'
 
@@ -17,6 +18,7 @@ export default function GalleryMedia({ item, alt }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-8% 0px' }}
+      style={{ width: displayWidth }}
     >
       {type === 'video' ? (
         <video

@@ -1,11 +1,40 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
+
+// Target row height — the single density knob. A row fills the full width; this
+// sets how tall (≈ how many per row) it lands at. ~820 keeps ~2 portraits per row
+// at laptop width. Lower = more per row. Tune to taste.
+const TARGET_ROW_HEIGHT = 820
+const GAP = 8 // px, matches the gap-2 gutter
+const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring
+
+// Greedy justified-rows layout (Flickr-style). A row closes once its
+// fill-to-width height drops to ≤ targetH; the trailing row is kept at targetH
+// (its natural width is < container) and flagged so it can be centered.
+function computeRows(items, width, gap, targetH) {
+  const rows = []
+  let row = []
+  let arSum = 0
+  for (const item of items) {
+    const ar = item.width && item.height ? item.width / item.height : 0.8
+    row.push({ item, ar })
+    arSum += ar
+    const rowHeight = (width - gap * (row.length - 1)) / arSum
+    if (rowHeight <= targetH) {
+      rows.push({ cells: row, height: rowHeight, full: true })
+      row = []
+      arSum = 0
+    }
+  }
+  if (row.length) rows.push({ cells: row, height: targetH, full: false })
+  return rows
+}
 
 export default function ProjectGallery({ categoryLabel, project, media, prev, next }) {
   // The home route snaps each section to the viewport (html { scroll-snap-type:
@@ -20,6 +49,21 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
     }
   }, [])
 
+  // Measure the content width so rows can be justified; recompute on resize.
+  const wrapRef = useRef(null)
+  const [width, setWidth] = useState(DEFAULT_WIDTH)
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const update = () => setWidth(el.clientWidth)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const rows = computeRows(media, width, GAP, TARGET_ROW_HEIGHT)
+
   return (
     <div className="min-h-[100dvh] bg-oxidized-graphite text-bone-porcelain">
       <ProjectHeader />
@@ -29,7 +73,7 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="mx-auto max-w-[1100px] px-6 pb-16 pt-[148px] md:pb-24"
+        className="mx-auto max-w-[1100px] px-6 pb-16 pt-[148px] text-center md:pb-24"
       >
         <motion.p
           variants={lineReveal}
@@ -46,20 +90,37 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         {project.description && (
           <motion.p
             variants={fadeInUp}
-            className="body-copy-lg mt-6 max-w-[62ch] whitespace-pre-line font-light text-bone-porcelain/70"
+            className="body-copy-lg mx-auto mt-6 max-w-[62ch] whitespace-pre-line font-light text-bone-porcelain/70"
           >
             {project.description}
           </motion.p>
         )}
       </motion.header>
 
-      {/* Media — full-width column grid. Column count is capped per breakpoint:
-          1 on phones, 2 from tablet through laptop, 3 on large monitors, 4 max on
-          very large screens. Each image fills its column and keeps native aspect. */}
-      <div className="grid grid-cols-1 gap-2 px-4 pb-24 sm:grid-cols-2 sm:px-6 lg:px-10 2xl:grid-cols-3 min-[1920px]:grid-cols-4">
-        {media.map((it, i) => (
-          <GalleryMedia key={it.src} item={it} alt={`${project.title} — image ${i + 1}`} />
-        ))}
+      {/* Media — justified rows. Full rows fill the width; a short trailing row is
+          kept at target height and centered. */}
+      <div ref={wrapRef} className="px-4 pb-24 sm:px-6 lg:px-10">
+        <div className="flex flex-col gap-2">
+          {rows.map((r, ri) => {
+            let imgIndex = 0
+            for (let k = 0; k < ri; k++) imgIndex += rows[k].cells.length
+            return (
+              <div
+                key={ri}
+                className={`flex gap-2 ${r.full ? '' : 'justify-center'}`}
+              >
+                {r.cells.map(({ item, ar }, ci) => (
+                  <GalleryMedia
+                    key={item.src}
+                    item={item}
+                    alt={`${project.title} — image ${imgIndex + ci + 1}`}
+                    displayWidth={r.height * ar}
+                  />
+                ))}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Footer: cycle to sibling projects */}

@@ -1,5 +1,5 @@
 import Nav from '@/components/ui/Nav'
-import SectionFade from '@/components/ui/SectionFade'
+import ScrollStage from '@/components/ui/ScrollStage'
 import MobileNotice from '@/components/ui/MobileNotice'
 import Hero from '@/components/sections/Hero'
 import Work from '@/components/sections/Work'
@@ -15,15 +15,12 @@ export default function Home() {
       <div className="hidden lg:block">
         <Nav />
         <main>
-          <SectionFade>
+          {/* Sections cross-dissolve into one another on scroll */}
+          <ScrollStage themes={['dark', 'light', 'dark']} ids={['home', 'work', 'about']}>
             <Hero />
-          </SectionFade>
-          <SectionFade>
             <Work />
-          </SectionFade>
-          <SectionFade>
             <About />
-          </SectionFade>
+          </ScrollStage>
         </main>
       </div>
     </>

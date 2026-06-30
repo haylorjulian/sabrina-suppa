@@ -53,6 +53,12 @@ export const categoryImages = {
   },
 }
 
+// Portrait left-column image for the Work section's category view, by slug.
+export const categoryLanding = {
+  'adaptive-flesh': `${ASSET_BASE}/adaptiveFlesh/Transfiguration/7.jpg`,
+  physical: `${ASSET_BASE}/physicalworks/Remains/3.JPG`,
+}
+
 // Work catalog — keyed by category slug, ordered list of projects.
 // Each project is an ordered list of media items the gallery cycles through.
 export const workMedia = {
