@@ -3,36 +3,28 @@
 import { motion } from 'framer-motion'
 import { imageReveal } from '@/lib/animations'
 
-// One gallery item — image or video — shown uncropped at its native aspect ratio.
-// Intrinsic width/height (from the build-time dimension manifest) are set as
-// attributes so the browser reserves layout space before the asset loads.
-// `maxH` caps height (these assets are portrait-heavy); `align` shifts the piece
-// within its column for editorial asymmetry. Reveals softly on scroll into view.
-const ALIGN = {
-  center: 'mx-auto',
-  start: 'mr-auto',
-  end: 'ml-auto',
-}
-
-export default function GalleryMedia({
-  item,
-  alt,
-  index,
-  total,
-  maxH = 'max-h-[78vh]',
-  align = 'center',
-}) {
+// One justified-grid item — image or video — shown uncropped at its native aspect
+// ratio. The figure is a flex item whose width comes from the aspect ratio:
+//   flex-grow: ar    → within a row, space is shared ∝ aspect, so every image in
+//                      the row settles to the same height and the row fills width.
+//   flex-shrink: 0   → never shrink below basis; the next item wraps instead.
+//   flex-basis: ar × rowBase → sets the baseline size; per-row count falls out of
+//                      viewport ÷ basis (dynamic with screen width).
+//   max-width: 100%  → a lone item on a narrow screen caps to the viewport.
+// Intrinsic width/height (from the build-time dimension manifest) stay as
+// attributes so the browser reserves space before the asset loads.
+export default function GalleryMedia({ item, alt, rowBase = 360 }) {
   const { type, src, width, height } = item
-  const mediaCls = `block w-auto max-w-full object-contain ${maxH}`
-  const num = String(index + 1).padStart(2, '0')
+  const ar = width && height ? width / height : 0.8
+  const mediaCls = 'block h-auto w-full'
 
   return (
     <motion.figure
       variants={imageReveal}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-12% 0px' }}
-      className={`w-fit ${ALIGN[align] || ALIGN.center}`}
+      viewport={{ once: true, margin: '-8% 0px' }}
+      style={{ flexGrow: ar, flexShrink: 0, flexBasis: `${ar * rowBase}px`, maxWidth: '100%' }}
     >
       {type === 'video' ? (
         <video
@@ -58,9 +50,6 @@ export default function GalleryMedia({
           className={mediaCls}
         />
       )}
-      <figcaption className="mt-3 text-[10px] uppercase tracking-[0.3em] text-bone-porcelain/35">
-        {num} <span className="text-bone-porcelain/20">/</span> {String(total).padStart(2, '0')}
-      </figcaption>
     </motion.figure>
   )
 }

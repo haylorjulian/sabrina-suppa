@@ -7,40 +7,10 @@ import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 
-// Height presets for single rows. Literal class strings so Tailwind picks them up.
-const SIZE = {
-  feature: 'max-h-[90vh]',
-  mid: 'max-h-[78vh]',
-  small: 'max-h-[58vh]',
-}
-
-// Deterministic layout planner. The media set is portrait-heavy, so rhythm comes
-// from varying scale, horizontal offset, and the occasional side-by-side diptych
-// rather than from full-bleed landscape moments. Keyed off the index so the
-// composition is authored and stable, never random.
-function planRows(items) {
-  const rows = []
-  let i = 0
-  let n = 0
-  while (i < items.length) {
-    const remaining = items.length - i
-    const mod = n % 5
-    if (mod === 2 && remaining >= 2) {
-      rows.push({ type: 'pair', items: [items[i], items[i + 1]], start: i })
-      i += 2
-    } else {
-      let size = 'mid'
-      let align = 'center'
-      if (mod === 0) size = 'feature'
-      else if (mod === 3) align = i % 2 ? 'end' : 'start'
-      else if (mod === 4) size = 'small'
-      rows.push({ type: 'single', item: items[i], size, align, index: i })
-      i += 1
-    }
-    n++
-  }
-  return rows
-}
+// Baseline row height for the justified grid — the single density knob. Per-row
+// count falls out of viewport ÷ (aspect × ROW_BASE), so it's dynamic with screen
+// width (more per row on larger monitors). Lower = denser. Tune to taste.
+const ROW_BASE = 360
 
 export default function ProjectGallery({ categoryLabel, project, media, prev, next }) {
   // The home route snaps each section to the viewport (html { scroll-snap-type:
@@ -54,9 +24,6 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
       html.style.scrollSnapType = prevSnap
     }
   }, [])
-
-  const rows = planRows(media)
-  const total = media.length
 
   return (
     <div className="min-h-[100dvh] bg-oxidized-graphite text-bone-porcelain">
@@ -91,39 +58,19 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         )}
       </motion.header>
 
-      {/* Media flow */}
-      <div className="space-y-16 px-6 pb-24 md:space-y-28">
-        {rows.map((row, ri) =>
-          row.type === 'pair' ? (
-            <div
-              key={ri}
-              className="mx-auto grid max-w-[1100px] grid-cols-1 items-end gap-8 sm:grid-cols-2"
-            >
-              {row.items.map((it, k) => (
-                <div key={it.src} className="flex justify-center">
-                  <GalleryMedia
-                    item={it}
-                    alt={`${project.title} — image ${row.start + k + 1}`}
-                    index={row.start + k}
-                    total={total}
-                    maxH="max-h-[64vh]"
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div key={ri} className="mx-auto max-w-[1100px]">
-              <GalleryMedia
-                item={row.item}
-                alt={`${project.title} — image ${row.index + 1}`}
-                index={row.index}
-                total={total}
-                maxH={SIZE[row.size]}
-                align={row.align}
-              />
-            </div>
-          )
-        )}
+      {/* Media — justified full-width grid */}
+      <div className="flex flex-wrap gap-2 px-4 pb-24 sm:px-6 lg:px-10">
+        {media.map((it, i) => (
+          <GalleryMedia
+            key={it.src}
+            item={it}
+            alt={`${project.title} — image ${i + 1}`}
+            rowBase={ROW_BASE}
+          />
+        ))}
+        {/* Spacer: absorbs leftover space in the final row so its images stay at
+            baseline size (left-aligned) rather than stretching oversized. */}
+        <i aria-hidden="true" style={{ flexGrow: 999, flexBasis: 0 }} />
       </div>
 
       {/* Footer: cycle to sibling projects */}
