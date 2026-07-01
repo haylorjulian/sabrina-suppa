@@ -23,14 +23,17 @@ export default function Work() {
   const { categoryIndex, activeCategory, selectCategory, projects } = useWork(c.categories)
   const landingImage = categoryLanding[activeCategory.slug]
 
-  // Light right band → nav text goes dark.
+  // Light right band → nav text goes dark. Desktop only: this section is mounted
+  // (hidden) in the mobile tree too, and mobile's nav must stay dark over its
+  // full-bleed imagery.
   useEffect(() => {
-    setTheme('light')
+    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
+      setTheme('light')
+    }
   }, [setTheme])
 
   return (
     <section
-      id="work"
       data-nav-theme="light"
       aria-label="Work"
       className="relative h-full w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite"

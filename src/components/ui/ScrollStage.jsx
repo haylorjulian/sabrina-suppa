@@ -8,6 +8,7 @@ const DURATION = 1.5 // seconds, section-to-section crossfade
 const COOLDOWN = 250 // ms after a fade before the next trigger is accepted
 const THRESHOLD = 12 // min |deltaY| to count as a scroll gesture
 const EASE = [0.4, 0, 0.2, 1]
+const DESKTOP = '(min-width: 1024px)' // the slideshow only runs at the desktop tier
 
 // Triggered slideshow: the home sections (which each fit one viewport) are
 // stacked and crossfade one at a time. A small scroll or key press auto-plays the
@@ -47,20 +48,23 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
     [n]
   )
 
-  // Keep the URL hash + nav theme in sync with the active section. The starting
-  // section (incl. an incoming #hash) is seeded in the useState initializer above.
+  // Keep the URL hash + nav theme in sync with the active section — desktop only.
+  // Below lg the stage is inert (mobile uses natural scroll + a dark nav), so we
+  // don't touch the hash or the nav theme there. The starting section (incl. an
+  // incoming #hash) is seeded in the useState initializer above.
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!window.matchMedia(DESKTOP).matches) return
     if (ids[index]) history.replaceState(null, '', `#${ids[index]}`)
     if (themes[index]) setTheme(themes[index])
   }, [index, ids, themes, setTheme])
 
-  // Input handling + hash navigation. Listeners attached once.
+  // Input handling + hash navigation. Only the desktop tier takes over native
+  // scroll; below lg this stays disengaged so the page scrolls normally on touch.
+  // Engages/disengages live as the viewport crosses the lg breakpoint.
   useEffect(() => {
     reducedRef.current = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-
-    // Take over native scroll; restore on unmount (e.g. navigating to a gallery).
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const mql = window.matchMedia(DESKTOP)
 
     const next = () => goTo(indexRef.current + 1)
     const prev = () => goTo(indexRef.current - 1)
@@ -101,20 +105,38 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       history.replaceState(null, '', `#${id}`)
     }
 
-    window.addEventListener('wheel', onWheel, { passive: false })
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('hashchange', onHash)
-    document.addEventListener('click', onClick)
-    onHash() // honour an initial #section in the URL
-
-    return () => {
+    let engaged = false
+    const engage = () => {
+      if (engaged) return
+      engaged = true
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('wheel', onWheel, { passive: false })
+      window.addEventListener('keydown', onKey)
+      window.addEventListener('hashchange', onHash)
+      document.addEventListener('click', onClick)
+      if (themes[indexRef.current]) setTheme(themes[indexRef.current])
+      onHash() // honour an initial #section in the URL
+    }
+    const disengage = () => {
+      if (!engaged) return
+      engaged = false
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('hashchange', onHash)
       document.removeEventListener('click', onClick)
-      document.body.style.overflow = prevOverflow
+      document.body.style.overflow = ''
+      setTheme('dark') // mobile sections are dark full-bleed imagery
     }
-  }, [goTo, ids])
+
+    const sync = () => (mql.matches ? engage() : disengage())
+    sync()
+    mql.addEventListener('change', sync)
+
+    return () => {
+      mql.removeEventListener('change', sync)
+      disengage()
+    }
+  }, [goTo, ids, themes, setTheme])
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden">

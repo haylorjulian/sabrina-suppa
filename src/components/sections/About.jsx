@@ -7,6 +7,7 @@ import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { SocialIcon } from '@/components/ui/icons'
+import { staggerContainer, fadeInUp } from '@/lib/animations'
 import FitBox from '@/components/work/FitBox'
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -14,23 +15,30 @@ const EASE = [0.22, 1, 0.36, 1]
 // About section: the Work two-column layout, mirrored. Left = a centred,
 // shrink-to-fit box with the bio + socials; right = full-height image with the
 // section name centred over it.
-export default function About() {
+// `sectionId` is set only by the mobile tree (see Hero) so the nav's #about
+// anchor resolves to the visible section without duplicating ids across trees.
+export default function About({ sectionId }) {
   const { t } = useLanguage()
   const c = t.about
   const { setTheme } = useNavTheme()
 
+  // Desktop only: About is mounted (hidden) in the mobile tree too, where the nav
+  // must stay dark over the full-bleed image cover below.
   useEffect(() => {
-    setTheme('light')
+    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
+      setTheme('light')
+    }
   }, [setTheme])
 
   return (
     <section
-      id="about"
+      id={sectionId}
       data-nav-theme="light"
       aria-label="About"
-      className="relative h-full w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
-      <div className="grid h-full grid-cols-1 lg:grid-cols-[50%_50%]">
+      {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
+      <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
         {/* Left — content in a centred, shrink-to-fit box (75% of the panel) */}
         <div className="relative h-full">
           <FitBox className="absolute left-1/2 top-1/2 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2">
@@ -89,6 +97,53 @@ export default function About() {
             className="object-cover"
           />
         </div>
+      </div>
+
+      {/* Mobile (<1024px) — full-bleed image cover with the bio + socials read as
+          natural flowing text (no FitBox scaling). */}
+      <div className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:hidden">
+        <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-oxidized-graphite/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite via-oxidized-graphite/80 to-transparent" />
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="relative z-10 flex flex-col gap-6 px-6 pb-20 pt-28"
+        >
+          <motion.h2
+            variants={fadeInUp}
+            className="font-copperplate text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+          >
+            {c.sectionLabel}
+          </motion.h2>
+
+          <motion.div variants={fadeInUp} className="max-w-[46ch] space-y-3">
+            {c.paragraphs.map((para, i) => (
+              <p key={i} className="body-copy whitespace-pre-line font-light text-bone-porcelain/85">
+                {para}
+              </p>
+            ))}
+          </motion.div>
+
+          <motion.ul variants={fadeInUp} className="flex flex-wrap items-center gap-7 pt-2">
+            {c.social.map((link) => (
+              <li key={link.label}>
+                <a
+                  href={link.href}
+                  target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel="noreferrer"
+                  aria-label={link.label}
+                  className="block text-bone-porcelain/70 transition-colors duration-300 hover:text-synthetic-flesh"
+                >
+                  <SocialIcon label={link.label} className="h-6 w-6" />
+                </a>
+              </li>
+            ))}
+          </motion.ul>
+        </motion.div>
       </div>
     </section>
   )

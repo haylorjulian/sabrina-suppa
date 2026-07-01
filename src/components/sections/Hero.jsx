@@ -9,7 +9,10 @@ import { staggerContainer, fadeInUp } from '@/lib/animations'
 import Preloader from '@/components/ui/Preloader'
 import ShimmerLine from '@/components/ui/ShimmerLine'
 
-export default function Hero() {
+// `sectionId` is set only by the mobile tree so the nav's #home anchor resolves
+// to the visible section — the desktop tree navigates by index (ScrollStage) and
+// omits the id to avoid duplicate ids across the two trees.
+export default function Hero({ sectionId }) {
   const { t } = useLanguage()
   const { loading } = usePreloader()
   const c = t.hero
@@ -22,10 +25,10 @@ export default function Hero() {
       <Preloader loading={loading} />
 
       <section
-        id="home"
+        id={sectionId}
         data-nav-theme="dark"
         aria-label="Hero"
-        className="relative h-full w-full overflow-hidden bg-wet-petroleum"
+        className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
       >
         {/* Full-bleed background (upgrade to MP4 when supplied) */}
         <Image
@@ -42,7 +45,7 @@ export default function Hero() {
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center md:hidden"
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center lg:hidden"
         >
           <motion.h1
             variants={fadeInUp}
@@ -66,7 +69,7 @@ export default function Hero() {
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute bottom-14 left-[52px] z-10 hidden md:block"
+          className="absolute bottom-14 left-[52px] z-10 hidden lg:block"
         >
           <motion.div variants={fadeInUp} className="mb-[18px] h-px w-8 bg-synthetic-flesh/45" />
           <motion.h1
@@ -88,7 +91,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: loading ? 0 : 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
-          className="absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-[10px] md:left-auto md:right-[52px] md:translate-x-0"
+          className="absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-[10px] lg:left-auto lg:right-[52px] lg:translate-x-0"
         >
           <span className="vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
             {c.scroll}

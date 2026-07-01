@@ -13,9 +13,10 @@
 
 html {
   scroll-behavior: smooth;
-  /* Gentle full-section snapping: rest states land on a section, the crossfade
-     (SectionFade) handles the transition. Each slide is exactly one viewport. */
-  scroll-snap-type: y mandatory;
+  /* No global scroll snapping. Desktop takes over scroll entirely (ScrollStage);
+     mobile scrolls naturally through full-height sections, some of which are
+     taller than the viewport (long category/bio covers) — mandatory snap would
+     trap those. */
 }
 
 body {
