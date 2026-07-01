@@ -19,11 +19,17 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   const n = items.length
   const { setTheme } = useNavTheme()
 
-  const [index, setIndex] = useState(0)
-  const indexRef = useRef(0)
+  // Seed the starting section from an incoming #hash during render (e.g. "Back to
+  // work" → /#work) so the stage's first paint is already on that section — no
+  // Hero flash, and no dependence on post-mount effect timing.
+  const [index, setIndex] = useState(() => {
+    if (typeof window === 'undefined') return 0
+    const i = ids.indexOf(window.location.hash.replace('#', ''))
+    return i > 0 ? i : 0
+  })
+  const indexRef = useRef(index)
   const lockedRef = useRef(false)
   const reducedRef = useRef(false)
-  const didInit = useRef(false)
 
   const goTo = useCallback(
     (target, { force = false } = {}) => {
@@ -41,19 +47,9 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
     [n]
   )
 
-  // Reflect the active section in the URL hash + nav theme. On first run, honour
-  // an incoming #section (e.g. "Back to work" → /#work) instead of overwriting it
-  // with #home.
+  // Keep the URL hash + nav theme in sync with the active section. The starting
+  // section (incl. an incoming #hash) is seeded in the useState initializer above.
   useEffect(() => {
-    if (!didInit.current) {
-      didInit.current = true
-      const i = ids.indexOf(window.location.hash.replace('#', ''))
-      if (i > 0) {
-        indexRef.current = i
-        setIndex(i)
-        return
-      }
-    }
     if (ids[index]) history.replaceState(null, '', `#${ids[index]}`)
     if (themes[index]) setTheme(themes[index])
   }, [index, ids, themes, setTheme])
