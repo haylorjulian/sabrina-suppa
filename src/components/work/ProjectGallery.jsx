@@ -7,17 +7,30 @@ import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 
-// Target row height — the single density knob. A row fills the full width; this
-// sets how tall (≈ how many per row) it lands at. ~820 keeps ~2 portraits per row
-// at laptop width. Lower = more per row. Tune to taste.
-const TARGET_ROW_HEIGHT = 820
+// ── Gallery density knobs ────────────────────────────────────────────────────
+// The gallery auto-fits images into justified rows (Flickr-style) — it isn't a
+// fixed grid, so the number per row emerges from the container width and the
+// images' aspect ratios. Because wider containers pack more per row, a single
+// target height gives ~2 on a laptop, ~3 on a monitor, ~4 on a large display —
+// and MAX_COLUMNS caps the top end so it never exceeds 4.
+//
+//   TARGET_ROW_HEIGHT — the main density dial. Higher → fewer, taller images per
+//     row; lower → more, smaller. ~900 lands on 2 per row at 14" laptop width.
+//     Try 760 for ~3 on a laptop, 1000+ to push toward 1–2.
+//   MAX_COLUMNS — hard ceiling per row on any screen size.
+//   GAP — pixel gutter between images (matches the gap-2 class below).
+// (Container padding `px-4 sm:px-6 lg:px-10` also nudges density: more padding →
+//  narrower usable width → slightly fewer per row.)
+const TARGET_ROW_HEIGHT = 900
+const MAX_COLUMNS = 4
 const GAP = 8 // px, matches the gap-2 gutter
 const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring
 
 // Greedy justified-rows layout (Flickr-style). A row closes once its
-// fill-to-width height drops to ≤ targetH; the trailing row is kept at targetH
-// (its natural width is < container) and flagged so it can be centered.
-function computeRows(items, width, gap, targetH) {
+// fill-to-width height drops to ≤ targetH, or once it hits MAX_COLUMNS cells; the
+// trailing row is kept at targetH (its natural width is < container) and flagged
+// so it can be centered.
+function computeRows(items, width, gap, targetH, maxColumns) {
   const rows = []
   let row = []
   let arSum = 0
@@ -26,7 +39,7 @@ function computeRows(items, width, gap, targetH) {
     row.push({ item, ar })
     arSum += ar
     const rowHeight = (width - gap * (row.length - 1)) / arSum
-    if (rowHeight <= targetH) {
+    if (rowHeight <= targetH || row.length >= maxColumns) {
       rows.push({ cells: row, height: rowHeight, full: true })
       row = []
       arSum = 0
@@ -62,7 +75,7 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
     return () => ro.disconnect()
   }, [])
 
-  const rows = computeRows(media, width, GAP, TARGET_ROW_HEIGHT)
+  const rows = computeRows(media, width, GAP, TARGET_ROW_HEIGHT, MAX_COLUMNS)
 
   return (
     <div className="min-h-[100dvh] bg-oxidized-graphite text-bone-porcelain">
@@ -90,7 +103,7 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         {project.description && (
           <motion.p
             variants={fadeInUp}
-            className="body-copy-lg mx-auto mt-6 max-w-[62ch] whitespace-pre-line font-light text-bone-porcelain/70"
+            className="body-copy-lg mx-auto mt-6 max-w-[100ch] whitespace-pre-line font-light text-bone-porcelain/70"
           >
             {project.description}
           </motion.p>
