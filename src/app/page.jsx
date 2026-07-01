@@ -16,7 +16,7 @@ export default function Home() {
         <Nav />
         <main>
           {/* Sections cross-dissolve into one another on scroll */}
-          <ScrollStage themes={['dark', 'light', 'light']} ids={['home', 'work', 'about']}>
+          <ScrollStage themes={['dark', 'dark', 'dark']} ids={['home', 'work', 'about']}>
             <Hero />
             <Work />
             <About />

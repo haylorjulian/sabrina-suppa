@@ -23,6 +23,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   const indexRef = useRef(0)
   const lockedRef = useRef(false)
   const reducedRef = useRef(false)
+  const didInit = useRef(false)
 
   const goTo = useCallback(
     (target, { force = false } = {}) => {
@@ -40,8 +41,19 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
     [n]
   )
 
-  // Reflect the active section in the URL hash + nav theme.
+  // Reflect the active section in the URL hash + nav theme. On first run, honour
+  // an incoming #section (e.g. "Back to work" → /#work) instead of overwriting it
+  // with #home.
   useEffect(() => {
+    if (!didInit.current) {
+      didInit.current = true
+      const i = ids.indexOf(window.location.hash.replace('#', ''))
+      if (i > 0) {
+        indexRef.current = i
+        setIndex(i)
+        return
+      }
+    }
     if (ids[index]) history.replaceState(null, '', `#${ids[index]}`)
     if (themes[index]) setTheme(themes[index])
   }, [index, ids, themes, setTheme])

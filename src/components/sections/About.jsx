@@ -79,8 +79,7 @@ export default function About() {
           </FitBox>
         </div>
 
-        {/* Right — full-viewport-height image, with the section name centred over
-            it (mirrors the Work category title) */}
+        {/* Right — full-viewport-height image */}
         <div className="relative hidden h-full lg:block">
           <Image
             src={assets.about.background}
@@ -89,14 +88,6 @@ export default function About() {
             sizes="50vw"
             className="object-cover"
           />
-          <motion.h2
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-copperplate text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[0.08em] text-synthetic-flesh [text-shadow:0_2px_18px_rgba(26,26,28,0.55)]"
-          >
-            {c.sectionLabel}
-          </motion.h2>
         </div>
       </div>
     </section>
