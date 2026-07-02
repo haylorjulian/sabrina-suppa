@@ -29,7 +29,7 @@ export function generateMetadata({ params }) {
   const r = resolve(params.category, params.project)
   if (!r) return {}
   const title = `${r.project.title} — Sabrina Suppa`
-  const description = (r.project.description || '').replace(/\s+/g, ' ').slice(0, 160)
+  const description = (Array.isArray(r.project.description) ? r.project.description.join(' ') : (r.project.description || '')).replace(/\s+/g, ' ').slice(0, 160)
   return {
     title,
     description,
