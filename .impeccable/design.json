@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-03T00:00:00.000Z",
+  "title": "Design System: Sabrina Suppa",
+  "extensions": {
+    "colorMeta": {
+      "oxidized-graphite": {
+        "role": "primary",
+        "displayName": "Oxidized Graphite",
+        "canonical": "#1A1A1C",
+        "tonalRamp": ["#0D0D0E", "#1A1A1C", "#2A2A2D", "#3D3D41", "#565659", "#77777B", "#A0A0A4", "#CFCFD2"]
+      },
+      "bone-porcelain": {
+        "role": "secondary",
+        "displayName": "Bone Porcelain",
+        "canonical": "#F3EEE8",
+        "tonalRamp": ["#4A463F", "#6B665E", "#8C877E", "#ADA89F", "#CBC6BD", "#E0DBD3", "#F3EEE8", "#FBF8F4"]
+      },
+      "synthetic-flesh": {
+        "role": "tertiary",
+        "displayName": "Synthetic Flesh",
+        "canonical": "#C9A48F",
+        "tonalRamp": ["#3B2C24", "#5E483C", "#836353", "#A9836E", "#C9A48F", "#D9BBAB", "#E7D2C7", "#F3E7E0"]
+      },
+      "surgical-taupe": {
+        "role": "tertiary",
+        "displayName": "Surgical Taupe",
+        "canonical": "#8F786C",
+        "tonalRamp": ["#2A231F", "#4A3E37", "#6B594F", "#8F786C", "#A6928A", "#BCACA5", "#D2C6C1", "#E8E1DD"]
+      },
+      "wet-petroleum": {
+        "role": "neutral",
+        "displayName": "Wet Petroleum",
+        "canonical": "#22262B",
+        "tonalRamp": ["#121417", "#22262B", "#2E333A", "#3E444C", "#545B64", "#727A84", "#9AA1AB", "#C6CBD2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display / Plaque", "purpose": "Copperplate engraved caps — artist name, section plates, category labels. Always uppercase, tracked." },
+      "body": { "displayName": "Body", "purpose": "Cormorant weight 300 — bios, project descriptions, statements. Held at ~60ch." },
+      "label": { "displayName": "Label / Instrument", "purpose": "futura-pt geometric caps — descriptors, scroll cue, micro-labels. Tracking ≥0.30em." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-signature", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The single system easing (ease-out-quart family). Every transition and entrance uses it." },
+      { "name": "pill-spring", "value": "spring(stiffness 380, damping 34)", "purpose": "The active-pill fill sliding between category tabs (layoutId)." },
+      { "name": "state-transition", "value": "200ms / 300ms", "purpose": "Control invert-on-hover (200ms) and nav link/color-theme flips (300ms)." },
+      { "name": "section-dissolve", "value": "scroll-linked opacity [0.15, 1, 1, 0.15]", "purpose": "Adjacent full-viewport sections crossfade through the graphite ground. Opacity only." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Category Pill (active)",
+      "kind": "chip",
+      "refersTo": "pill-active",
+      "description": "The selected Work category tab — a single dark cell that slides between tabs.",
+      "html": "<button class=\"ds-pill-active\">Adaptive Flesh</button>",
+      "css": ".ds-pill-active { position: relative; border: none; border-radius: 9999px; padding: 8px 22px; background: var(--oxidized-graphite, #1A1A1C); color: var(--bone-porcelain, #F3EEE8); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; }"
+    },
+    {
+      "name": "Category Pill (inactive)",
+      "kind": "chip",
+      "refersTo": "pill-inactive",
+      "description": "An unselected Work category — dashed, provisional, waiting to be chosen.",
+      "html": "<button class=\"ds-pill-inactive\">Physical Works</button>",
+      "css": ".ds-pill-inactive { position: relative; border: 1px dashed rgba(26,26,28,0.40); border-radius: 9999px; padding: 8px 22px; background: rgba(243,238,232,0.50); color: var(--oxidized-graphite, #1A1A1C); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; transition: color 0.2s, border-color 0.2s; } .ds-pill-inactive:hover { border-color: rgba(26,26,28,0.7); }"
+    },
+    {
+      "name": "Arrow Button (light theme)",
+      "kind": "button",
+      "refersTo": "arrow-button",
+      "description": "Square gallery/next-project control on a light surface. Inverts fully on hover.",
+      "html": "<button class=\"ds-arrow-light\" aria-label=\"Next image\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-arrow-light { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(26,26,28,0.30); border-radius: 0; background: transparent; color: var(--oxidized-graphite, #1A1A1C); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.2s; } .ds-arrow-light:hover { background: var(--oxidized-graphite, #1A1A1C); color: var(--bone-porcelain, #F3EEE8); transform: scale(1.05); } .ds-arrow-light:active { transform: scale(0.94); }"
+    },
+    {
+      "name": "Arrow Button (dark theme)",
+      "kind": "button",
+      "refersTo": "arrow-button",
+      "description": "Same control on a dark surface — light border/glyph, inverts to a bone fill.",
+      "html": "<button class=\"ds-arrow-dark\" aria-label=\"Next image\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-arrow-dark { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(243,238,232,0.30); border-radius: 0; background: transparent; color: var(--bone-porcelain, #F3EEE8); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.2s; } .ds-arrow-dark:hover { background: var(--bone-porcelain, #F3EEE8); color: var(--oxidized-graphite, #1A1A1C); transform: scale(1.05); } .ds-arrow-dark:active { transform: scale(0.94); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Floating Copperplate nav link — rests dimmed, rises to full on hover. Color auto-flips per section.",
+      "html": "<a class=\"ds-nav-link\" href=\"#work\">Work</a>",
+      "css": ".ds-nav-link { font-family: 'Copperplate Gothic Light', 'Copperplate', Georgia, serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.20em; color: rgba(26,26,28,0.55); text-decoration: none; transition: color 0.3s; } .ds-nav-link:hover { color: var(--oxidized-graphite, #1A1A1C); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Specimen Vitrine",
+    "overview": "The site is a clinical display case for a practice about the body under engineering. Work is presented as specimens — lit from the dark, held still, examined — and the interface is the vitrine: cold, exact glass that frames a charged, bodily subject without ever competing with it. The whole experience runs two registers of the same case: a dark world (the lit vitrine — oxidized-graphite ground, cinematic imagery, hairline serifs) carries atmosphere and first impression, and a light world (the catalogue card — bone-porcelain ground, dark ink, taxonomic labels) carries the index. The single fixed nav flips between them automatically, so moving through the site feels like turning a specimen from its dramatic display into its documentation and back. Density is low and deliberate; depth is soft and atmospheric, not stacked — no drop shadows, only tonal gradients, opacity dissolves, and functional text-shadow.",
+    "keyCharacteristics": [
+      "Two-world system: dark cinematic vitrine ↔ light catalogue index, nav auto-flips.",
+      "Specimen-first: imagery leads, the interface recedes to glass.",
+      "Atmospheric depth, zero drop shadows — dissolves, gradients, crossfades.",
+      "Hairline, uppercase, widely-tracked typography as instrument labeling.",
+      "Refined unease by precision and low light, never by shock."
+    ],
+    "rules": [
+      { "name": "The Two-Worlds Rule", "body": "Every surface is either dark-world (oxidized-graphite ground, bone-porcelain type, data-nav-theme dark) or light-world (bone-porcelain ground, oxidized-graphite type, data-nav-theme light). There is no third ground; new sections declare their world and never invent a mid-gray in between.", "section": "colors" },
+      { "name": "The One-Skin Rule", "body": "synthetic-flesh is the only accent and it is rare — reserved for moments that reference the body (accents, hovers, the descriptor). It is prohibited as a button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.", "section": "colors" },
+      { "name": "The Tracked-Caps Rule", "body": "Every Copperplate and Futura label is uppercase and widely tracked (≥0.20em). Sentence-case display type is forbidden; these fonts are labels, not headlines.", "section": "typography" },
+      { "name": "The Hairline Rule", "body": "Cormorant body always runs at weight 300, never bolder. The thin literary line is the reading voice of the whole system; a heavier body weight reads as a different, wrong site.", "section": "typography" },
+      { "name": "The No-Shadow Rule", "body": "Drop shadows are prohibited. If an element needs separation, use a tonal gradient, an opacity dissolve, or the wet-petroleum surface step. A box-shadow anywhere in this system is a bug.", "section": "elevation" },
+      { "name": "The Functional-Glow Rule", "body": "text-shadow exists to keep light type readable over dark imagery and nothing else. It is never applied to type on a solid surface for effect.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do anchor every surface to one of the two worlds (dark #1A1A1C ground / #F3EEE8 type, or light #F3EEE8 ground / #1A1A1C type) and declare its data-nav-theme.",
+      "Do let imagery lead — the specimen holds the room; type, spacing, and motion frame it.",
+      "Do keep all display/label type uppercase and tracked ≥0.20em (Copperplate) and body type Cormorant weight 300.",
+      "Do convey depth with tonal gradients, opacity dissolves, and the wet-petroleum step — atmospheric, not stacked.",
+      "Do reserve synthetic-flesh (#C9A48F) for rare, body-referencing accents and hovers only.",
+      "Do hold body measure at ~60ch and keep the cinematic motion behind a prefers-reduced-motion crossfade fallback."
+    ],
+    "donts": [
+      "Don't ship a generic Squarespace/template portfolio — a white grid of equal thumbnails with a neutral sans and no point of view.",
+      "Don't apply startup/SaaS polish: no bright/rounded/gradient-accent styling, no hero-metric blocks, no product-landing cadence.",
+      "Don't drift into gothic/horror kitsch — no skulls, gore, blood-drip, or Halloween darkness. The unease is clinical and refined.",
+      "Don't go busy or maximalist: no clutter, no loud stacking, no animation for its own sake competing with the work.",
+      "Don't add a box-shadow anywhere — a drop shadow in this system is a bug.",
+      "Don't use synthetic-flesh as a button fill, background, or section device; don't invent a third mid-gray ground; don't set body type above weight 300."
+    ]
+  }
+}
