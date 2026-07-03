@@ -14,7 +14,7 @@ import ShimmerLine from '@/components/ui/ShimmerLine'
 // omits the id to avoid duplicate ids across the two trees.
 export default function Hero({ sectionId }) {
   const { t } = useLanguage()
-  const { loading } = usePreloader()
+  const { loading, instant } = usePreloader()
   const c = t.hero
   // "Body Architect · Exploring Adaptive Morphologies" → two lines on mobile
   const descParts = c.descriptor.split(' · ')
@@ -22,7 +22,7 @@ export default function Hero({ sectionId }) {
 
   return (
     <>
-      <Preloader loading={loading} />
+      <Preloader loading={loading} instant={instant} />
 
       <section
         id={sectionId}

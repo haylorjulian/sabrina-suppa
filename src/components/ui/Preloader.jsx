@@ -5,7 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 
 // loading (animation-spec): full-screen overlay with a choreographed exit that
 // hands off into the hero entrance. Visibility is driven by usePreloader.
-export default function Preloader({ loading }) {
+export default function Preloader({ loading, instant = false }) {
   const { t } = useLanguage()
 
   return (
@@ -14,7 +14,7 @@ export default function Preloader({ loading }) {
         <motion.div
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-oxidized-graphite"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] } }}
+          exit={{ opacity: 0, transition: { duration: instant ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] } }}
         >
           <motion.div
             initial={{ opacity: 0, y: 12 }}

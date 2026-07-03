@@ -47,6 +47,7 @@ export default function Work() {
             src={landingImage}
             alt={activeCategory.label}
             fill
+            priority
             sizes="50vw"
             className="object-cover"
           />

@@ -1,6 +1,6 @@
 'use client'
 
-import { Children, useCallback, useEffect, useRef, useState } from 'react'
+import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavTheme } from '@/components/NavThemeProvider'
 
@@ -9,6 +9,10 @@ const COOLDOWN = 250 // ms after a fade before the next trigger is accepted
 const THRESHOLD = 12 // min |deltaY| to count as a scroll gesture
 const EASE = [0.4, 0, 0.2, 1]
 const DESKTOP = '(min-width: 1024px)' // the slideshow only runs at the desktop tier
+
+// Layout effects warn during SSR; fall back to useEffect on the server (a no-op
+// there) so the hash-seed reconcile below stays warning-free.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 // Triggered slideshow: the home sections (which each fit one viewport) are
 // stacked and crossfade one at a time. A small scroll or key press auto-plays the
@@ -20,17 +24,32 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   const n = items.length
   const { setTheme } = useNavTheme()
 
-  // Seed the starting section from an incoming #hash during render (e.g. "Back to
-  // work" → /#work) so the stage's first paint is already on that section — no
-  // Hero flash, and no dependence on post-mount effect timing.
-  const [index, setIndex] = useState(() => {
-    if (typeof window === 'undefined') return 0
-    const i = ids.indexOf(window.location.hash.replace('#', ''))
-    return i > 0 ? i : 0
-  })
-  const indexRef = useRef(index)
+  // Start on the first section: the server and the first client render must agree,
+  // and the incoming #hash is client-only. We reconcile it in the layout effect
+  // below, which runs before paint — so "Back to work" (→ /#work) still lands
+  // directly on that section with no Hero flash and no hydration mismatch.
+  const [index, setIndex] = useState(0)
+  const indexRef = useRef(0)
   const lockedRef = useRef(false)
   const reducedRef = useRef(false)
+  const instantRef = useRef(false) // true only for the pre-paint hash seed, so it doesn't crossfade
+
+  // Jump straight to an incoming #hash section on mount, before the browser
+  // paints, without animating the transition.
+  useIsomorphicLayoutEffect(() => {
+    const i = ids.indexOf(window.location.hash.replace('#', ''))
+    if (i > 0) {
+      instantRef.current = true
+      indexRef.current = i
+      setIndex(i)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Re-enable the crossfade once the instant hash seed has committed.
+  useEffect(() => {
+    instantRef.current = false
+  }, [index])
 
   const goTo = useCallback(
     (target, { force = false } = {}) => {
@@ -146,7 +165,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
           className="absolute inset-0"
           initial={false}
           animate={{ opacity: i === index ? 1 : 0 }}
-          transition={{ duration: reducedRef.current ? 0 : DURATION, ease: EASE }}
+          transition={{ duration: instantRef.current || reducedRef.current ? 0 : DURATION, ease: EASE }}
           style={{ zIndex: i === index ? 2 : 1, pointerEvents: i === index ? 'auto' : 'none' }}
         >
           {child}
