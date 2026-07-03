@@ -4,22 +4,27 @@ import { motion } from 'framer-motion'
 
 // Square bordered arrow control. Used for image up/down nav and the
 // Next Project CTA. Pure render — caller wires onClick.
-// theme: 'light' (dark borders/glyph on light bg) | 'dark' (light on dark)
+// theme: 'light' (dark glyph on porcelain) | 'dark' (light glyph over imagery)
+//
+// Emergent-light treatment (Vitrine): at rest the control is a faint form that
+// nearly dissolves into its ground; attention (hover/focus) raises a soft light —
+// a flesh bloom in the dark world, an ink penumbra in the light world. No hard
+// invert. See DESIGN.md — The Emergent-Light Rule.
 export default function ArrowButton({ glyph, onClick, label, size = 'md', theme = 'light' }) {
   const dims = size === 'lg' ? 'w-[38px] h-[38px] text-sm' : 'w-9 h-9 text-[13px]'
   const palette =
     theme === 'dark'
-      ? 'border-bone-porcelain/30 text-bone-porcelain hover:bg-bone-porcelain hover:text-oxidized-graphite'
-      : 'border-oxidized-graphite/30 text-oxidized-graphite hover:bg-oxidized-graphite hover:text-bone-porcelain'
+      ? 'border-bone-porcelain/10 bg-bone-porcelain/[0.03] text-bone-porcelain/70 backdrop-blur-[3px] hover:border-synthetic-flesh/40 hover:bg-synthetic-flesh/[0.07] hover:text-bone-porcelain hover:[box-shadow:var(--glow-flesh)] focus-visible:border-synthetic-flesh/40 focus-visible:bg-synthetic-flesh/[0.07] focus-visible:text-bone-porcelain focus-visible:[box-shadow:var(--glow-flesh)]'
+      : 'border-oxidized-graphite/10 bg-oxidized-graphite/[0.02] text-oxidized-graphite/70 backdrop-blur-[3px] hover:border-surgical-taupe/40 hover:bg-surgical-taupe/[0.08] hover:text-oxidized-graphite hover:[box-shadow:var(--penumbra-ink)] focus-visible:border-surgical-taupe/40 focus-visible:bg-surgical-taupe/[0.08] focus-visible:text-oxidized-graphite focus-visible:[box-shadow:var(--penumbra-ink)]'
 
   return (
     <motion.button
       type="button"
       onClick={onClick}
       aria-label={label}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.94 }}
-      className={`flex items-center justify-center border bg-transparent transition-colors duration-200 ${dims} ${palette}`}
+      whileHover={{ scale: 1.03, y: -1 }}
+      whileTap={{ scale: 0.94, y: 0 }}
+      className={`ds-control flex items-center justify-center border transition-[color,background-color,border-color,box-shadow] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none ${dims} ${palette}`}
     >
       <span aria-hidden="true">{glyph}</span>
     </motion.button>

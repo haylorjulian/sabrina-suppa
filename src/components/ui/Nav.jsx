@@ -64,7 +64,7 @@ export default function Nav() {
             <a
               key={link.href}
               href={link.href}
-              className={`font-copperplate text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
+              className={`nav-link font-copperplate text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
             </a>
@@ -119,7 +119,7 @@ export default function Nav() {
                   variants={overlayItem}
                   href={link.href}
                   onClick={closeMenu}
-                  className="font-copperplate text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
+                  className="nav-link font-copperplate text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
                 >
                   {link.label}
                 </motion.a>

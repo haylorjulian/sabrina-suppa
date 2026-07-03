@@ -64,14 +64,14 @@ components:
 
 The site is a clinical display case for a practice about the body under engineering. Work is presented as specimens — lit from the dark, held still, examined — and the interface is the vitrine: cold, exact glass that frames a charged, bodily subject without ever competing with it. The whole experience runs two registers of the same case. A **dark world** (the lit vitrine: `oxidized-graphite` ground, cinematic imagery, hairline serifs) carries atmosphere and first impression. A **light world** (the catalogue card: `bone-porcelain` ground, dark ink, taxonomic labels) carries the index — categories, projects, the artist record. The single fixed nav flips between them automatically (`data-nav-theme`), so moving through the site feels like turning a specimen from its dramatic display into its documentation and back.
 
-Density is low and deliberate. One dominant idea per viewport, generous negative space, long controlled pacing. The system's depth is **soft and atmospheric, not stacked** — there are no drop shadows. Depth is conveyed the way it is in a dim gallery: tonal gradients that dissolve image into ground, opacity crossfades between states, a light segment travelling a scroll track, text-shadow used only to keep type legible over photography. Transitions behave like the work itself — membranes dissolving, states settling — never like UI chrome sliding around.
+Density is low and deliberate. One dominant idea per viewport, generous negative space, long controlled pacing. The system's depth is **soft and atmospheric, not stacked** — no structural drop shadows. Depth is conveyed the way it is in a dim gallery: tonal gradients that dissolve image into ground, opacity crossfades between states, a light segment travelling a scroll track, text-shadow used only to keep type legible over photography. Controls are the one place light gathers — at rest they nearly vanish into the ground and, on attention, catch a soft emergent glow (see §4). Transitions behave like the work itself — membranes dissolving, states settling — never like UI chrome sliding around.
 
 This system explicitly rejects the **generic Squarespace/template portfolio** (a white grid of thumbnails with no point of view), **startup/SaaS polish** (bright, rounded, gradient-accented, hero-metric energy), **gothic/horror kitsch** (the unease is clinical and refined, never skulls or gore), and **busy maximalism** (nothing on screen competes with the work). If a screen could belong to any other artist, it has failed the vitrine.
 
 **Key Characteristics:**
 - Two-world system: dark cinematic vitrine ↔ light catalogue index, nav auto-flips.
 - Specimen-first: imagery leads, the interface recedes to glass.
-- Atmospheric depth, zero drop shadows — dissolves, gradients, crossfades.
+- Atmospheric depth, no structural drop shadows — dissolves, gradients, crossfades, plus soft emergent glow on controls.
 - Hairline, uppercase, widely-tracked typography as instrument labeling.
 - Refined unease by precision and low light, never by shock.
 
@@ -95,7 +95,7 @@ A five-tone body-and-instrument palette: two grounds at the extremes (near-black
 ### Named Rules
 **The Two-Worlds Rule.** Every surface is either dark-world (`oxidized-graphite` ground, `bone-porcelain` type, `data-nav-theme="dark"`) or light-world (`bone-porcelain` ground, `oxidized-graphite` type, `data-nav-theme="light"`). There is no third ground. New sections declare their world; they never invent a mid-gray in between.
 
-**The One-Skin Rule.** `synthetic-flesh` is the only accent and it is rare — reserved for moments that reference the body (accents, hovers, the descriptor). It is prohibited as a button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.
+**The One-Skin Rule.** `synthetic-flesh` is the only accent and it is rare — reserved for moments that reference the body (accents, hovers, the descriptor, and the transient emergent glow that lifts a control on attention). It is prohibited as a *static* button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.
 
 ## 3. Typography
 
@@ -119,32 +119,36 @@ A five-tone body-and-instrument palette: two grounds at the extremes (near-black
 
 ## 4. Elevation
 
-Flat by doctrine. The system uses **no `box-shadow`** anywhere. Depth is atmospheric, achieved through four materials only: (1) tonal gradients that dissolve imagery into the graphite ground (`bg-gradient-to-t from-oxidized-graphite via-oxidized-graphite/80 to-transparent`), (2) opacity crossfades between gallery images and section states, (3) the `wet-petroleum` tonal step for secondary dark surfaces, and (4) `text-shadow` used *functionally* — only to hold type legible over photography (`0 2px 18px rgba(26,26,28,0.6)`), never as decoration. Controls sit flat on their surface; they gain presence by inverting on hover, not by lifting.
+Structurally flat, softly lit. There are **no directional drop shadows** simulating stacked panels. Surface depth is atmospheric, through four materials: (1) tonal gradients that dissolve imagery into the graphite ground (`bg-gradient-to-t from-oxidized-graphite via-oxidized-graphite/80 to-transparent`), (2) opacity crossfades between gallery images and section states, (3) the `wet-petroleum` tonal step for secondary dark surfaces, and (4) `text-shadow` used *functionally* — only to hold type legible over photography (`0 2px 18px rgba(26,26,28,0.6)`), never as decoration.
+
+**Controls are the one place light is allowed to gather.** They carry an *emergent light*: at rest a control nearly dissolves into its ground, and attention (hover / focus) raises a soft, diffuse glow — a flesh-toned bloom in the dark world (`--glow-flesh`), an ink penumbra in the light world (`--penumbra-ink`), with a ≤3px `backdrop-blur` lifting it off the imagery behind. The glow is soft and non-directional (no offset that reads as elevation); it responds to state and settles back. This is emergent-from-shadow, deliberately **not** glassmorphism.
 
 ### Named Rules
-**The No-Shadow Rule.** Drop shadows are prohibited. If an element needs separation, use a tonal gradient, an opacity dissolve, or the `wet-petroleum` surface step. A box-shadow anywhere in this system is a bug.
+**The Emergent-Light Rule.** Structural drop shadows are prohibited — no directional offset simulating a lifted panel. Shadow is permitted *only* as emergent light on controls: soft, diffuse, flesh- or ink-toned, tied to state, tokenized as `--glow-flesh` / `--penumbra-ink`. A hard offset drop shadow anywhere is still a bug.
 
-**The Functional-Glow Rule.** `text-shadow` exists to keep light type readable over dark imagery and nothing else. It is never applied to type on a solid surface for effect.
+**The Glass-Is-For-Controls Rule.** `backdrop-filter: blur()` is allowed only as a ≤3px functional lift of an *interactive control* off imagery. Frosted panels, glass cards, and decorative blur on surfaces remain prohibited.
+
+**The Functional-Glow Rule.** `text-shadow` exists to keep light type readable over dark imagery, and the nav-link underglow (`--glow-underlay`) to raise a link on hover. Neither is applied to static type on a solid surface for effect.
 
 ## 5. Components
 
-Controls are minimal and instrumental — thin lines, tracked caps, invert-on-hover — so they recede into the atmosphere and let the specimen hold the room.
+Controls are minimal and instrumental — thin lines, tracked caps — that recede into the atmosphere at rest and catch a soft emergent light on attention, so the specimen holds the room.
 
 ### Pills (Work category tabs)
 - **Shape:** Fully rounded (`rounded-full`), padding `8px 22px`.
-- **Active:** Solid `oxidized-graphite` fill, `bone-porcelain` label. The fill slides between pills via a shared `layoutId` spring (stiffness 380, damping 34) — a single dark cell migrating across the taxonomy.
-- **Inactive:** Dashed hairline border (`oxidized-graphite/40`) over a translucent `bone-porcelain/50` fill, `oxidized-graphite` label. Dashed = provisional, not yet selected.
+- **Active:** Solid `oxidized-graphite` lozenge, `bone-porcelain` label, floating on a soft ink penumbra with a faint `flesh-halo` ring (`--penumbra-ink, --flesh-halo`). The fill slides between pills via a shared `layoutId` spring (stiffness 380, damping 34) — a single dark cell migrating across the taxonomy.
+- **Inactive:** A quiet form — hairline `oxidized-graphite/10` border over a `surgical-taupe/5` fill with a 3px `backdrop-blur`, `oxidized-graphite/85` label. On hover/focus it warms (border `surgical-taupe/40`, taupe fill), raises the ink penumbra, and lifts 1px. Settling under glass, not a dashed placeholder.
 - **Label:** 9.5px, uppercase, tracking 0.20em.
 
 ### Arrow Buttons (gallery / Next Project)
 - **Shape:** Square, no radius. 36px default, 38px large.
-- **Style:** 1px border at 30% opacity of the world's ink; transparent fill; glyph in the ink color.
-- **Hover / Focus:** Full color inversion — border color floods the fill, glyph flips to the ground color; `scale 1.05` on hover, `0.94` on tap (200ms). Theme-aware: `light` (dark-on-light) and `dark` (light-on-dark) variants.
+- **Rest:** A faint form — 1px border at 10% of the world's ink, a near-invisible tint fill, glyph at ~70% ink, 3px `backdrop-blur` lifting it off imagery.
+- **Hover / Focus (emergent light):** No invert. The control surfaces — glyph brightens to full ink, border warms, a soft glow rises (`--glow-flesh` in the dark world, `--penumbra-ink` in the light world), and it lifts 1px (`scale 1.03, y -1`; `0.94` on tap). Theme-aware: `dark` (flesh bloom over imagery) and `light` (ink penumbra on porcelain).
 
 ### Navigation
 - **Style:** Single fixed bar, transparent, `px-6 py-7` (`md:px-[52px]`). No background, no border — it floats over whichever world is beneath it.
 - **Typography:** Copperplate, 14px, uppercase, tracking 0.20–0.28em.
-- **States:** Links rest at ~55–65% ink opacity, rise to full on hover (300ms). Color auto-flips via `data-nav-theme` + IntersectionObserver reading the section below.
+- **States:** Links rest at ~55–65% ink opacity and rise to full on hover/focus (300ms), catching a soft flesh underglow behind the label (`--glow-underlay`, `.nav-link::after`) — the type catches the light rather than snapping on. Color auto-flips via `data-nav-theme` + IntersectionObserver reading the section below.
 - **Mobile:** Hamburger (two 1px rules) morphs into an X; opens a full-screen `oxidized-graphite` overlay with large centered Copperplate links (staggered entrance) and social icons at the base. Body scroll locks while open.
 
 ### Signature: The Section Dissolve
@@ -165,5 +169,6 @@ Controls are minimal and instrumental — thin lines, tracked caps, invert-on-ho
 - **Don't** apply **startup/SaaS polish**: no bright/rounded/gradient-accent styling, no hero-metric blocks, no product-landing cadence.
 - **Don't** drift into **gothic/horror kitsch** — no skulls, gore, blood-drip, or Halloween darkness. The unease is clinical and refined.
 - **Don't** go **busy or maximalist**: no clutter, no loud stacking, no animation for its own sake competing with the work.
-- **Don't** add a `box-shadow` anywhere — a drop shadow in this system is a bug (see The No-Shadow Rule).
-- **Don't** use `synthetic-flesh` as a button fill, background, or section device; don't invent a third mid-gray ground; don't set body type above weight 300.
+- **Don't** add a *structural* drop shadow (any hard directional offset simulating a lifted panel) — that's still a bug. Control glow is the only permitted shadow, and only as soft, state-tied emergent light (see The Emergent-Light Rule).
+- **Don't** use `backdrop-blur` as decoration or on surfaces — it's allowed only as a ≤3px lift of an interactive control (see The Glass-Is-For-Controls Rule). No frosted panels, no glass cards.
+- **Don't** use `synthetic-flesh` as a *static* fill, background, or section device (the emergent control glow is a transient, on-attention exception); don't invent a third mid-gray ground; don't set body type above weight 300.

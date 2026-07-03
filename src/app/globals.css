@@ -9,6 +9,15 @@
   --surgical-taupe: #8f786c;
   --oxidized-graphite: #1a1a1c;
   --wet-petroleum: #22262b;
+
+  /* Emergent-light control materials (see DESIGN.md — The Emergent-Light Rule).
+     Controls surface from shadow on attention; the light is flesh-toned in the
+     dark world, an ink penumbra in the light world. Not glassmorphism. */
+  --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+  --glow-flesh: 0 0 26px -6px rgba(201, 164, 143, 0.55), inset 0 0 0 1px rgba(201, 164, 143, 0.22);
+  --penumbra-ink: 0 8px 22px -12px rgba(26, 26, 28, 0.65);
+  --flesh-halo: 0 0 0 4px rgba(201, 164, 143, 0.05);
+  --glow-underlay: rgba(201, 164, 143, 0.42);
 }
 
 html {
@@ -45,5 +54,41 @@ body {
     line-height: 1.6;
     letter-spacing: 0.01em;
     text-wrap: pretty;
+  }
+
+  /* Nav links catch a soft flesh underglow on hover/focus (emergent-light) rather
+     than snapping colour. The bloom sits behind the label; only its opacity
+     animates, so no layout or paint of the text itself. */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 130%;
+    height: 210%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, var(--glow-underlay), transparent 75%);
+    filter: blur(6px);
+    opacity: 0;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-signature);
+  }
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    opacity: 0.55;
+  }
+}
+
+/* Emergent-light controls settle instantly under reduced motion — the lit
+   end-state still applies on hover/focus, only the transition is removed. */
+@media (prefers-reduced-motion: reduce) {
+  .ds-control,
+  .nav-link,
+  .nav-link::after {
+    transition: none !important;
   }
 }

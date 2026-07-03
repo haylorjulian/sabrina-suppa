@@ -40,7 +40,11 @@
       "body": { "displayName": "Body", "purpose": "Cormorant weight 300 — bios, project descriptions, statements. Held at ~60ch." },
       "label": { "displayName": "Label / Instrument", "purpose": "futura-pt geometric caps — descriptors, scroll cue, micro-labels. Tracking ≥0.30em." }
     },
-    "shadows": [],
+    "shadows": [
+      { "name": "glow-flesh", "value": "0 0 26px -6px rgba(201,164,143,0.55), inset 0 0 0 1px rgba(201,164,143,0.22)", "purpose": "Emergent light on dark-world controls (arrow buttons) on hover/focus. Soft, non-directional flesh bloom — not elevation." },
+      { "name": "penumbra-ink", "value": "0 8px 22px -12px rgba(26,26,28,0.65)", "purpose": "Emergent light on light-world controls (pills, light-theme arrows). Soft ink penumbra as objects settle under glass." },
+      { "name": "flesh-halo", "value": "0 0 0 4px rgba(201,164,143,0.05)", "purpose": "Faint flesh ring around the active pill lozenge, paired with penumbra-ink." }
+    ],
     "motion": [
       { "name": "ease-signature", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The single system easing (ease-out-quart family). Every transition and entrance uses it." },
       { "name": "pill-spring", "value": "spring(stiffness 380, damping 34)", "purpose": "The active-pill fill sliding between category tabs (layoutId)." },
@@ -57,41 +61,41 @@
       "name": "Category Pill (active)",
       "kind": "chip",
       "refersTo": "pill-active",
-      "description": "The selected Work category tab — a single dark cell that slides between tabs.",
+      "description": "The selected Work category tab — a dark lozenge floating on a soft ink penumbra with a faint flesh halo; slides between tabs.",
       "html": "<button class=\"ds-pill-active\">Adaptive Flesh</button>",
-      "css": ".ds-pill-active { position: relative; border: none; border-radius: 9999px; padding: 8px 22px; background: var(--oxidized-graphite, #1A1A1C); color: var(--bone-porcelain, #F3EEE8); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; }"
+      "css": ".ds-pill-active { position: relative; border: none; border-radius: 9999px; padding: 8px 22px; background: var(--oxidized-graphite, #1A1A1C); color: var(--bone-porcelain, #F3EEE8); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; box-shadow: 0 8px 22px -12px rgba(26,26,28,0.65), 0 0 0 4px rgba(201,164,143,0.05); }"
     },
     {
       "name": "Category Pill (inactive)",
       "kind": "chip",
       "refersTo": "pill-inactive",
-      "description": "An unselected Work category — dashed, provisional, waiting to be chosen.",
+      "description": "An unselected Work category — a quiet blurred form that warms with a taupe glow and lifts on attention. Settling under glass, not a dashed placeholder.",
       "html": "<button class=\"ds-pill-inactive\">Physical Works</button>",
-      "css": ".ds-pill-inactive { position: relative; border: 1px dashed rgba(26,26,28,0.40); border-radius: 9999px; padding: 8px 22px; background: rgba(243,238,232,0.50); color: var(--oxidized-graphite, #1A1A1C); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; transition: color 0.2s, border-color 0.2s; } .ds-pill-inactive:hover { border-color: rgba(26,26,28,0.7); }"
+      "css": ".ds-pill-inactive { position: relative; border: 1px solid rgba(26,26,28,0.10); border-radius: 9999px; padding: 8px 22px; background: rgba(143,120,108,0.05); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); color: rgba(26,26,28,0.85); font-family: 'futura-pt', 'Copperplate Gothic Light', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.20em; cursor: pointer; transition: background-color 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1); } .ds-pill-inactive:hover, .ds-pill-inactive:focus-visible { border-color: rgba(143,120,108,0.40); background: rgba(143,120,108,0.09); box-shadow: 0 8px 22px -12px rgba(26,26,28,0.65); transform: translateY(-1px); }"
     },
     {
       "name": "Arrow Button (light theme)",
       "kind": "button",
       "refersTo": "arrow-button",
-      "description": "Square gallery/next-project control on a light surface. Inverts fully on hover.",
+      "description": "Square gallery/next-project control on a light surface. Emergent light — surfaces with an ink penumbra on hover, no invert.",
       "html": "<button class=\"ds-arrow-light\" aria-label=\"Next image\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
-      "css": ".ds-arrow-light { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(26,26,28,0.30); border-radius: 0; background: transparent; color: var(--oxidized-graphite, #1A1A1C); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.2s; } .ds-arrow-light:hover { background: var(--oxidized-graphite, #1A1A1C); color: var(--bone-porcelain, #F3EEE8); transform: scale(1.05); } .ds-arrow-light:active { transform: scale(0.94); }"
+      "css": ".ds-arrow-light { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(26,26,28,0.10); border-radius: 0; background: rgba(26,26,28,0.02); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); color: rgba(26,26,28,0.70); cursor: pointer; transition: color 0.45s cubic-bezier(0.22,1,0.36,1), background-color 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1); } .ds-arrow-light:hover, .ds-arrow-light:focus-visible { color: var(--oxidized-graphite, #1A1A1C); border-color: rgba(143,120,108,0.40); background: rgba(143,120,108,0.08); box-shadow: 0 8px 22px -12px rgba(26,26,28,0.65); transform: translateY(-1px) scale(1.03); } .ds-arrow-light:active { transform: scale(0.94); }"
     },
     {
       "name": "Arrow Button (dark theme)",
       "kind": "button",
       "refersTo": "arrow-button",
-      "description": "Same control on a dark surface — light border/glyph, inverts to a bone fill.",
+      "description": "Same control on a dark surface — a faint form that emerges from shadow with a soft flesh bloom on hover, no invert.",
       "html": "<button class=\"ds-arrow-dark\" aria-label=\"Next image\"><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
-      "css": ".ds-arrow-dark { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(243,238,232,0.30); border-radius: 0; background: transparent; color: var(--bone-porcelain, #F3EEE8); cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.2s; } .ds-arrow-dark:hover { background: var(--bone-porcelain, #F3EEE8); color: var(--oxidized-graphite, #1A1A1C); transform: scale(1.05); } .ds-arrow-dark:active { transform: scale(0.94); }"
+      "css": ".ds-arrow-dark { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1px solid rgba(243,238,232,0.10); border-radius: 0; background: rgba(243,238,232,0.03); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); color: rgba(243,238,232,0.70); cursor: pointer; transition: color 0.45s cubic-bezier(0.22,1,0.36,1), background-color 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1); } .ds-arrow-dark:hover, .ds-arrow-dark:focus-visible { color: var(--bone-porcelain, #F3EEE8); border-color: rgba(201,164,143,0.40); background: rgba(201,164,143,0.07); box-shadow: 0 0 26px -6px rgba(201,164,143,0.55), inset 0 0 0 1px rgba(201,164,143,0.22); transform: translateY(-1px) scale(1.03); } .ds-arrow-dark:active { transform: scale(0.94); }"
     },
     {
       "name": "Nav Link",
       "kind": "nav",
       "refersTo": "nav-link",
-      "description": "Floating Copperplate nav link — rests dimmed, rises to full on hover. Color auto-flips per section.",
+      "description": "Floating Copperplate nav link — rests dimmed, rises to full on hover and catches a soft flesh underglow behind the label. Color auto-flips per section.",
       "html": "<a class=\"ds-nav-link\" href=\"#work\">Work</a>",
-      "css": ".ds-nav-link { font-family: 'Copperplate Gothic Light', 'Copperplate', Georgia, serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.20em; color: rgba(26,26,28,0.55); text-decoration: none; transition: color 0.3s; } .ds-nav-link:hover { color: var(--oxidized-graphite, #1A1A1C); }"
+      "css": ".ds-nav-link { position: relative; font-family: 'Copperplate Gothic Light', 'Copperplate', Georgia, serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.20em; color: rgba(243,238,232,0.55); text-decoration: none; transition: color 0.35s cubic-bezier(0.22,1,0.36,1); } .ds-nav-link::after { content: ''; position: absolute; left: 50%; top: 50%; width: 130%; height: 210%; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(201,164,143,0.42), transparent 75%); filter: blur(6px); opacity: 0; z-index: -1; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.22,1,0.36,1); } .ds-nav-link:hover, .ds-nav-link:focus-visible { color: var(--bone-porcelain, #F3EEE8); } .ds-nav-link:hover::after, .ds-nav-link:focus-visible::after { opacity: 0.55; }"
     }
   ],
   "narrative": {
@@ -109,14 +113,15 @@
       { "name": "The One-Skin Rule", "body": "synthetic-flesh is the only accent and it is rare — reserved for moments that reference the body (accents, hovers, the descriptor). It is prohibited as a button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.", "section": "colors" },
       { "name": "The Tracked-Caps Rule", "body": "Every Copperplate and Futura label is uppercase and widely tracked (≥0.20em). Sentence-case display type is forbidden; these fonts are labels, not headlines.", "section": "typography" },
       { "name": "The Hairline Rule", "body": "Cormorant body always runs at weight 300, never bolder. The thin literary line is the reading voice of the whole system; a heavier body weight reads as a different, wrong site.", "section": "typography" },
-      { "name": "The No-Shadow Rule", "body": "Drop shadows are prohibited. If an element needs separation, use a tonal gradient, an opacity dissolve, or the wet-petroleum surface step. A box-shadow anywhere in this system is a bug.", "section": "elevation" },
-      { "name": "The Functional-Glow Rule", "body": "text-shadow exists to keep light type readable over dark imagery and nothing else. It is never applied to type on a solid surface for effect.", "section": "elevation" }
+      { "name": "The Emergent-Light Rule", "body": "Structural drop shadows are prohibited — no directional offset simulating a lifted panel. Shadow is permitted only as emergent light on controls: soft, diffuse, flesh- or ink-toned, tied to state, tokenized as --glow-flesh / --penumbra-ink. A hard offset drop shadow anywhere is still a bug.", "section": "elevation" },
+      { "name": "The Glass-Is-For-Controls Rule", "body": "backdrop-filter: blur() is allowed only as a ≤3px functional lift of an interactive control off imagery. Frosted panels, glass cards, and decorative blur on surfaces remain prohibited.", "section": "elevation" },
+      { "name": "The Functional-Glow Rule", "body": "text-shadow exists to keep light type readable over dark imagery, and the nav-link underglow (--glow-underlay) to raise a link on hover. Neither is applied to static type on a solid surface for effect.", "section": "elevation" }
     ],
     "dos": [
       "Do anchor every surface to one of the two worlds (dark #1A1A1C ground / #F3EEE8 type, or light #F3EEE8 ground / #1A1A1C type) and declare its data-nav-theme.",
       "Do let imagery lead — the specimen holds the room; type, spacing, and motion frame it.",
       "Do keep all display/label type uppercase and tracked ≥0.20em (Copperplate) and body type Cormorant weight 300.",
-      "Do convey depth with tonal gradients, opacity dissolves, and the wet-petroleum step — atmospheric, not stacked.",
+      "Do convey depth with tonal gradients, opacity dissolves, and the wet-petroleum step — atmospheric, not stacked. Controls are the one place light gathers: a soft emergent glow on hover/focus (--glow-flesh dark, --penumbra-ink light).",
       "Do reserve synthetic-flesh (#C9A48F) for rare, body-referencing accents and hovers only.",
       "Do hold body measure at ~60ch and keep the cinematic motion behind a prefers-reduced-motion crossfade fallback."
     ],
@@ -125,8 +130,9 @@
       "Don't apply startup/SaaS polish: no bright/rounded/gradient-accent styling, no hero-metric blocks, no product-landing cadence.",
       "Don't drift into gothic/horror kitsch — no skulls, gore, blood-drip, or Halloween darkness. The unease is clinical and refined.",
       "Don't go busy or maximalist: no clutter, no loud stacking, no animation for its own sake competing with the work.",
-      "Don't add a box-shadow anywhere — a drop shadow in this system is a bug.",
-      "Don't use synthetic-flesh as a button fill, background, or section device; don't invent a third mid-gray ground; don't set body type above weight 300."
+      "Don't add a structural drop shadow (any hard directional offset simulating a lifted panel) — that's still a bug. Control glow is the only permitted shadow, and only as soft, state-tied emergent light.",
+      "Don't use backdrop-blur as decoration or on surfaces — it's allowed only as a ≤3px lift of an interactive control. No frosted panels, no glass cards.",
+      "Don't use synthetic-flesh as a static fill, background, or section device (the emergent control glow is a transient, on-attention exception); don't invent a third mid-gray ground; don't set body type above weight 300."
     ]
   }
 }
