@@ -278,5 +278,29 @@
   "r2://sabrina-suppa-media/adaptiveFlesh/Force_Matrix/16.mp4": {
     "w": 4,
     "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Transfiguration/9.mp4": {
+    "w": 4,
+    "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Pressure_Calibration/1.mp4": {
+    "w": 4,
+    "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Pressure_Calibration/5a.mp4": {
+    "w": 4,
+    "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Pressure_Calibration/17.mp4": {
+    "w": 4,
+    "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Force_Matrix/5a.mp4": {
+    "w": 4,
+    "h": 5
+  },
+  "https://media.sabrinasuppa.com/adaptiveFlesh/Force_Matrix/16.mp4": {
+    "w": 4,
+    "h": 5
   }
 }
