@@ -14,6 +14,8 @@
 // OR an absolute URL (e.g. a Cloudflare R2 URL written by the CMS on upload).
 
 import sizeOf from 'image-size'
+import nextEnv from '@next/env'
+const { loadEnvConfig } = nextEnv
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,6 +24,11 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const ROOT = join(__dirname, '..')
 const CONTENT = join(ROOT, 'src/content')
 const PUBLIC = join(ROOT, 'public')
+
+// This script runs as a plain Node process (via the prebuild/predev npm hooks),
+// so — unlike `next dev`/`next build` — it does not auto-load .env*  files.
+// Load them the same way Next.js does so NEXT_PUBLIC_ASSET_BASE etc. are honored.
+loadEnvConfig(ROOT)
 
 // Base for relative media paths. Point this at the R2 public URL (e.g.
 // https://media.sabrinasuppa.com) once assets are migrated; defaults to the
