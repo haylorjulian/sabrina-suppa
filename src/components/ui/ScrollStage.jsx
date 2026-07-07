@@ -32,7 +32,8 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   const indexRef = useRef(0)
   const lockedRef = useRef(false)
   const reducedRef = useRef(false)
-  const instantRef = useRef(false) // true only for the pre-paint hash seed, so it doesn't crossfade
+  const instantRef = useRef(false) // true only for a seed/hash jump, so it doesn't crossfade
+  const firstSyncRef = useRef(true) // skip the first hash write so an incoming #hash isn't clobbered
 
   // Jump straight to an incoming #hash section on mount, before the browser
   // paints, without animating the transition.
@@ -52,10 +53,11 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   }, [index])
 
   const goTo = useCallback(
-    (target, { force = false } = {}) => {
+    (target, { force = false, instant = false } = {}) => {
       const clamped = Math.max(0, Math.min(n - 1, target))
       if (clamped === indexRef.current) return
       if (lockedRef.current && !force) return
+      if (instant) instantRef.current = true // consumed by the render, reset after commit
       lockedRef.current = true
       indexRef.current = clamped
       setIndex(clamped)
@@ -74,8 +76,15 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!window.matchMedia(DESKTOP).matches) return
-    if (ids[index]) history.replaceState(null, '', `#${ids[index]}`)
     if (themes[index]) setTheme(themes[index])
+    // Don't write the hash on the initial commit: when arriving via /#work the
+    // incoming hash may land a tick after mount, and clobbering it to #home here
+    // would strand the stage on the first section. `onHash` (below) honours it.
+    if (firstSyncRef.current) {
+      firstSyncRef.current = false
+    } else if (ids[index]) {
+      history.replaceState(null, '', `#${ids[index]}`)
+    }
   }, [index, ids, themes, setTheme])
 
   // Input handling + hash navigation. Only the desktop tier takes over native
@@ -105,10 +114,10 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       }
     }
 
-    const onHash = () => {
+    const onHash = ({ instant = false } = {}) => {
       const id = window.location.hash.replace('#', '')
       const i = ids.indexOf(id)
-      if (i >= 0) goTo(i, { force: true })
+      if (i >= 0) goTo(i, { force: true, instant })
     }
 
     // Native scroll is disabled, so in-page #section links (the nav) can't move
@@ -134,7 +143,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       window.addEventListener('hashchange', onHash)
       document.addEventListener('click', onClick)
       if (themes[indexRef.current]) setTheme(themes[indexRef.current])
-      onHash() // honour an initial #section in the URL
+      onHash({ instant: true }) // honour an initial #section in the URL, without a crossfade
     }
     const disengage = () => {
       if (!engaged) return

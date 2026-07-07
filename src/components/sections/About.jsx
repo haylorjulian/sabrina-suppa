@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useNavTheme } from '@/components/NavThemeProvider'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import FitBox from '@/components/work/FitBox'
@@ -20,16 +18,11 @@ const EASE = [0.22, 1, 0.36, 1]
 export default function About({ sectionId }) {
   const { t } = useLanguage()
   const c = t.about
-  const { setTheme } = useNavTheme()
 
-  // Desktop only: About is mounted (hidden) in the mobile tree too, where the nav
-  // must stay dark over the full-bleed image cover below.
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
-      setTheme('light')
-    }
-  }, [setTheme])
-
+  // The nav colour theme is owned solely by ScrollStage (it maps this section's
+  // index → its theme); sections must not set it themselves, or their mount
+  // effects race the stage on first paint. The data-nav-theme marker below stays
+  // as the declarative source of truth.
   return (
     <section
       id={sectionId}

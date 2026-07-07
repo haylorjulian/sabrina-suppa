@@ -49,6 +49,13 @@ export default function ProjectPage({ params }) {
   const prev = flatProjects[(idx - 1 + flatProjects.length) % flatProjects.length]
   const next = flatProjects[(idx + 1) % flatProjects.length]
 
+  // Within-category siblings for the right-side project nav.
+  const siblings = cat.projects.map((p, i) => ({
+    href: `/work/${cat.slug}/${p.slug}`,
+    title: p.title,
+    active: i === pi,
+  }))
+
   return (
     <ProjectGallery
       categoryLabel={cat.label}
@@ -56,6 +63,7 @@ export default function ProjectPage({ params }) {
       media={media}
       prev={prev}
       next={next}
+      siblings={siblings}
     />
   )
 }

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
+import ProjectNav from './ProjectNav'
 
 // ── Gallery density knobs ────────────────────────────────────────────────────
 // The gallery auto-fits images into justified rows (Flickr-style) — it isn't a
@@ -49,7 +50,7 @@ function computeRows(items, width, gap, targetH, maxColumns) {
   return rows
 }
 
-export default function ProjectGallery({ categoryLabel, project, media, prev, next }) {
+export default function ProjectGallery({ categoryLabel, project, media, prev, next, siblings = [] }) {
   // The home route snaps each section to the viewport (html { scroll-snap-type:
   // y mandatory }). A long gallery must scroll freely — neutralise snap here and
   // restore it on unmount.
@@ -80,6 +81,7 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
   return (
     <div className="min-h-[100dvh] bg-oxidized-graphite text-bone-porcelain">
       <ProjectHeader />
+      <ProjectNav siblings={siblings} />
 
       {/* Intro */}
       <motion.header

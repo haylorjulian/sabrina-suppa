@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWork } from '@/hooks/useWork'
-import { useNavTheme } from '@/components/NavThemeProvider'
 import { categoryLanding } from '@/lib/assets'
 import FitBox from '@/components/work/FitBox'
 
@@ -19,19 +17,13 @@ const EASE = [0.22, 1, 0.36, 1]
 export default function Work() {
   const { t } = useLanguage()
   const c = t.work
-  const { setTheme } = useNavTheme()
   const { categoryIndex, activeCategory, selectCategory, projects } = useWork(c.categories)
   const landingImage = categoryLanding[activeCategory.slug]
 
-  // Light right band → nav text goes dark. Desktop only: this section is mounted
-  // (hidden) in the mobile tree too, and mobile's nav must stay dark over its
-  // full-bleed imagery.
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches) {
-      setTheme('light')
-    }
-  }, [setTheme])
-
+  // The nav colour theme is owned solely by ScrollStage (it maps this section's
+  // index → 'light'); sections must not set it themselves, or their mount effects
+  // race the stage on first paint. The data-nav-theme marker below stays as the
+  // declarative source of truth.
   return (
     <section
       data-nav-theme="light"
@@ -99,38 +91,26 @@ export default function Work() {
               ))}
             </motion.div>
 
-            {/* Projects */}
-            <div className="mt-10">
-              <p className="font-copperplate text-[11px] uppercase tracking-[0.28em] text-oxidized-graphite/80">
-                {c.projectsLabel}
-              </p>
-              <motion.ul
-                key={`projects-${activeCategory.slug}`}
+            {/* See Projects → jumps straight to the active category's first gallery */}
+            {projects[0] && (
+              <motion.div
+                key={`see-${activeCategory.slug}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-                className="mt-3 flex flex-col gap-1"
+                className="mt-10"
               >
-                {projects.map((p) => (
-                  <li key={p.slug}>
-                    <Link
-                      href={p.href}
-                      className="group inline-flex items-baseline gap-2.5 border-b border-transparent pb-0.5 transition-colors duration-300 hover:border-oxidized-graphite/25"
-                    >
-                      <span className="font-cormorant text-[clamp(13px,1vw,15px)] font-light italic text-oxidized-graphite/55 transition-colors duration-300 group-hover:text-oxidized-graphite/80">
-                        {p.title}
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="text-[11px] text-oxidized-graphite/35 transition-transform duration-300 group-hover:translate-x-1"
-                      >
-                        →
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </motion.ul>
-            </div>
+                <Link
+                  href={projects[0].href}
+                  className="group inline-flex items-center gap-3 border-b border-oxidized-graphite/30 pb-2 font-copperplate text-[12px] uppercase tracking-[0.24em] text-oxidized-graphite transition-colors duration-300 hover:border-oxidized-graphite"
+                >
+                  {c.seeProjects}
+                  <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+              </motion.div>
+            )}
           </FitBox>
         </div>
       </div>
