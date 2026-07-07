@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import copy from '@/content/copy.json'
+import copy from '@/content/copy.generated.json'
 import { workMedia } from '@/lib/assets'
 import ProjectGallery from '@/components/work/ProjectGallery'
 

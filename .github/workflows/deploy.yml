@@ -1,0 +1,40 @@
+name: Deploy to Cloudflare
+
+# Rebuilds and deploys the site whenever content or code lands on main — including
+# the JSON commits the CMS pushes. Assembles content (prebuild) → next build → wrangler deploy.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # `build` runs `prebuild` (scripts/build-content.mjs) first, then `next build`.
+      - run: npm run build
+        env:
+          # Set this repo Variable to the R2 public URL after migrating media
+          # (e.g. https://media.sabrinasuppa.com). Unset = in-repo /assets path.
+          NEXT_PUBLIC_ASSET_BASE: ${{ vars.NEXT_PUBLIC_ASSET_BASE }}
+
+      - name: Deploy (production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy

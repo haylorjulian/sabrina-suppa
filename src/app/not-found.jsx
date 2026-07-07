@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import copy from '@/content/copy.json'
+import copy from '@/content/copy.generated.json'
 
 export const metadata = {
   title: 'Page not found — Sabrina Suppa',

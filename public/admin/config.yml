@@ -1,0 +1,184 @@
+# Sveltia CMS — content manager for the Sabrina Suppa portfolio.
+# Editors reach it at /admin. Docs: https://sveltiacms.app
+#
+# Placeholders below marked YOUR_… must be filled in once during setup
+# (see CMS_SETUP.md). Media uploads go to Cloudflare R2; the R2 Secret Access
+# Key is NEVER stored here — the CMS prompts each editor for it on first upload.
+
+backend:
+  name: github
+  repo: haylorjulian/sabrina-suppa
+  branch: main
+  # URL of the deployed sveltia-cms-auth Worker that handles GitHub login.
+  base_url: https://sveltia-cms-auth.haylorjulian.workers.dev
+
+site_url: https://sabrinasuppa.com
+
+# Uploaded images/videos are stored in Cloudflare R2, kept out of the git repo.
+media_libraries:
+  cloudflare_r2:
+    account_id: b33721b725b6196dc0c28a226dad3102
+    bucket: sabrina-suppa-media
+    access_key_id: 62654235c28dfcb2a4fbbb7620594fe3
+    public_url: https://media.sabrinasuppa.com
+    prefix: uploads/
+
+# English-only today. To require review before publishing, add:
+#   publish_mode: editorial_workflow
+
+collections:
+  # ------------------------------------------------------------------ Singletons
+  - name: settings
+    label: Site Settings
+    delete: false
+    files:
+      - name: site
+        label: General & SEO
+        file: src/content/site.json
+        fields:
+          - label: SEO / Meta
+            name: meta
+            widget: object
+            fields:
+              - { label: Site title, name: title, widget: string }
+              - { label: Site description, name: description, widget: text }
+          - label: "404 page"
+            name: notFound
+            widget: object
+            fields:
+              - { label: Code, name: code, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: string }
+              - { label: Home link text, name: home, widget: string }
+
+      - name: nav
+        label: Navigation
+        file: src/content/nav.json
+        fields:
+          - { label: Logo text, name: logo, widget: string }
+          - label: Links
+            name: links
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Href, name: href, widget: string }
+          - { label: Menu label, name: menuLabel, widget: string }
+          - { label: Close label, name: closeLabel, widget: string }
+
+      - name: hero
+        label: Hero (Home)
+        file: src/content/hero.json
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Descriptor, name: descriptor, widget: string }
+          - { label: Scroll cue, name: scroll, widget: string }
+          - { label: Background image, name: background, widget: image }
+          - { label: Background alt text, name: bgAlt, widget: string }
+
+      - name: preloader
+        label: Preloader
+        file: src/content/preloader.json
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Descriptor, name: descriptor, widget: string }
+
+      - name: about
+        label: About
+        file: src/content/about.json
+        fields:
+          - { label: Section label, name: sectionLabel, widget: string }
+          - label: Paragraphs
+            name: paragraphs
+            widget: list
+            field: { label: Paragraph, name: paragraph, widget: text }
+          - { label: Background image, name: background, widget: image }
+          - { label: Background alt text, name: bgAlt, widget: string }
+          - label: Social links
+            name: social
+            widget: list
+            fields:
+              - { label: Platform, name: label, widget: select, options: [Email, Instagram, Twitter, Linktree] }
+              - { label: URL, name: href, widget: string }
+
+      - name: work_ui
+        label: Work — buttons & labels
+        file: src/content/work-ui.json
+        fields:
+          - { label: "'of' (image X of Y)", name: imageOf, widget: string }
+          - { label: Next project, name: nextProject, widget: string }
+          - { label: Previous image (screen-reader), name: prevImageLabel, widget: string }
+          - { label: Next image (screen-reader), name: nextImageLabel, widget: string }
+          - { label: Go to image (screen-reader), name: goToImageLabel, widget: string }
+          - { label: See projects, name: seeProjects, widget: string }
+          - { label: Back, name: back, widget: string }
+          - { label: Category label, name: categoryLabel, widget: string }
+          - { label: Description label, name: descriptionLabel, widget: string }
+          - { label: Projects label, name: projectsLabel, widget: string }
+
+  # ------------------------------------------------------------------ Categories
+  - name: categories
+    label: Categories
+    label_singular: Category
+    folder: src/content/categories
+    identifier_field: label
+    slug: "{{fields.slug}}"
+    create: true
+    delete: true
+    extension: json
+    format: json
+    summary: "{{label}}"
+    fields:
+      - label: Slug (URL id)
+        name: slug
+        widget: string
+        hint: Lowercase letters, numbers and dashes only. Used in the page URL — avoid changing it after launch.
+        pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers and dashes only']
+      - { label: Label (display name), name: label, widget: string }
+      - { label: Order (lower shows first), name: order, widget: number, value_type: int, default: 1 }
+      - label: Description (paragraphs)
+        name: description
+        widget: list
+        field: { label: Paragraph, name: paragraph, widget: text }
+      - { label: Cover image — landscape (desktop), name: coverLandscape, widget: image, required: false }
+      - { label: Cover image — vertical (mobile), name: coverVertical, widget: image, required: false }
+      - { label: Landing portrait image, name: landingPortrait, widget: image, required: false }
+
+  # -------------------------------------------------------------------- Projects
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    identifier_field: title
+    slug: "{{fields.slug}}"
+    create: true
+    delete: true
+    extension: json
+    format: json
+    summary: "{{title}}"
+    fields:
+      - label: Slug (URL id)
+        name: slug
+        widget: string
+        hint: Lowercase letters, numbers and dashes only. Used in the page URL — avoid changing it after launch.
+        pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers and dashes only']
+      - { label: Title, name: title, widget: string }
+      - label: Category
+        name: category
+        widget: relation
+        collection: categories
+        value_field: slug
+        search_fields: [label, slug]
+        display_fields: [label]
+      - { label: Order (within category), name: order, widget: number, value_type: int, default: 1 }
+      - label: Description
+        name: description
+        widget: text
+        hint: Leave a blank line between paragraphs.
+      - { label: "'Coming soon' label (leave blank if the project is live)", name: comingSoon, widget: string, required: false }
+      - label: Gallery media (images & videos, shown in this order)
+        name: media
+        widget: list
+        summary: "{{fields.src}}"
+        fields:
+          - { label: Image or video, name: src, widget: file }
+          - { label: Alt text (describe the image), name: alt, widget: string, required: false, default: "" }

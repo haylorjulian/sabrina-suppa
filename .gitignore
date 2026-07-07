@@ -4,3 +4,7 @@
 .env.local
 .DS_Store
 *.log
+
+# Assembled by scripts/build-content.mjs at prebuild/predev — never edit by hand.
+/src/content/copy.generated.json
+/src/lib/media.generated.json

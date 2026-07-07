@@ -3,7 +3,7 @@ import localFont from 'next/font/local'
 import './globals.css'
 import Providers from '@/components/Providers'
 import PageTransitionWrapper from '@/components/PageTransitionWrapper'
-import copy from '@/content/copy.json'
+import copy from '@/content/copy.generated.json'
 
 // Cormorant via next/font ships weights 300+. The mockups call for a 200
 // hairline; 300 is the thinnest available, so font-extralight (200) utilities

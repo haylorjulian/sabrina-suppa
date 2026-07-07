@@ -1,0 +1,16 @@
+{
+  "sectionLabel": "About",
+  "paragraphs": [
+    "Sabrina Suppa is an artist and designer based in London. For the past five years, she has worked as a character artist in major studios within the gaming and film industries such as Framestore, DNEG, MPC and Ninja Theory, where she cultivated her fascination with anatomical studies and the expressive potential of the human body. Alongside her work in the industry, in 2025 she began independently exploring 3D printing and physical fabrication as a personal pursuit, gradually shifting her practice towards a more intimate artistic language.",
+    "Defining herself as a Body Architect, Suppa’s work exists at the intersection of fashion, technology, and geometric abstraction, constructing conceptual structures that reshape and extend the human silhouette. Influenced by an early background in Classical Piano and Interior Design, her work reflects a fascination with the body in its most unrestrained and transformative forms.",
+    "Through sculptural wearables and engineered morphologies, she explores ambivalence in perception: forms that mutate in meaning through subtraction or addition, objects that appear delicate or innocent while concealing latent force beneath their surface. Her practice investigates the tension between visibility and concealment, suggesting that what is hidden often carries the deepest resonance."
+  ],
+  "bgAlt": "Sculptural form lit with golden fracture light, fading into darkness",
+  "background": "aboutPage.jpg",
+  "social": [
+    { "label": "Email", "href": "mailto:info@sabrinasuppa.com" },
+    { "label": "Instagram", "href": "https://instagram.com/sabrinasuppa" },
+    { "label": "Twitter", "href": "https://x.com/suppa_sabrina" },
+    { "label": "Linktree", "href": "https://linktr.ee/sabrinasuppa" }
+  ]
+}

@@ -44,7 +44,7 @@ const ICONS = {
   Linktree: LinktreeIcon,
 }
 
-// Resolve an icon by its social label (from copy.json about.social).
+// Resolve an icon by its social label (from src/content/about.json → social).
 export function SocialIcon({ label, className }) {
   const Cmp = ICONS[label]
   return Cmp ? <Cmp className={className} /> : null

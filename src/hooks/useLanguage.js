@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useMemo } from 'react'
-import copy from '@/content/copy.json'
+import copy from '@/content/copy.generated.json'
 
 const LanguageContext = createContext(null)
 

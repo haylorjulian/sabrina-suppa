@@ -1,0 +1,14 @@
+{
+  "slug": "adaptive-flesh",
+  "label": "Adaptive Flesh",
+  "order": 1,
+  "description": [
+    "An ongoing research exploring anatomical architectures designed for bodies in flux.",
+    "We no longer inhabit a singular, coherent reality. Contemporary existence unfolds across overlapping experiences in digital, biological, syntethic environments. Our perception of these realities frequently contradict one another, producing states of instability and cognitive dissonance - Adaptive Flesh emerges as a response to this condition.",
+    "This project explores how engineered morphologies can augment the body with integrated capacities for protection, calibration and resistance, functioning as adaptive interfaces between these changing landscapes.",
+    "Through a series of experimental artefacts, wearable structures, and material investigations, the aim of this research is to examine strategies of transformation and controlled adaptation, drawing inspiration from natural defense mechanisms and computational logic in technology."
+  ],
+  "coverLandscape": "categories/adaptive-flesh-landscape.jpg",
+  "coverVertical": "categories/adaptive-flesh-vertical.jpg",
+  "landingPortrait": "adaptiveFlesh/Transfiguration/7.jpg"
+}

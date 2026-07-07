@@ -51,12 +51,20 @@ Notes (not defects):
 
 ---
 
+## Content & CMS
+
+Content is edited through the git-based CMS at **`/admin`** (Sveltia CMS) — see
+[CMS_SETUP.md](CMS_SETUP.md). The editable source of truth lives in `src/content/` (singletons plus
+per-category and per-project files); `scripts/build-content.mjs` assembles it into the
+`*.generated.json` files the app imports (run automatically on `dev`/`build`). Do not edit the
+generated files by hand.
+
 ## Pre-Launch Checklist
 
-- [ ] Replace `[PLACEHOLDER: ...]` project titles in `src/content/copy.json` (Work section — Adaptive Flesh ×3 + Physical Works)
-- [ ] Swap the Hero background for the final MP4 video when ready (currently `homePage.jpg`)
-- [ ] Rename asset files containing spaces (see SUMMARY.md) and update the encoded paths in `assets.js`
+- [ ] Swap the Hero background for the final MP4 video when ready (currently `homePage.jpg` in `src/content/hero.json`)
+- [ ] Complete the one-time CMS setup (R2, GitHub OAuth Worker, deploy secrets) — see [CMS_SETUP.md](CMS_SETUP.md)
 - [ ] Verify fonts load in production (`npm run build && npm start`)
 
-> Italian (EN/IT) toggle removed for now — `copy.json` is English-only. Social links and category/project descriptions are filled in with real copy.
+> English-only for now — the content is structured under an `en` locale for future languages. Social
+> links and category/project descriptions are filled in with real copy.
 - [ ] Run a Lighthouse audit

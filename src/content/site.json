@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "title": "Sabrina Suppa — Body Architect",
+    "description": "Sabrina Suppa is a body architect exploring adaptive morphologies — engineered structures that reshape and extend the human silhouette."
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Page not found",
+    "body": "The page you were looking for has shifted out of frame.",
+    "home": "Return home"
+  }
+}
