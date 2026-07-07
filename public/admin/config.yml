@@ -19,7 +19,7 @@ media_libraries:
   cloudflare_r2:
     account_id: b33721b725b6196dc0c28a226dad3102
     bucket: sabrina-suppa-media
-    access_key_id: 62654235c28dfcb2a4fbbb7620594fe3
+    access_key_id: b2764329b9f5e3b9c038da0a3693de91
     public_url: https://media.sabrinasuppa.com
     prefix: uploads/
 
