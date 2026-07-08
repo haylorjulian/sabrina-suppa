@@ -1,7 +1,7 @@
 {
   "name": "Sabrina Suppa",
-  "descriptor": "Body Architect · Exploring Adaptive Morphologies",
+  "descriptor": "Body Architect",
   "scroll": "Scroll",
-  "bgAlt": "Sculptural form in dark, cinematic light",
-  "background": "homePage.jpg"
+  "background": "https://media.sabrinasuppa.com/uploads/homePage.jpg",
+  "bgAlt": "Sculptural form in dark, cinematic light"
 }

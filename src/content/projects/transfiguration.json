@@ -1,27 +1,82 @@
 {
   "slug": "transfiguration",
-  "title": "Transfiguration, 2026",
+  "title": "Transfiguration",
   "category": "adaptive-flesh",
   "order": 1,
-  "description": "A sequence of developmental states compressed into a single organism, where emergence, decay, protection, and growth occur simultaneously. The surrounding membrane functions as a regulatory interface: a temporary structure that isolates the body from external pressures while allowing profound internal reorganization to take place. Within the framework of Adaptive Flesh, the chrysalis is understood not as a symbol of rebirth, but as a technology of adaptation — a protective system through which the body acquires the capacity to navigate changing realities.",
+  "description": "This project shows a sequence of trasitional states compressed into a single organism: the surrounding membrane acts as a regulatory interface that shields the body from external pressure while enabling profound internal reorganization.\nThe process of \"ecdysis\" is metaphor of a trasformation that can only occur through rupture in order to take place.\n\nHere is an aesthetic exploration of the results of these ruptures.",
+  "comingSoon": "",
   "media": [
-    { "src": "adaptiveFlesh/Transfiguration/1.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/2.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/3.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/4.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/5.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/7.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/8.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/9.mp4", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/10.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/11.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/12.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/13.JPG", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/14.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/15.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/16.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/17.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/18.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Transfiguration/19.jpg", "alt": "" }
+    {
+      "src": "adaptiveFlesh/Transfiguration/2.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/1.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/3.jpg",
+      "alt": "Here is an aesthetic exploration of the results of these ruptures."
+    },
+    {
+      "src": "https://media.sabrinasuppa.com/uploads/side_07_v03.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/5.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/7.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/8.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/9.mp4",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/10.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/11.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/12.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/13.JPG",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/14.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/15.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/16.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/17.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/18.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/19.jpg",
+      "alt": ""
+    }
   ]
 }
