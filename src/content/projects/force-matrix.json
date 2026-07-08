@@ -1,26 +1,78 @@
 {
   "slug": "force-matrix",
-  "title": "Force Matrix, 2026",
+  "title": "Force Matrix",
   "category": "adaptive-flesh",
   "order": 3,
   "description": "Explores the coexistence of protection and latent force within a single anatomical system. An external armor conceals an internal structure that is continuously present yet not visible at first sight. The work proposes that defense and offense are not opposites but reciprocal states of the same morphology. What protects also possesses the potential to act. What appears dormant retains the capacity for activation.",
+  "comingSoon": "",
   "media": [
-    { "src": "adaptiveFlesh/Force_Matrix/1.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/2.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/3.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/4.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/5.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/5a.mp4", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/6.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/7.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/8.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/9.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/10.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/11.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/12.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/13.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/14.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/15.jpg", "alt": "" },
-    { "src": "adaptiveFlesh/Force_Matrix/16.mp4", "alt": "" }
+    {
+      "src": "adaptiveFlesh/Force_Matrix/1.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/2.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/3.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/4.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/5.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/5a.mp4",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/6.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/7.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/8.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/9.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/10.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/11.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/12.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/13.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/14.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/15.jpg",
+      "alt": ""
+    },
+    {
+      "src": "adaptiveFlesh/Force_Matrix/16.mp4",
+      "alt": ""
+    }
   ]
 }
