@@ -56,6 +56,16 @@ body {
     text-wrap: pretty;
   }
 
+  /* Shared description type for the desktop Work + About panels. Fixed size (no
+     per-content scaling), so both panels render identically and stay stable on
+     resize. Tuned so the longer About copy fits its box at common laptop sizes. */
+  .section-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    text-wrap: pretty;
+  }
+
   /* Nav links catch a soft flesh underglow on hover/focus (emergent-light) rather
      than snapping colour. The bloom sits behind the label; only its opacity
      animates, so no layout or paint of the text itself. */

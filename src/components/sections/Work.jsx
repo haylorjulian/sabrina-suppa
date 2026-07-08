@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWork } from '@/hooks/useWork'
 import { categoryLanding } from '@/lib/assets'
-import FitBox from '@/components/work/FitBox'
 import ShimmerLine from '@/components/ui/ShimmerLine'
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -55,15 +54,14 @@ export default function Work() {
           </motion.h2>
         </div>
 
-        {/* Right — a fixed-size box (dynamic to the viewport). The category toggle
-            is pinned to the top and "See Projects" to the bottom, so they never
-            shift between categories; the description is vertically centred in the
-            space between them, scaled to fit (FitBox) so its length never moves
-            the pinned controls. */}
-        <div className="relative h-full">
-          <div className="absolute left-1/2 top-1/2 flex h-[65%] w-[65%] -translate-x-1/2 -translate-y-1/2 flex-col 2xl:h-[60%] 2xl:w-[55%]">
-            {/* Category toggle — pinned top */}
-            <div className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-1">
+        {/* Right — a content-sized box, centred in the column. Width is capped at
+            a fixed measure (~60ch) and height derives from the tallest category
+            description, so line lengths and the toggle↔description↔button gaps
+            stay as designed at every viewport size instead of inflating with it. */}
+        <div className="flex h-full items-center justify-center">
+          <div className="flex w-[min(60ch,75%)] flex-col">
+            {/* Category toggle — pinned above the description block */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
               {c.categories.map((cat, i) => (
                 <button
                   key={cat.slug}
@@ -81,29 +79,41 @@ export default function Work() {
               ))}
             </div>
 
-            {/* Description — centred in the flexible middle, scaled to fit so it
-                never displaces the pinned controls (capped in the CMS to the
-                Adaptive Flesh length). */}
-            <FitBox className="min-h-0 w-full flex-1">
-              <motion.p
-                key={`desc-${activeCategory.slug}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-                className="body-copy whitespace-pre-line font-light text-oxidized-graphite/70"
-              >
-                {activeCategory.description}
-              </motion.p>
-            </FitBox>
+            {/* Description — every category renders stacked into the same grid
+                cell, so the cell always reserves the tallest description's height
+                and the toggle / See Projects never move on switch; the active one
+                cross-dissolves in place. Fixed type (shared with About), no
+                scaling. The margins are the toggle↔description↔button rhythm —
+                steady on normal screens, compressing only on short viewports. */}
+            <div className="my-[clamp(2.5rem,6svh,4rem)] grid">
+              {c.categories.map((cat, i) => (
+                <motion.div
+                  key={cat.slug}
+                  initial={false}
+                  animate={{ opacity: i === categoryIndex ? 1 : 0 }}
+                  transition={{ duration: 0.7, ease: EASE }}
+                  aria-hidden={i !== categoryIndex}
+                  className={`col-start-1 row-start-1 w-full space-y-3 self-center ${
+                    i === categoryIndex ? '' : 'pointer-events-none'
+                  }`}
+                >
+                  {cat.description.split('\n\n').map((para, j) => (
+                    <p key={j} className="section-desc font-light text-oxidized-graphite/70">
+                      {para}
+                    </p>
+                  ))}
+                </motion.div>
+              ))}
+            </div>
 
-            {/* See Projects — pinned bottom; jumps to the category's first gallery */}
+            {/* See Projects — pinned below the description block; jumps to the
+                category's first gallery */}
             {projects[0] && (
               <motion.div
                 key={`see-${activeCategory.slug}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-                className="shrink-0"
               >
                 <Link href={projects[0].href} className="group inline-flex flex-col items-start gap-2">
                   <span className="inline-flex items-center gap-3 font-copperplate text-[12px] uppercase tracking-[0.18em] text-oxidized-graphite">

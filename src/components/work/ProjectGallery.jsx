@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
-import { setSectionTarget } from '@/lib/sectionTarget'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
@@ -23,7 +22,7 @@ import ProjectNav from './ProjectNav'
 //   GAP — pixel gutter between images (matches the gap-2 class below).
 // (Container padding `px-4 sm:px-6 lg:px-10` also nudges density: more padding →
 //  narrower usable width → slightly fewer per row.)
-const TARGET_ROW_HEIGHT = 900
+const TARGET_ROW_HEIGHT = 1000
 const MAX_COLUMNS = 4
 const GAP = 8 // px, matches the gap-2 gutter
 const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring
@@ -148,13 +147,6 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
           >
             <span className="text-[10px] uppercase tracking-[0.3em] text-bone-porcelain/35">Previous</span>
             <span className="font-cormorant text-lg font-light italic">{prev.title}</span>
-          </Link>
-          <Link
-            href="/#work"
-            onClick={() => setSectionTarget('work')}
-            className="shrink-0 text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/45 transition-colors duration-300 hover:text-bone-porcelain"
-          >
-            Index
           </Link>
           <Link
             href={next.href}

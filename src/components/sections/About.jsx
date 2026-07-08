@@ -6,7 +6,6 @@ import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
-import FitBox from '@/components/work/FitBox'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -32,9 +31,11 @@ export default function About({ sectionId }) {
     >
       {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
-        {/* Left — content in a centred, shrink-to-fit box (75% of the panel) */}
-        <div className="relative h-full">
-          <FitBox className="absolute left-1/2 top-1/2 h-[65%] w-[65%] -translate-x-1/2 -translate-y-1/2 2xl:h-[60%] 2xl:w-[55%]">
+        {/* Left — content-sized box, centred in the column. Width is capped at the
+            same fixed measure as Work (~60ch) so line lengths and spacing hold at
+            every viewport size. Fixed type (shared with Work), no scaling. */}
+        <div className="flex h-full items-center justify-center">
+          <div className="flex w-[min(60ch,75%)] flex-col">
             <motion.p
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -51,7 +52,7 @@ export default function About({ sectionId }) {
               className="mt-8 space-y-3"
             >
               {c.paragraphs.map((para, i) => (
-                <p key={i} className="body-copy whitespace-pre-line font-light text-oxidized-graphite/70">
+                <p key={i} className="section-desc whitespace-pre-line font-light text-oxidized-graphite/70">
                   {para}
                 </p>
               ))}
@@ -77,7 +78,7 @@ export default function About({ sectionId }) {
                 </li>
               ))}
             </motion.ul>
-          </FitBox>
+          </div>
         </div>
 
         {/* Right — full-viewport-height image */}
