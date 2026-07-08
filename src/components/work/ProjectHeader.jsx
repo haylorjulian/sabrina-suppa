@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { setSectionTarget } from '@/lib/sectionTarget'
 
 // Lightweight fixed header for standalone project routes (the global <Nav> is
 // mounted only on the home route). Dark theme — galleries sit on graphite.
@@ -18,6 +19,7 @@ export default function ProjectHeader() {
         </Link>
         <Link
           href="/#work"
+          onClick={() => setSectionTarget('work')}
           className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-bone-porcelain/60 transition-colors duration-300 hover:text-bone-porcelain"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4" aria-hidden="true">

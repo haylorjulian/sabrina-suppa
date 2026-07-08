@@ -4,9 +4,8 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
-import { usePreloader } from '@/hooks/usePreloader'
+import { usePreloaderState } from '@/components/PreloaderProvider'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
-import Preloader from '@/components/ui/Preloader'
 import ShimmerLine from '@/components/ui/ShimmerLine'
 
 // `sectionId` is set only by the mobile tree so the nav's #home anchor resolves
@@ -14,22 +13,19 @@ import ShimmerLine from '@/components/ui/ShimmerLine'
 // omits the id to avoid duplicate ids across the two trees.
 export default function Hero({ sectionId }) {
   const { t } = useLanguage()
-  const { loading, instant } = usePreloader()
+  const { loading } = usePreloaderState()
   const c = t.hero
   // "Body Architect · Exploring Adaptive Morphologies" → two lines on mobile
   const descParts = c.descriptor.split(' · ')
   const shadow = '[text-shadow:0_1px_8px_rgba(26,26,28,0.7)]'
 
   return (
-    <>
-      <Preloader loading={loading} instant={instant} />
-
-      <section
-        id={sectionId}
-        data-nav-theme="dark"
-        aria-label="Hero"
-        className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
-      >
+    <section
+      id={sectionId}
+      data-nav-theme="dark"
+      aria-label="Hero"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+    >
         {/* Full-bleed background (upgrade to MP4 when supplied) */}
         <Image
           src={assets.hero.background}
@@ -98,7 +94,6 @@ export default function Hero({ sectionId }) {
           </span>
           <ShimmerLine tone="light" className="h-16" />
         </motion.div>
-      </section>
-    </>
+    </section>
   )
 }

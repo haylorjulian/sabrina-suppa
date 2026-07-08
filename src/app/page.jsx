@@ -1,5 +1,6 @@
 import Nav from '@/components/ui/Nav'
 import ScrollStage from '@/components/ui/ScrollStage'
+import PreloaderProvider from '@/components/PreloaderProvider'
 import Hero from '@/components/sections/Hero'
 import Work from '@/components/sections/Work'
 import WorkMobile from '@/components/sections/WorkMobile'
@@ -7,7 +8,7 @@ import About from '@/components/sections/About'
 
 export default function Home() {
   return (
-    <>
+    <PreloaderProvider>
       <Nav />
       <main>
         {/* Desktop (≥1024px) — triggered slideshow that crossfades one section at
@@ -28,6 +29,6 @@ export default function Home() {
           <About sectionId="about" />
         </div>
       </main>
-    </>
+    </PreloaderProvider>
   )
 }

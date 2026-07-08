@@ -3,6 +3,7 @@
 import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavTheme } from '@/components/NavThemeProvider'
+import { peekSectionTarget } from '@/lib/sectionTarget'
 
 const DURATION = 1.5 // seconds, section-to-section crossfade
 const COOLDOWN = 250 // ms after a fade before the next trigger is accepted
@@ -35,15 +36,45 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
   const instantRef = useRef(false) // true only for a seed/hash jump, so it doesn't crossfade
   const firstSyncRef = useRef(true) // skip the first hash write so an incoming #hash isn't clobbered
 
-  // Jump straight to an incoming #hash section on mount, before the browser
-  // paints, without animating the transition.
+  // Seed the starting section, before paint, so "Back to work" lands on Work with
+  // no Hero flash and no theme desync. A client navigation stashes its target
+  // synchronously at click time (see sectionTarget) — reliable, unlike the URL
+  // hash, which Next applies a frame late and without a `hashchange` event. Fall
+  // back to the hash for full-page deep links (e.g. a bookmarked /#work).
   useIsomorphicLayoutEffect(() => {
-    const i = ids.indexOf(window.location.hash.replace('#', ''))
+    const target = peekSectionTarget() ?? window.location.hash.replace('#', '')
+    const i = ids.indexOf(target)
+    if (process.env.NODE_ENV !== 'production')
+      console.debug('[ScrollStage] mount seed', { target, index: i, hash: window.location.hash })
     if (i > 0) {
       instantRef.current = true
       indexRef.current = i
-      setIndex(i)
+      setIndex(i) // theme follows via the sync effect below
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Settle watchdog: for ~1.2s after mount, re-assert the seeded section if the
+  // stage is still (or back) on the first slide while a target is pending — this
+  // catches every lifecycle crack at once: a StrictMode effect replay, Next
+  // committing the URL after our mount effects, or a remount that missed the
+  // seed. It only ever corrects 0 → target, and user input is locked for longer
+  // than this window after any move, so it can never fight a deliberate scroll.
+  useEffect(() => {
+    let raf
+    const deadline = performance.now() + 1200
+    const tick = () => {
+      const target = peekSectionTarget() ?? window.location.hash.replace('#', '')
+      const i = ids.indexOf(target)
+      if (i > 0 && indexRef.current === 0) {
+        if (process.env.NODE_ENV !== 'production')
+          console.debug('[ScrollStage] watchdog re-seed →', target)
+        goTo(i, { force: true, instant: true })
+      }
+      if (performance.now() < deadline) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -61,7 +92,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       lockedRef.current = true
       indexRef.current = clamped
       setIndex(clamped)
-      const dur = reducedRef.current ? 0 : DURATION
+      const dur = reducedRef.current || instant ? 0 : DURATION // instant jumps don't animate, so don't hold the input lock
       window.setTimeout(() => {
         lockedRef.current = false
       }, dur * 1000 + COOLDOWN)

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
+import { setSectionTarget } from '@/lib/sectionTarget'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
@@ -150,6 +151,7 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
           </Link>
           <Link
             href="/#work"
+            onClick={() => setSectionTarget('work')}
             className="shrink-0 text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/45 transition-colors duration-300 hover:text-bone-porcelain"
           >
             Index
