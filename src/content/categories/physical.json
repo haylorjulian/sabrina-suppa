@@ -2,11 +2,7 @@
   "slug": "physical",
   "label": "Physical Works",
   "order": 2,
-  "description": [
-    "Past traces emerges as “ghosts of intentions”, echoing through our present.",
-    "The remains, in this context, are imprints of desires and experiences hardened by time, yet never fully silent. They speak to what once was, but also to what was meant to be or could still become. An aesthetic of absence, delay and recurrence, where lost memories remain suspended in a perpetual state of becoming.",
-    "3D printed sculptural wearable in elastic TPU."
-  ],
+  "description": "Past traces emerges as “ghosts of intentions”, echoing through our present.\n\nThe remains, in this context, are imprints of desires and experiences hardened by time, yet never fully silent. They speak to what once was, but also to what was meant to be or could still become. An aesthetic of absence, delay and recurrence, where lost memories remain suspended in a perpetual state of becoming.\n\n3D printed sculptural wearable in elastic TPU.",
   "coverLandscape": "categories/physical-landscape.jpg",
   "coverVertical": "categories/physical-vertical.jpg",
   "landingPortrait": "physicalworks/Remains/3.JPG"

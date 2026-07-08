@@ -34,7 +34,7 @@ export default function About({ sectionId }) {
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
         {/* Left — content in a centred, shrink-to-fit box (75% of the panel) */}
         <div className="relative h-full">
-          <FitBox className="absolute left-1/2 top-1/2 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2">
+          <FitBox className="absolute left-1/2 top-1/2 h-[65%] w-[65%] -translate-x-1/2 -translate-y-1/2 2xl:h-[60%] 2xl:w-[55%]">
             <motion.p
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}

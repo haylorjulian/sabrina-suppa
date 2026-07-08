@@ -135,10 +135,11 @@ collections:
         pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers and dashes only']
       - { label: Label (display name), name: label, widget: string }
       - { label: Order (lower shows first), name: order, widget: number, value_type: int, default: 1 }
-      - label: Description (paragraphs)
+      - label: Description
         name: description
-        widget: list
-        field: { label: Paragraph, name: paragraph, widget: text }
+        widget: text
+        hint: "Leave a blank line between paragraphs. Max 923 characters — the length of the Adaptive Flesh description, so the Work panel's pinned controls never shift."
+        pattern: ['^[\s\S]{0,923}$', 'Keep the description to 923 characters or fewer (the Adaptive Flesh length).']
       - { label: Cover image — landscape (desktop), name: coverLandscape, widget: image, required: false }
       - { label: Cover image — vertical (mobile), name: coverVertical, widget: image, required: false }
       - { label: Landing portrait image, name: landingPortrait, widget: image, required: false }

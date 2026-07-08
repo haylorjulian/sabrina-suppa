@@ -50,16 +50,12 @@ export default function WorkMobile() {
                 {cat.label}
               </motion.h2>
 
-              <motion.div variants={fadeInUp} className="max-w-[46ch] space-y-3">
-                {(cat.description || []).map((para, i) => (
-                  <p
-                    key={i}
-                    className="body-copy whitespace-pre-line font-light text-bone-porcelain/85"
-                  >
-                    {para}
-                  </p>
-                ))}
-              </motion.div>
+              <motion.p
+                variants={fadeInUp}
+                className="body-copy max-w-[46ch] whitespace-pre-line font-light text-bone-porcelain/85"
+              >
+                {cat.description}
+              </motion.p>
 
               <motion.div variants={fadeInUp} className="pt-2">
                 <Link
