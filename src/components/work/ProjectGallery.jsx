@@ -22,7 +22,7 @@ import ProjectNav from './ProjectNav'
 //   GAP — pixel gutter between images (matches the gap-2 class below).
 // (Container padding `px-4 sm:px-6 lg:px-10` also nudges density: more padding →
 //  narrower usable width → slightly fewer per row.)
-const TARGET_ROW_HEIGHT = 1000
+const TARGET_ROW_HEIGHT = 1500
 const MAX_COLUMNS = 4
 const GAP = 8 // px, matches the gap-2 gutter
 const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring

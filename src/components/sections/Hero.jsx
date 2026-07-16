@@ -26,14 +26,16 @@ export default function Hero({ sectionId }) {
       aria-label="Hero"
       className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
-        {/* Full-bleed background (upgrade to MP4 when supplied) */}
+        {/* Background at intrinsic pixel size — object-none renders the file 1:1
+            with no resampling (crops when the viewport is smaller, shows the
+            wet-petroleum ground when larger). No filters/shadows touch it. */}
         <Image
           src={assets.hero.background}
           alt={c.bgAlt}
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-none object-center"
         />
 
         {/* Mobile: centred name + descriptor on three lines */}

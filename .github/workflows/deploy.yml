@@ -31,6 +31,10 @@ jobs:
           # Set this repo Variable to the R2 public URL after migrating media
           # (e.g. https://media.sabrinasuppa.com). Unset = in-repo /assets path.
           NEXT_PUBLIC_ASSET_BASE: ${{ vars.NEXT_PUBLIC_ASSET_BASE }}
+          # Inlined at build time by Next.js; gates the bugdrop widget (see
+          # src/app/layout.jsx) out of this production build. Leave unset for
+          # any other build (local dev, staging) so the widget stays available.
+          NEXT_PUBLIC_ENV: production
 
       - name: Deploy (production)
         uses: cloudflare/wrangler-action@v3

@@ -1,0 +1,42 @@
+name: Deploy to Cloudflare (staging)
+
+# Rebuilds and deploys the site to the staging Worker (sabrina-suppa-staging,
+# see wrangler.jsonc `env.staging`) whenever content or code lands on `staging`.
+# NEXT_PUBLIC_ENV is intentionally left unset here (unlike deploy.yml) so
+# preview-only features like the bugdrop widget stay enabled.
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # `build` runs `prebuild` (scripts/build-content.mjs) first, then `next build`.
+      - run: npm run build
+        env:
+          # Set this repo Variable to the R2 public URL after migrating media
+          # (e.g. https://media.sabrinasuppa.com). Unset = in-repo /assets path.
+          NEXT_PUBLIC_ASSET_BASE: ${{ vars.NEXT_PUBLIC_ASSET_BASE }}
+
+      - name: Deploy (staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env staging
