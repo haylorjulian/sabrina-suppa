@@ -58,7 +58,7 @@ export default function Work() {
             a fixed measure (~60ch) and height derives from the tallest category
             description, so line lengths and the toggle↔description↔button gaps
             stay as designed at every viewport size instead of inflating with it. */}
-        <div className="flex h-full items-center justify-center">
+        <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#b7b7b7] to-[#86858b]">
           <div className="flex w-[min(60ch,75%)] flex-col">
             {/* Category toggle — pinned above the description block */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-1">

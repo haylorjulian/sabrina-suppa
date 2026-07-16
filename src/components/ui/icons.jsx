@@ -37,11 +37,21 @@ export function LinktreeIcon({ className = 'h-5 w-5' }) {
   )
 }
 
+// LinkedIn logo
+export function LinkedInIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M4.983 3.5C4.983 4.881 3.87 6 2.5 6S.017 4.881.017 3.5 1.13 1 2.5 1s2.483 1.119 2.483 2.5zM.238 8.25h4.524V23H.238V8.25zM8.19 8.25h4.337v2.014h.062c.604-1.144 2.08-2.35 4.28-2.35 4.576 0 5.42 3.012 5.42 6.93V23h-4.522v-6.24c0-1.489-.027-3.404-2.074-3.404-2.076 0-2.394 1.622-2.394 3.298V23H8.19V8.25z" />
+    </svg>
+  )
+}
+
 const ICONS = {
   Email: EmailIcon,
   Instagram: InstagramIcon,
   Twitter: TwitterIcon,
   Linktree: LinktreeIcon,
+  LinkedIn: LinkedInIcon,
 }
 
 // Resolve an icon by its social label (from src/content/about.json → social).

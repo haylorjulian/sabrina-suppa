@@ -142,7 +142,14 @@ const copy = {
     notFound: site.notFound,
     nav,
     preloader,
-    hero: { name: hero.name, descriptor: hero.descriptor, scroll: hero.scroll, bgAlt: hero.bgAlt },
+    // `background` is deliberately absent — it routes to media.generated.json below.
+    hero: {
+      name: hero.name,
+      scroll: hero.scroll,
+      bgAlt: hero.bgAlt,
+      connect: hero.connect,
+      footer: hero.footer,
+    },
     work: { ...workUi, categories: copyCategories },
     about: {
       sectionLabel: about.sectionLabel,

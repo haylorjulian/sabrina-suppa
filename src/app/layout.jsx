@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${copperplate.variable}`}>
       <head>
-        {/* Adobe Fonts (Typekit) — provides "futura-pt" for the hero descriptor */}
+        {/* Adobe Fonts (Typekit) — provides "futura-pt" for the Descriptor/Label tier */}
         <link rel="stylesheet" href="https://use.typekit.net/kbo0jje.css" />
       </head>
       <body className="font-cormorant bg-oxidized-graphite text-bone-porcelain antialiased">

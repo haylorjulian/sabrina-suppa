@@ -1,7 +1,12 @@
 {
   "name": "Sabrina Suppa",
-  "descriptor": "Body Architect",
   "scroll": "Scroll",
   "background": "https://media.sabrinasuppa.com/uploads/homePage.jpg",
-  "bgAlt": "Sculptural form in dark, cinematic light"
+  "bgAlt": "Sculptural form in dark, cinematic light",
+  "connect": { "label": "Connect", "href": "mailto:info@sabrinasuppa.com" },
+  "footer": {
+    "location": "London, UK",
+    "copyright": "© 2026 Sabrina Suppa · All rights reserved",
+    "email": "info@sabrinasuppa.com"
+  }
 }

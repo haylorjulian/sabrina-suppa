@@ -5,11 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
+import { DURATION } from '@/components/ui/ScrollStage'
 import { InstagramIcon, LinktreeIcon, SocialIcon } from '@/components/ui/icons'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
 // section currently under the bar — sections declare data-nav-theme="dark|light"
 // (dark bg → light text, light bg → dark text).
+//
+// The bar hides itself on the desktop hero, which carries its own chrome (a right
+// rail + footer strip). Below lg there is no stage, so it always shows.
 const overlayContainer = {
   hidden: { opacity: 0 },
   visible: {
@@ -27,7 +31,7 @@ const overlayItem = {
 export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
-  const { theme } = useNavTheme()
+  const { theme, section } = useNavTheme()
 
   // Lock page scroll while the full-screen menu is open.
   useEffect(() => {
@@ -47,9 +51,19 @@ export default function Nav() {
 
   const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
 
+  // The hero owns its own chrome, so the bar steps aside there — fading against
+  // the stage's crossfade so the two move as one. `invisible` (not just opacity)
+  // is what takes the links out of the focus order while they're hidden.
+  const hiddenOnHero = section === 'home'
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <nav className="flex items-center justify-between px-6 py-7 md:px-[52px]">
+      <nav
+        style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
+        className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[52px] ${
+          hiddenOnHero ? 'lg:invisible lg:opacity-0' : ''
+        }`}
+      >
         <a
           href="#home"
           onClick={closeMenu}

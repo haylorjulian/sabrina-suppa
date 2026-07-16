@@ -34,6 +34,7 @@ spacing:
   md: "24px"
   lg: "36px"
   xl: "52px"
+  hero-chrome: "32px"
 components:
   pill-active:
     backgroundColor: "{colors.oxidized-graphite}"
@@ -106,9 +107,9 @@ A five-tone body-and-instrument palette: two grounds at the extremes (near-black
 **Character:** An engraved glyphic display against a hairline literary serif, punctuated by cold geometric caps. Copperplate labels the specimen like a brass museum plate; Cormorant is the reading voice — thin, elegant, slightly uneasy; Futura is the instrument reading. Three families, each doing one job, none interchangeable.
 
 ### Hierarchy
-- **Display / Name** (Copperplate 300, `clamp(28px, 7.5vw, 46px)`, line-height 1.1, tracking 0.08em): The artist name in the Hero and preloader, and the large ABOUT plate. Always uppercase, always tracked. The engraved plaque.
+- **Display / Name** (Copperplate 300, `clamp(28px, 7.5vw, 46px)`, line-height 1.1, tracking 0.08em): The artist name in the Hero, and the large ABOUT plate. Always uppercase, always tracked. The engraved plaque. The desktop Hero wordmark is the one exception, held at `clamp(24px, 3.4vw, 37px)`: it sits bottom-left against the right rail and the footer strip, and at the full display scale it overpowers the specimen rather than framing it.
 - **Section Plate** (Copperplate 300, ~14px, uppercase, tracking 0.20–0.28em): Nav logo, nav links, section labels ("ABOUT", category names). The taxonomic labeling layer.
-- **Descriptor / Label** (futura-pt 400, 12px, uppercase, tracking 0.30–0.34em): "Body Architect · Exploring Adaptive Morphologies", scroll cue, micro-labels. The instrument reading.
+- **Descriptor / Label** (futura-pt 400, 12px, uppercase, tracking 0.20–0.34em): The Hero footer strip ("LONDON, UK", the copyright), the scroll cue, micro-labels. The instrument reading. The positioning line "Body Architect" is brand strategy (see PRODUCT.md) but is deliberately unrendered — the Hero states the name and shows the work.
 - **Body** (Cormorant 300, `clamp(1rem … 1.1rem)`, line-height 1.7, tracking 0.01em): Bios, project descriptions, statements. Held at `max-w-[60ch]`. Light weight is intentional; do not bump to 400 for "readability" — increase size/contrast instead.
 - **Signature Italic** (Cormorant italic, extralight, `text-3xl`/`text-4xl`, tracking 0.08em): The preloader name only. A single expressive flourish before the clinical system takes over.
 

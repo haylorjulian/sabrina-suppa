@@ -34,7 +34,7 @@ export default function About({ sectionId }) {
         {/* Left — content-sized box, centred in the column. Width is capped at the
             same fixed measure as Work (~60ch) so line lengths and spacing hold at
             every viewport size. Fixed type (shared with Work), no scaling. */}
-        <div className="flex h-full items-center justify-center">
+        <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#86858b] to-[#b7b7b7]">
           <div className="flex w-[min(60ch,75%)] flex-col">
             <motion.p
               initial={{ opacity: 0, y: 6 }}

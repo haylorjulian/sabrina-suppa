@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { peekSectionTarget } from '@/lib/sectionTarget'
 
-const DURATION = 1.5 // seconds, section-to-section crossfade
+// Exported: the Nav fades its bar in/out against this same crossfade (see Nav.jsx).
+export const DURATION = 1.5 // seconds, section-to-section crossfade
 const COOLDOWN = 250 // ms after a fade before the next trigger is accepted
 const THRESHOLD = 12 // min |deltaY| to count as a scroll gesture
 const EASE = [0.4, 0, 0.2, 1]
@@ -23,7 +24,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 export default function ScrollStage({ children, themes = [], ids = [] }) {
   const items = Children.toArray(children)
   const n = items.length
-  const { setTheme } = useNavTheme()
+  const { setTheme, setSection } = useNavTheme()
 
   // Start on the first section: the server and the first client render must agree,
   // and the incoming #hash is client-only. We reconcile it in the layout effect
@@ -100,14 +101,15 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
     [n]
   )
 
-  // Keep the URL hash + nav theme in sync with the active section — desktop only.
+  // Keep the URL hash + nav state in sync with the active section — desktop only.
   // Below lg the stage is inert (mobile uses natural scroll + a dark nav), so we
-  // don't touch the hash or the nav theme there. The starting section (incl. an
+  // don't touch the hash or the nav state there. The starting section (incl. an
   // incoming #hash) is seeded in the useState initializer above.
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!window.matchMedia(DESKTOP).matches) return
     if (themes[index]) setTheme(themes[index])
+    if (ids[index]) setSection(ids[index])
     // Don't write the hash on the initial commit: when arriving via /#work the
     // incoming hash may land a tick after mount, and clobbering it to #home here
     // would strand the stage on the first section. `onHash` (below) honours it.
@@ -116,7 +118,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
     } else if (ids[index]) {
       history.replaceState(null, '', `#${ids[index]}`)
     }
-  }, [index, ids, themes, setTheme])
+  }, [index, ids, themes, setTheme, setSection])
 
   // Input handling + hash navigation. Only the desktop tier takes over native
   // scroll; below lg this stays disengaged so the page scrolls normally on touch.
@@ -174,6 +176,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       window.addEventListener('hashchange', onHash)
       document.addEventListener('click', onClick)
       if (themes[indexRef.current]) setTheme(themes[indexRef.current])
+      if (ids[indexRef.current]) setSection(ids[indexRef.current])
       onHash({ instant: true }) // honour an initial #section in the URL, without a crossfade
     }
     const disengage = () => {
@@ -185,6 +188,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       document.removeEventListener('click', onClick)
       document.body.style.overflow = ''
       setTheme('dark') // mobile sections are dark full-bleed imagery
+      setSection(null) // no stage below lg — the nav bar shows on every section
     }
 
     const sync = () => (mql.matches ? engage() : disengage())
@@ -195,7 +199,7 @@ export default function ScrollStage({ children, themes = [], ids = [] }) {
       mql.removeEventListener('change', sync)
       disengage()
     }
-  }, [goTo, ids, themes, setTheme])
+  }, [goTo, ids, themes, setTheme, setSection])
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden">

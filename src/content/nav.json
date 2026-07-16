@@ -2,7 +2,7 @@
   "logo": "SS",
   "links": [
     { "label": "Home", "href": "#home" },
-    { "label": "Work", "href": "#work" },
+    { "label": "Works", "href": "#work" },
     { "label": "About", "href": "#about" }
   ],
   "menuLabel": "Menu",

@@ -4,7 +4,7 @@
 
 const EASE = [0.22, 1, 0.36, 1]
 
-// hero — staggered entrance: rule, name, descriptor, scroll indicator
+// hero — staggered entrance: name, right rail, footer strip
 export const fadeInUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } },
