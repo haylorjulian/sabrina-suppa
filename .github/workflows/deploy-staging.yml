@@ -2,8 +2,8 @@ name: Deploy to Cloudflare (staging)
 
 # Rebuilds and deploys the site to the staging Worker (sabrina-suppa-staging,
 # see wrangler.jsonc `env.staging`) whenever content or code lands on `staging`.
-# NEXT_PUBLIC_ENV is intentionally left unset here (unlike deploy.yml) so
-# preview-only features like the bugdrop widget stay enabled.
+# NEXT_PUBLIC_ENV=staging is the opt-in flag that enables preview-only features
+# like the bugdrop widget (see src/app/layout.jsx) — it's off everywhere else.
 
 on:
   push:
@@ -33,6 +33,8 @@ jobs:
           # Set this repo Variable to the R2 public URL after migrating media
           # (e.g. https://media.sabrinasuppa.com). Unset = in-repo /assets path.
           NEXT_PUBLIC_ASSET_BASE: ${{ vars.NEXT_PUBLIC_ASSET_BASE }}
+          # Inlined at build time by Next.js; opts this build into the bugdrop widget.
+          NEXT_PUBLIC_ENV: staging
 
       - name: Deploy (staging)
         uses: cloudflare/wrangler-action@v3

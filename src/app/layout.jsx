@@ -57,10 +57,11 @@ export default function RootLayout({ children }) {
         <Providers>
           <PageTransitionWrapper>{children}</PageTransitionWrapper>
         </Providers>
-        {/* Bug reporting widget — gated out of production. NEXT_PUBLIC_ENV is set to
-            "production" only in the production build step (.github/workflows/deploy.yml);
-            local dev and staging builds leave it unset, so the widget loads there. */}
-        {process.env.NEXT_PUBLIC_ENV !== 'production' && (
+        {/* Bug reporting widget — opt-in, staging only. NEXT_PUBLIC_ENV is set to
+            "staging" only in the staging build step (.github/workflows/deploy-staging.yml);
+            it's unset everywhere else (production build, local dev on any branch),
+            so the widget stays off by default. */}
+        {process.env.NEXT_PUBLIC_ENV === 'staging' && (
           <script
             src="https://bugdrop.neonwatty.workers.dev/widget.js"
             data-repo="haylorjulian/sabrina-suppa"
