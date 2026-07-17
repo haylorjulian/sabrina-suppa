@@ -23,6 +23,13 @@ const copperplate = localFont({
   display: 'swap',
 })
 
+// Custom display font 
+const ernest = localFont({
+  src: '../fonts/ErnestTrial-Regular.otf',
+  variable: '--font-ernest',
+  display: 'swap',
+})
+
 export const metadata = {
   // Resolves relative og/twitter image paths to absolute URLs. Update if the
   // production domain changes.
@@ -48,7 +55,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${copperplate.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${copperplate.variable} ${ernest.variable}`}>
       <head>
         {/* Adobe Fonts (Typekit) — provides "futura-pt" for the Descriptor/Label tier */}
         <link rel="stylesheet" href="https://use.typekit.net/kbo0jje.css" />
