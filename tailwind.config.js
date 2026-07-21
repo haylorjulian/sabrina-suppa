@@ -23,6 +23,7 @@ module.exports = {
         'forma-banner': ['"forma-djr-banner"', 'sans-serif'],
         'neue-haas-display': ['"neue-haas-grotesk-display"', 'sans-serif'],
         'neue-haas-text': ['"neue-haas-grotesk-text"', 'sans-serif'],
+        'ivyora-display': ['"ivyora-display"', 'sans-serif'],
       },
     },
   },

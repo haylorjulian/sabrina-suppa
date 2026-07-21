@@ -38,11 +38,11 @@ body {
 }
 
 @layer components {
-  /* Fluid body copy — font-size scales smoothly with the viewport (rem-based so
-     it respects user zoom / OS text size), with no breakpoint jumps. Pair with a
-     max-width measure (e.g. max-w-[60ch]) on the container for line length. */
+  /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).
+     15px — one step below the 16px desktop panels (.section-desc), which take
+     over at lg. Pair with a max-width measure (e.g. max-w-[60ch]) for line length. */
   .body-copy {
-    font-size: clamp(1rem, 0.86rem + 0.7vw, 1rem);
+    font-size: 0.9375rem;
     line-height: 1.7;
     letter-spacing: 0.01em;
     text-wrap: pretty;
@@ -56,11 +56,12 @@ body {
     text-wrap: pretty;
   }
 
-  /* Shared description type for the desktop Work + About panels. Fixed size (no
+  /* Shared body type for the desktop Work + About panels. Fixed size (no
      per-content scaling), so both panels render identically and stay stable on
-     resize. Tuned so the longer About copy fits its box at common laptop sizes. */
+     resize. 16px for legibility; the longer About copy still fits its box at
+     common laptop sizes (verify on short viewports if the copy grows). */
   .section-desc {
-    font-size: 14px;
+    font-size: 1rem;
     line-height: 1.55;
     letter-spacing: 0.01em;
     text-wrap: pretty;

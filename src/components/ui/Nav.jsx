@@ -46,8 +46,18 @@ export default function Nav() {
   const linkColor = barDark
     ? 'text-bone-porcelain/65 hover:text-bone-porcelain'
     : 'text-oxidized-graphite/55 hover:text-oxidized-graphite'
-  const logoColor = barDark ? 'text-bone-porcelain/80' : 'text-oxidized-graphite/75'
   const hamColor = barDark ? 'bg-bone-porcelain' : 'bg-oxidized-graphite'
+
+  // The wordmark inverts against the section theme, but only from lg up: that's
+  // where Work and About become two-column splits and it sits over the opposite
+  // half from the links (Work's dark image, About's grey gradient). Below lg the
+  // sections are full-bleed dark, so it follows the bar or it would vanish.
+  // Keyed off `theme`, not `barDark` — the latter also goes true for the open
+  // mobile menu, which would wrongly flip it at lg if the viewport were resized.
+  const logoColor = [
+    barDark ? 'text-bone-porcelain/80' : 'text-oxidized-graphite/75',
+    isDark ? 'lg:text-oxidized-graphite/75' : 'lg:text-bone-porcelain/80',
+  ].join(' ')
 
   const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
 
@@ -64,12 +74,20 @@ export default function Nav() {
           hiddenOnHero ? 'lg:invisible lg:opacity-0' : ''
         }`}
       >
+        {/* Both variants render; CSS picks one. Branching on a JS breakpoint here
+            would disagree with the server render and blow up hydration. */}
         <a
           href="#home"
           onClick={closeMenu}
-          className={`font-copperplate text-[14px] uppercase tracking-[0.28em] transition-colors duration-300 ${logoColor}`}
+          aria-label={t.nav.logoFull}
+          className={`font-ivyora-display font-thin text-[14px] uppercase tracking-[8px] opacity-80 transition-colors duration-300 ${logoColor}`}
         >
-          {t.nav.logo}
+          <span aria-hidden="true" className="lg:hidden">
+            {t.nav.logo}
+          </span>
+          <span aria-hidden="true" className="hidden lg:inline">
+            {t.nav.logoFull}
+          </span>
         </a>
 
         {/* Desktop links + social icons */}
@@ -78,7 +96,7 @@ export default function Nav() {
             <a
               key={link.href}
               href={link.href}
-              className={`nav-link font-copperplate text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
+              className={`nav-link font-neue-haas-display text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
             </a>
@@ -133,7 +151,7 @@ export default function Nav() {
                   variants={overlayItem}
                   href={link.href}
                   onClick={closeMenu}
-                  className="nav-link font-copperplate text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
+                  className="nav-link font-neue-haas-display text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
                 >
                   {link.label}
                 </motion.a>

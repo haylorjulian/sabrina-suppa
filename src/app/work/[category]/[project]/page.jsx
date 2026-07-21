@@ -5,11 +5,6 @@ import ProjectGallery from '@/components/work/ProjectGallery'
 
 const categories = copy.en.work.categories
 
-// Ordered, flattened project list — used for prev/next cycling across categories.
-const flatProjects = categories.flatMap((c) =>
-  c.projects.map((p) => ({ href: `/work/${c.slug}/${p.slug}`, title: p.title }))
-)
-
 function resolve(categorySlug, projectSlug) {
   const cat = categories.find((c) => c.slug === categorySlug)
   if (!cat) return null
@@ -44,11 +39,6 @@ export default function ProjectPage({ params }) {
   const { cat, pi, project } = r
   const media = workMedia[cat.slug]?.[pi]?.media || []
 
-  const here = `/work/${cat.slug}/${project.slug}`
-  const idx = flatProjects.findIndex((f) => f.href === here)
-  const prev = flatProjects[(idx - 1 + flatProjects.length) % flatProjects.length]
-  const next = flatProjects[(idx + 1) % flatProjects.length]
-
   // Within-category siblings for the right-side project nav.
   const siblings = cat.projects.map((p, i) => ({
     href: `/work/${cat.slug}/${p.slug}`,
@@ -57,13 +47,6 @@ export default function ProjectPage({ params }) {
   }))
 
   return (
-    <ProjectGallery
-      categoryLabel={cat.label}
-      project={project}
-      media={media}
-      prev={prev}
-      next={next}
-      siblings={siblings}
-    />
+    <ProjectGallery project={project} media={media} siblings={siblings} />
   )
 }

@@ -1,30 +1,37 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { staggerContainer, fadeInUp, lineReveal } from '@/lib/animations'
+import { staggerContainer, fadeInUp } from '@/lib/animations'
+import { useLanguage } from '@/hooks/useLanguage'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
 
 // ── Gallery density knobs ────────────────────────────────────────────────────
-// The gallery auto-fits images into justified rows (Flickr-style) — it isn't a
-// fixed grid, so the number per row emerges from the container width and the
-// images' aspect ratios. Because wider containers pack more per row, a single
-// target height gives ~2 on a laptop, ~3 on a monitor, ~4 on a large display —
-// and MAX_COLUMNS caps the top end so it never exceeds 4.
+// The gallery auto-fits items into justified rows (Flickr-style): a row closes
+// once its fill-to-width height drops to ≤ TARGET_ROW_HEIGHT, or once it hits
+// MAX_COLUMNS. Density therefore emerges from container width × aspect ratios.
 //
-//   TARGET_ROW_HEIGHT — the main density dial. Higher → fewer, taller images per
-//     row; lower → more, smaller. ~900 lands on 2 per row at 14" laptop width.
-//     Try 760 for ~3 on a laptop, 1000+ to push toward 1–2.
-//   MAX_COLUMNS — hard ceiling per row on any screen size.
-//   GAP — pixel gutter between images (matches the gap-2 class below).
+// In practice every item's aspect ratio is the 0.8 fallback, because
+// media.generated.json carries width/height: null for all but one item (see
+// computeRows). So each row is really N equal-width columns.
+//
+//   MAX_COLUMNS — hard ceiling per row, and the only thing that can cap the top
+//     end. TARGET_ROW_HEIGHT alone cannot hold 2-up across the desktop range: at
+//     1024 the row must not close at 1, which needs targetH < ~1180, while at
+//     3440 closing at 2 by height needs targetH ≥ ~2090. No single value does
+//     both, so the ceiling does the capping and targetH only picks where 1-up
+//     flips to 2-up.
+//   TARGET_ROW_HEIGHT — that flip point. At 1000, rows close at 1 up to ~768 and
+//     run 2-up from ~1024 on. Raise it to push the 2-up threshold wider; lower it
+//     to bring 2-up to narrower screens.
+//   GAP — pixel gutter between items; must match the gap-4 class below.
 // (Container padding `px-4 sm:px-6 lg:px-10` also nudges density: more padding →
 //  narrower usable width → slightly fewer per row.)
-const TARGET_ROW_HEIGHT = 1500
-const MAX_COLUMNS = 4
-const GAP = 8 // px, matches the gap-2 gutter
+const TARGET_ROW_HEIGHT = 1000
+const MAX_COLUMNS = 2
+const GAP = 32 // px, matches the gap-4 gutter
 const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring
 
 // Greedy justified-rows layout (Flickr-style). A row closes once its
@@ -50,7 +57,9 @@ function computeRows(items, width, gap, targetH, maxColumns) {
   return rows
 }
 
-export default function ProjectGallery({ categoryLabel, project, media, prev, next, siblings = [] }) {
+export default function ProjectGallery({ project, media, siblings = [] }) {
+  const { t } = useLanguage()
+  const footer = t.hero.footer
   // The home route snaps each section to the viewport (html { scroll-snap-type:
   // y mandatory }). A long gallery must scroll freely — neutralise snap here and
   // restore it on unmount.
@@ -83,29 +92,33 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
       <ProjectHeader />
       <ProjectNav siblings={siblings} />
 
-      {/* Intro */}
+      {/* Rule between the fixed header and the page content. It sits on the
+          gallery's own margins rather than the header's, so it lines up with the
+          images below it. In flow, not fixed — a fixed rule would ride down the
+          page cutting across the gallery. */}
+      <div className="px-4 pt-[104px] sm:px-6 lg:px-10">
+        <div className="h-px w-full bg-bone-porcelain/25" />
+      </div>
+
+      {/* Intro — left-aligned, indented off the rule's left end (lg: 40px margin
+          + 88px indent). Padding is per-side so the indent can't collide with a
+          shorthand px- utility. */}
       <motion.header
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="mx-auto max-w-[1100px] px-6 pb-16 pt-[148px] text-center md:pb-24"
+        className="pb-16 pl-4 pr-4 pt-14 sm:pl-6 sm:pr-6 md:pb-24 lg:pl-[128px] lg:pr-10"
       >
-        <motion.p
-          variants={lineReveal}
-          className="font-copperplate text-[12px] uppercase tracking-[0.28em] text-synthetic-flesh/70"
-        >
-          {categoryLabel}
-        </motion.p>
         <motion.h1
           variants={fadeInUp}
-          className="mt-5 font-cormorant text-[clamp(30px,5vw,64px)] font-light italic leading-[1.05] tracking-[0.01em]"
+          className="-ml-1 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
         >
-          {project.title}
+          <span className="opacity-80">{project.title}</span>
         </motion.h1>
         {project.description && (
           <motion.p
             variants={fadeInUp}
-            className="body-copy-lg mx-auto mt-6 max-w-[100ch] whitespace-pre-line font-light text-bone-porcelain/70"
+            className="mt-6 max-w-[85ch] whitespace-pre-line text-[1rem] font-light leading-[1.7] tracking-[0.02em] text-pretty text-bone-porcelain/70"
           >
             {project.description}
           </motion.p>
@@ -115,14 +128,14 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
       {/* Media — justified rows. Full rows fill the width; a short trailing row is
           kept at target height and centered. */}
       <div ref={wrapRef} className="px-4 pb-24 sm:px-6 lg:px-10">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           {rows.map((r, ri) => {
             let imgIndex = 0
             for (let k = 0; k < ri; k++) imgIndex += rows[k].cells.length
             return (
               <div
                 key={ri}
-                className={`flex gap-2 ${r.full ? '' : 'justify-center'}`}
+                className={`flex gap-4 ${r.full ? '' : 'justify-center'}`}
               >
                 {r.cells.map(({ item, ar }, ci) => (
                   <GalleryMedia
@@ -138,24 +151,20 @@ export default function ProjectGallery({ categoryLabel, project, media, prev, ne
         </div>
       </div>
 
-      {/* Footer: cycle to sibling projects */}
-      <footer className="border-t border-bone-porcelain/10">
-        <nav className="mx-auto flex max-w-[1100px] items-center justify-between gap-6 px-6 py-12">
-          <Link
-            href={prev.href}
-            className="flex flex-col gap-1 text-bone-porcelain/55 transition-colors duration-300 hover:text-bone-porcelain"
+      {/* Footer — same treatment as the Hero footer strip: rule, then a
+          location / copyright / email row. */}
+      <footer className="px-4 pt-6 sm:px-6 lg:px-10">
+        <div className="h-px w-full bg-bone-porcelain/25" />
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center py-[21px] font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/70">
+          <span className="justify-self-start">{footer.location}</span>
+          <span className="justify-self-center whitespace-nowrap">{footer.copyright}</span>
+          <a
+            href={`mailto:${footer.email}`}
+            className="nav-link justify-self-end text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
           >
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bone-porcelain/35">Previous</span>
-            <span className="font-cormorant text-lg font-light italic">{prev.title}</span>
-          </Link>
-          <Link
-            href={next.href}
-            className="flex flex-col items-end gap-1 text-right text-bone-porcelain/55 transition-colors duration-300 hover:text-bone-porcelain"
-          >
-            <span className="text-[10px] uppercase tracking-[0.3em] text-bone-porcelain/35">Next</span>
-            <span className="font-cormorant text-lg font-light italic">{next.title}</span>
-          </Link>
-        </nav>
+            {footer.email}
+          </a>
+        </div>
       </footer>
     </div>
   )

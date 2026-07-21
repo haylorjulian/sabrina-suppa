@@ -1,5 +1,6 @@
 {
   "logo": "SS",
+  "logoFull": "Sabrina Suppa",
   "links": [
     { "label": "Home", "href": "#home" },
     { "label": "Works", "href": "#work" },

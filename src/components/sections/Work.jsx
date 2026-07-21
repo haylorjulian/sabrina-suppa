@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWork } from '@/hooks/useWork'
 import { categoryLanding } from '@/lib/assets'
-import ShimmerLine from '@/components/ui/ShimmerLine'
+import ShimmerArrow from '@/components/ui/ShimmerArrow'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -48,7 +48,7 @@ export default function Work() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 0.5, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-descriptor text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] text-white [text-shadow:0_2px_18px_rgba(26,26,28,0.55)]"
+            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display font-thin text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] text-white [text-shadow:0_2px_18px_rgba(26,26,28,0.55)]"
           >
             {activeCategory.label}
           </motion.h2>
@@ -68,7 +68,7 @@ export default function Work() {
                   type="button"
                   onClick={() => selectCategory(i)}
                   aria-current={i === categoryIndex}
-                  className={`font-copperplate text-[12px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                  className={`font-neue-haas-display text-[13px] uppercase tracking-[0.18em] transition-colors duration-300 ${
                     i === categoryIndex
                       ? 'text-oxidized-graphite'
                       : 'text-oxidized-graphite/40 hover:text-oxidized-graphite/70'
@@ -115,14 +115,12 @@ export default function Work() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
               >
-                <Link href={projects[0].href} className="group inline-flex flex-col items-start gap-2">
-                  <span className="inline-flex items-center gap-3 font-copperplate text-[12px] uppercase tracking-[0.18em] text-oxidized-graphite">
-                    {c.seeProjects}
-                    <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-                      →
-                    </span>
-                  </span>
-                  <ShimmerLine tone="dark" orientation="horizontal" className="w-full" />
+                <Link
+                  href={projects[0].href}
+                  className="group inline-flex items-center gap-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] text-oxidized-graphite"
+                >
+                  {c.seeProjects}
+                  <ShimmerArrow tone="dark" className="h-3 w-9 -translate-x-[5px] transition-transform duration-300 group-hover:translate-x-[-1px]" />
                 </Link>
               </motion.div>
             )}

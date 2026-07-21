@@ -45,7 +45,7 @@ export default function WorkMobile() {
             >
               <motion.h2
                 variants={fadeInUp}
-                className="font-copperplate text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+                className="font-ivyora-display font-thin text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
               >
                 {cat.label}
               </motion.h2>
@@ -60,7 +60,7 @@ export default function WorkMobile() {
               <motion.div variants={fadeInUp} className="pt-2">
                 <Link
                   href={`/work/${cat.slug}/${first.slug}`}
-                  className="group inline-flex items-center gap-3 border-b border-bone-porcelain/30 pb-2 font-copperplate text-[12px] uppercase tracking-[0.24em] text-bone-porcelain transition-colors duration-300 hover:border-bone-porcelain"
+                  className="group inline-flex items-center gap-3 border-b border-bone-porcelain/30 pb-2 font-neue-haas-display text-[12px] uppercase tracking-[0.24em] text-bone-porcelain transition-colors duration-300 hover:border-bone-porcelain"
                 >
                   {c.seeProjects}
                   <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">

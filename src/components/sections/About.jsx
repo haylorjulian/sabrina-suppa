@@ -22,10 +22,14 @@ export default function About({ sectionId }) {
   // index → its theme); sections must not set it themselves, or their mount
   // effects race the stage on first paint. The data-nav-theme marker below stays
   // as the declarative source of truth.
+  //
+  // "dark" describes what sits *under the bar*, not the section's ground: the
+  // links ride the right column's image, so they render light. The left column's
+  // grey gradient is why the wordmark inverts against this (see Nav.jsx).
   return (
     <section
       id={sectionId}
-      data-nav-theme="light"
+      data-nav-theme="dark"
       aria-label="About"
       className="relative min-h-[100svh] w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
@@ -40,7 +44,7 @@ export default function About({ sectionId }) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE }}
-              className="font-copperplate text-[11px] uppercase tracking-[0.28em] text-oxidized-graphite/80"
+              className="font-neue-haas-display text-[13px] uppercase tracking-[0.28em] text-oxidized-graphite/80"
             >
               {c.sectionLabel}
             </motion.p>
@@ -109,7 +113,7 @@ export default function About({ sectionId }) {
         >
           <motion.h2
             variants={fadeInUp}
-            className="font-copperplate text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+            className="font-neue-haas-display text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
           >
             {c.sectionLabel}
           </motion.h2>
