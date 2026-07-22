@@ -3,7 +3,8 @@
   "label": "Physical Works",
   "order": 2,
   "description": "A collection of wearable artefacts and functional morphologies developed to investigate the relationship between body and their surrounding conditions.\n\nWorking across 3D printing & casting, these projects explore how digital speculation can become physical matter.",
+  "descriptionMobile": "",
   "desktopImage": "physicalworks/Remains/3.JPG",
-  "overlayTextColor": "light",
+  "overlayTextColor": "dark",
   "desktopOverlayTextColor": "light"
 }
