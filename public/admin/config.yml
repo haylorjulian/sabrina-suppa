@@ -140,9 +140,21 @@ collections:
         widget: text
         hint: "Leave a blank line between paragraphs. Max 923 characters — the length of the Adaptive Flesh description, so the Work panel's pinned controls never shift."
         pattern: ['^[\s\S]{0,923}$', 'Keep the description to 923 characters or fewer (the Adaptive Flesh length).']
-      - { label: Cover image — landscape (desktop), name: coverLandscape, widget: image, required: false }
-      - { label: Cover image — vertical (mobile), name: coverVertical, widget: image, required: false }
-      - { label: Landing portrait image, name: landingPortrait, widget: image, required: false }
+      - label: Description — mobile
+        name: descriptionMobile
+        widget: text
+        required: false
+        hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
+      - { label: Background image — desktop, name: desktopImage, widget: image, required: false }
+      - { label: Background image — mobile (optional — defaults to the desktop image), name: mobileImage, widget: image, required: false }
+      - label: Text colour over the mobile image
+        name: overlayTextColor
+        widget: select
+        options:
+          - { label: Light, value: light }
+          - { label: Dark, value: dark }
+        default: light
+        hint: "Choose Dark when the mobile background image is light, so the category name, description and link stay readable."
 
   # -------------------------------------------------------------------- Projects
   - name: projects
@@ -175,6 +187,11 @@ collections:
         name: description
         widget: text
         hint: Leave a blank line between paragraphs.
+      - label: Description — mobile
+        name: descriptionMobile
+        widget: text
+        required: false
+        hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
       - { label: "'Coming soon' label (leave blank if the project is live)", name: comingSoon, widget: string, required: false }
       - label: Gallery media (images & videos, shown in this order)
         name: media

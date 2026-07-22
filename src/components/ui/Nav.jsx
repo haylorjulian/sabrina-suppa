@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
+import { setSectionTarget } from '@/lib/sectionTarget'
 import { DURATION } from '@/components/ui/ScrollStage'
 import { InstagramIcon, LinktreeIcon, SocialIcon } from '@/components/ui/icons'
 
@@ -32,6 +35,7 @@ export default function Nav() {
   const { open, toggleMenu, closeMenu } = useNav()
   const { t } = useLanguage()
   const { theme, section } = useNavTheme()
+  const pathname = usePathname()
 
   // Lock page scroll while the full-screen menu is open.
   useEffect(() => {
@@ -41,8 +45,32 @@ export default function Nav() {
     }
   }, [open])
 
-  const isDark = theme === 'dark'
+  // The nav is mounted globally. `theme`/`section` are only driven by ScrollStage
+  // on home (and persist stale after navigating away), so off the home route we
+  // ignore them: project pages are dark-world, and the desktop ProjectHeader owns
+  // the top bar there — so the global bar steps aside at md+ and only its mobile
+  // hamburger remains.
+  const isHome = pathname === '/'
+  const isDark = isHome ? theme === 'dark' : true
   const barDark = isDark || open
+
+  // Home hash links (#work) only resolve on the home route; from any other page
+  // they must jump home first (/#work) and hand the target section off to the
+  // home page via setSectionTarget (see sectionTarget.js).
+  const resolveHref = (href) => (isHome || !href.startsWith('#') ? href : `/${href}`)
+  const handleNavClick = (href) => {
+    if (!isHome && href.startsWith('#')) setSectionTarget(href.slice(1))
+    closeMenu()
+  }
+
+  // Every project, grouped by category, for the mobile menu's project index.
+  const projectGroups = t.work.categories.map((cat) => ({
+    label: cat.label,
+    projects: cat.projects.map((p) => ({
+      href: `/work/${cat.slug}/${p.slug}`,
+      title: p.title,
+    })),
+  }))
   const linkColor = barDark
     ? 'text-bone-porcelain/65 hover:text-bone-porcelain'
     : 'text-oxidized-graphite/55 hover:text-oxidized-graphite'
@@ -61,23 +89,27 @@ export default function Nav() {
 
   const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
 
-  // The hero owns its own chrome, so the bar steps aside there — fading against
-  // the stage's crossfade so the two move as one. `invisible` (not just opacity)
-  // is what takes the links out of the focus order while they're hidden.
-  const hiddenOnHero = section === 'home'
+  // On home the hero owns its own chrome, so the bar steps aside there — fading
+  // against the stage's crossfade so the two move as one. Off home the desktop
+  // ProjectHeader owns the top, so the bar hides from md up and only its mobile
+  // hamburger shows. `invisible` (not just opacity) takes the links out of the
+  // focus order while they're hidden.
+  const barHiddenClass = isHome
+    ? section === 'home'
+      ? 'lg:invisible lg:opacity-0'
+      : ''
+    : 'md:invisible md:opacity-0'
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <nav
         style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
-        className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[52px] ${
-          hiddenOnHero ? 'lg:invisible lg:opacity-0' : ''
-        }`}
+        className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[52px] ${barHiddenClass}`}
       >
         {/* Both variants render; CSS picks one. Branching on a JS breakpoint here
             would disagree with the server render and blow up hydration. */}
         <a
-          href="#home"
+          href={isHome ? '#home' : '/'}
           onClick={closeMenu}
           aria-label={t.nav.logoFull}
           className={`font-ivyora-display font-thin text-[14px] uppercase tracking-[8px] opacity-80 transition-colors duration-300 ${logoColor}`}
@@ -95,7 +127,8 @@ export default function Nav() {
           {t.nav.links.map((link) => (
             <a
               key={link.href}
-              href={link.href}
+              href={resolveHref(link.href)}
+              onClick={() => handleNavClick(link.href)}
               className={`nav-link font-neue-haas-display text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
@@ -134,7 +167,9 @@ export default function Nav() {
         </button>
       </nav>
 
-      {/* Full-screen mobile menu */}
+      {/* Full-screen mobile menu — the site's single wayfinding surface on
+          mobile: section links up top, then every project grouped by category,
+          then socials. Scrolls when the project index outgrows the viewport. */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -142,42 +177,85 @@ export default function Nav() {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 z-40 flex flex-col bg-oxidized-graphite md:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto bg-oxidized-graphite md:hidden"
           >
-            <div className="flex flex-1 flex-col items-center justify-center gap-9">
-              {t.nav.links.map((link) => (
-                <motion.a
-                  key={link.href}
-                  variants={overlayItem}
-                  href={link.href}
-                  onClick={closeMenu}
-                  className="nav-link font-neue-haas-display text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-            </div>
-
-            {/* Social icons — towards the bottom */}
-            <motion.ul
-              variants={overlayItem}
-              className="flex flex-wrap items-center justify-center gap-7 px-6 pb-14"
-            >
-              {t.about.social.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-                    rel="noreferrer"
-                    onClick={closeMenu}
-                    aria-label={link.label}
-                    className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
+            <div className="flex min-h-full flex-col gap-12 px-6 pb-14 pt-28">
+              {/* Primary section links */}
+              <div className="flex flex-col items-center gap-7">
+                {t.nav.links.map((link) => (
+                  <motion.a
+                    key={link.href}
+                    variants={overlayItem}
+                    href={resolveHref(link.href)}
+                    onClick={() => handleNavClick(link.href)}
+                    className="nav-link font-neue-haas-display text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
                   >
-                    <SocialIcon label={link.label} className="h-6 w-6" />
-                  </a>
-                </li>
-              ))}
-            </motion.ul>
+                    {link.label}
+                  </motion.a>
+                ))}
+              </div>
+
+              {/* Project index — styled distinctly from the section links above:
+                  dimmed category labels over italic project titles (echoing the
+                  desktop ProjectNav rail). The current project gets the one rare
+                  accent as a tick, never a fill (DESIGN.md). */}
+              <div className="flex flex-col gap-9">
+                {projectGroups.map((group) => (
+                  <motion.div
+                    key={group.label}
+                    variants={overlayItem}
+                    className="flex flex-col items-center gap-4"
+                  >
+                    <span className="font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/40">
+                      {group.label}
+                    </span>
+                    <ul className="flex flex-col items-center gap-3">
+                      {group.projects.map((p) => {
+                        const active = pathname === p.href
+                        return (
+                          <li key={p.href}>
+                            <Link
+                              href={p.href}
+                              onClick={closeMenu}
+                              aria-current={active ? 'page' : undefined}
+                              className={`flex items-center gap-3 font-neue-haas-display text-lg font-light italic transition-colors duration-300 ${
+                                active
+                                  ? 'text-bone-porcelain'
+                                  : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'
+                              }`}
+                            >
+                              {p.title}
+                              {active && <span aria-hidden="true" className="h-px w-6 bg-synthetic-flesh" />}
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Social icons — pinned to the bottom */}
+              <motion.ul
+                variants={overlayItem}
+                className="mt-auto flex flex-wrap items-center justify-center gap-7 pt-4"
+              >
+                {t.about.social.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+                      rel="noreferrer"
+                      onClick={closeMenu}
+                      aria-label={link.label}
+                      className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
+                    >
+                      <SocialIcon label={link.label} className="h-6 w-6" />
+                    </a>
+                  </li>
+                ))}
+              </motion.ul>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

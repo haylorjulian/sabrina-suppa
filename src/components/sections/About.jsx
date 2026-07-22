@@ -103,6 +103,9 @@ export default function About({ sectionId }) {
         <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-oxidized-graphite/55" />
         <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite via-oxidized-graphite/80 to-transparent" />
+        {/* Top seam fade — meets the graphite bottom of the Physical cover above
+            so the section change reads as a fade, not a hard line. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-oxidized-graphite to-transparent" />
 
         <motion.div
           variants={staggerContainer}

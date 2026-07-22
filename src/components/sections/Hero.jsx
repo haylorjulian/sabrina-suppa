@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { usePreloaderState } from '@/components/PreloaderProvider'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import ShimmerLine from '@/components/ui/ShimmerLine'
+import Footer from '@/components/ui/Footer'
 import { InstagramIcon } from '@/components/ui/icons'
 
 // `sectionId` is set only by the mobile tree so the nav's #home anchor resolves
@@ -46,32 +47,38 @@ export default function Hero({ sectionId }) {
           className="object-cover object-center"
         />
 
-        {/* Mobile: centred name */}
+        {/* Mobile chrome — scroll cue, wordmark, then the footer strip, stacked
+            across the hero's lower half (the desktop tier reads its rail + its
+            own footer strip instead). Mirrors the desktop hero's bottom-anchored
+            composition and reuses the shared footer for parity with the project
+            pages. */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center lg:hidden"
+          className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-6 text-center lg:hidden"
         >
+          {/* Scroll cue */}
+          <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[10px]">
+            <span className={`vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 ${shadow}`}>
+              {c.scroll}
+            </span>
+            <ShimmerLine tone="light" className="h-16" />
+          </motion.div>
+
+          {/* Wordmark */}
           <motion.h1
             variants={fadeInUp}
             className={`font-ivyora-display font-thin text-[clamp(28px,7.5vw,46px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
           >
             {c.name}
           </motion.h1>
-        </motion.div>
 
-        {/* Mobile scroll cue — the desktop tier reads its rail instead. */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: loading ? 0 : 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-[10px] lg:hidden"
-        >
-          <span className={`vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 ${shadow}`}>
-            {c.scroll}
-          </span>
-          <ShimmerLine tone="light" className="h-16" />
+          {/* Footer — same responsive strip as the project pages, tightened to
+              sit closer to the hero's bottom edge */}
+          <motion.div variants={fadeInUp} className="w-full">
+            <Footer shadow rowPadding="pt-[18px] pb-0" />
+          </motion.div>
         </motion.div>
 
         {/* Desktop chrome — the hero carries its own, so the nav bar hides here.
@@ -145,21 +152,7 @@ export default function Hero({ sectionId }) {
             variants={fadeInUp}
             className="pointer-events-auto absolute inset-x-[32px] bottom-0"
           >
-            <div className="h-px w-full bg-bone-porcelain/25" />
-            {/* grid, not justify-between: the latter centres the copyright in the
-                leftover space, which is off-centre against a short "London, UK".
-                Equal 1fr columns flank an auto centre — the copyright is the
-                widest item here, so a plain grid-cols-3 would wrap it. */}
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center py-[21px] font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/70">
-              <span className={`justify-self-start ${shadow}`}>{c.footer.location}</span>
-              <span className={`justify-self-center whitespace-nowrap ${shadow}`}>{c.footer.copyright}</span>
-              <a
-                href={`mailto:${c.footer.email}`}
-                className={`nav-link justify-self-end ${linkColor} ${shadow}`}
-              >
-                {c.footer.email}
-              </a>
-            </div>
+            <Footer shadow />
           </motion.div>
         </motion.div>
     </section>

@@ -1,4 +1,3 @@
-import Nav from '@/components/ui/Nav'
 import ScrollStage from '@/components/ui/ScrollStage'
 import PreloaderProvider from '@/components/PreloaderProvider'
 import Hero from '@/components/sections/Hero'
@@ -9,7 +8,6 @@ import About from '@/components/sections/About'
 export default function Home() {
   return (
     <PreloaderProvider>
-      <Nav />
       <main>
         {/* Desktop (≥1024px) — triggered slideshow that crossfades one section at
             a time on wheel/keys. ScrollStage owns scroll only at this tier. */}

@@ -126,12 +126,17 @@ const copyCategories = categories.map((cat) => ({
   slug: cat.slug,
   label: cat.label,
   description: cat.description,
+  // Optional per-record mobile copy; falls back to the desktop text when blank.
+  descriptionMobile: cat.descriptionMobile || cat.description,
+  // Light/dark colour for the text overlaid on the mobile category image.
+  overlayTextColor: cat.overlayTextColor || 'light',
   projects: projects
     .filter((p) => p.category === cat.slug)
     .map((p) => ({
       slug: p.slug,
       title: p.title,
       description: p.description,
+      descriptionMobile: p.descriptionMobile || p.description,
       ...(p.comingSoon ? { comingSoon: p.comingSoon } : {}),
     })),
 }))
@@ -162,16 +167,13 @@ const copy = {
 
 // ---- Assemble media.generated.json -----------------------------------------
 
+// Per-category background images: a desktop image and an optional mobile image
+// that falls back to the desktop one when the editor leaves it blank.
 const categoryImages = {}
-const categoryLanding = {}
 for (const cat of categories) {
-  if (cat.coverLandscape || cat.coverVertical) {
-    categoryImages[cat.slug] = {
-      landscape: cat.coverLandscape ? resolveSrc(cat.coverLandscape) : null,
-      vertical: cat.coverVertical ? resolveSrc(cat.coverVertical) : null,
-    }
-  }
-  if (cat.landingPortrait) categoryLanding[cat.slug] = resolveSrc(cat.landingPortrait)
+  const desktop = cat.desktopImage ? resolveSrc(cat.desktopImage) : null
+  const mobile = cat.mobileImage ? resolveSrc(cat.mobileImage) : desktop
+  if (desktop || mobile) categoryImages[cat.slug] = { desktop, mobile }
 }
 
 // workMedia keyed by category slug, ordered to match copy.work.categories[].projects.
@@ -189,7 +191,6 @@ const media = {
     about: { background: resolveSrc(about.background) },
   },
   categoryImages,
-  categoryLanding,
   workMedia,
 }
 

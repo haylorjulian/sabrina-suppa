@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
-import { useLanguage } from '@/hooks/useLanguage'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
+import Footer from '@/components/ui/Footer'
 
 // ── Gallery density knobs ────────────────────────────────────────────────────
 // The gallery auto-fits items into justified rows (Flickr-style): a row closes
@@ -58,8 +58,6 @@ function computeRows(items, width, gap, targetH, maxColumns) {
 }
 
 export default function ProjectGallery({ project, media, siblings = [] }) {
-  const { t } = useLanguage()
-  const footer = t.hero.footer
   // The home route snaps each section to the viewport (html { scroll-snap-type:
   // y mandatory }). A long gallery must scroll freely — neutralise snap here and
   // restore it on unmount.
@@ -95,8 +93,11 @@ export default function ProjectGallery({ project, media, siblings = [] }) {
       {/* Rule between the fixed header and the page content. It sits on the
           gallery's own margins rather than the header's, so it lines up with the
           images below it. In flow, not fixed — a fixed rule would ride down the
-          page cutting across the gallery. */}
-      <div className="px-4 pt-[104px] sm:px-6 lg:px-10">
+          page cutting across the gallery.
+          Below md the global <Nav> (28px py + 20px hamburger row) is the header,
+          so 76px keeps the gap under it equal to the 28px gap above it; at md the
+          desktop ProjectHeader takes over and needs the taller 104px clearance. */}
+      <div className="px-4 pt-[76px] sm:px-6 md:pt-[104px] lg:px-10">
         <div className="h-px w-full bg-bone-porcelain/25" />
       </div>
 
@@ -120,7 +121,12 @@ export default function ProjectGallery({ project, media, siblings = [] }) {
             variants={fadeInUp}
             className="mt-6 max-w-[85ch] whitespace-pre-line text-[1rem] font-light leading-[1.7] tracking-[0.02em] text-pretty text-bone-porcelain/70"
           >
-            {project.description}
+            {/* Both variants render; CSS picks one so the static/server markup
+                matches on hydration. descriptionMobile falls back to the desktop
+                text at build time, so these are identical until the editor sets
+                a distinct mobile description. */}
+            <span className="lg:hidden">{project.descriptionMobile}</span>
+            <span className="hidden lg:inline">{project.description}</span>
           </motion.p>
         )}
       </motion.header>
@@ -151,20 +157,12 @@ export default function ProjectGallery({ project, media, siblings = [] }) {
         </div>
       </div>
 
-      {/* Footer — same treatment as the Hero footer strip: rule, then a
-          location / copyright / email row. */}
-      <footer className="px-4 pt-6 sm:px-6 lg:px-10">
-        <div className="h-px w-full bg-bone-porcelain/25" />
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center py-[21px] font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/70">
-          <span className="justify-self-start">{footer.location}</span>
-          <span className="justify-self-center whitespace-nowrap">{footer.copyright}</span>
-          <a
-            href={`mailto:${footer.email}`}
-            className="nav-link justify-self-end text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
-          >
-            {footer.email}
-          </a>
-        </div>
+      {/* Footer — shared strip (rule + location / copyright / email row). Hidden
+          on mobile; the global <Nav> hamburger is the single mobile chrome here
+          (see ProjectHeader), so this only shows once that desktop header takes
+          over at md. */}
+      <footer className="hidden px-4 pt-6 sm:px-6 md:block lg:px-10">
+        <Footer />
       </footer>
     </div>
   )

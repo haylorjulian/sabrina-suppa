@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWork } from '@/hooks/useWork'
-import { categoryLanding } from '@/lib/assets'
+import { categoryImages } from '@/lib/assets'
 import ShimmerArrow from '@/components/ui/ShimmerArrow'
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -18,7 +18,7 @@ export default function Work() {
   const { t } = useLanguage()
   const c = t.work
   const { categoryIndex, activeCategory, selectCategory, projects } = useWork(c.categories)
-  const landingImage = categoryLanding[activeCategory.slug]
+  const landingImage = categoryImages[activeCategory.slug]?.desktop
 
   // The nav colour theme is owned solely by ScrollStage (it maps this section's
   // index → 'light'); sections must not set it themselves, or their mount effects

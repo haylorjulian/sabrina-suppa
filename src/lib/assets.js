@@ -13,11 +13,9 @@ export const ASSET_BASE = media.ASSET_BASE
 // Section backgrounds — { hero: { background }, about: { background } }
 export const assets = media.assets
 
-// Category landing images by slug — { landscape, vertical } (desktop / mobile covers).
+// Category background images by slug — { desktop, mobile }. `mobile` falls back
+// to `desktop` at build time when the editor leaves the mobile image blank.
 export const categoryImages = media.categoryImages
-
-// Portrait left-column image for the Work section's category view, by slug.
-export const categoryLanding = media.categoryLanding
 
 // Work catalog keyed by category slug, ordered to match copy.work.categories[].projects.
 // Each project is { media: [ { type, src, width, height, alt? } ] }.
