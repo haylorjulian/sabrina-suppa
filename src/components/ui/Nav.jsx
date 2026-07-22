@@ -9,7 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { setSectionTarget } from '@/lib/sectionTarget'
 import { DURATION } from '@/components/ui/ScrollStage'
-import { InstagramIcon, LinktreeIcon, SocialIcon } from '@/components/ui/icons'
+import { SocialIcon } from '@/components/ui/icons'
 
 // Single fixed nav shared across all sections. Its colour theme adapts to the
 // section currently under the bar — sections declare data-nav-theme="dark|light"
@@ -87,8 +87,6 @@ export default function Nav() {
     isDark ? 'lg:text-oxidized-graphite/75' : 'lg:text-bone-porcelain/80',
   ].join(' ')
 
-  const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
-
   // On home the hero owns its own chrome, so the bar steps aside there — fading
   // against the stage's crossfade so the two move as one. Off home the desktop
   // ProjectHeader owns the top, so the bar hides from md up and only its mobile
@@ -122,7 +120,7 @@ export default function Nav() {
           </span>
         </a>
 
-        {/* Desktop links + social icons */}
+        {/* Desktop links */}
         <div className="hidden items-center gap-9 md:flex">
           {t.nav.links.map((link) => (
             <a
@@ -134,24 +132,6 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
-          <a
-            href={socialHref('Instagram')}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Instagram"
-            className={`transition-colors duration-300 ${linkColor}`}
-          >
-            <InstagramIcon className="h-[19px] w-[19px]" />
-          </a>
-          <a
-            href={socialHref('Linktree')}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Linktree"
-            className={`transition-colors duration-300 ${linkColor}`}
-          >
-            <LinktreeIcon className="h-[19px] w-[19px]" />
-          </a>
         </div>
 
         {/* Mobile hamburger */}
