@@ -4,11 +4,20 @@
   "category": "physical",
   "order": 1,
   "description": "“Remains” investigates the idea of the body through absence. Emerging as a fossil-like fragment, this wearable evokes the imprint of a structure that once protected, supported, or transformed the organism that carried it.\n\nSuspended between artifact and anatomy, the piece suggests that evolution leaves behind a residue through which its history can still be read.",
+  "descriptionMobile": "",
   "comingSoon": "Coming soon",
   "media": [
-    { "src": "physicalworks/Remains/1.JPG", "alt": "" },
-    { "src": "physicalworks/Remains/2.jpg", "alt": "" },
-    { "src": "physicalworks/Remains/3.JPG", "alt": "" },
-    { "src": "physicalworks/Remains/4.jpg", "alt": "" }
+    {
+      "src": "physicalworks/Remains/1.JPG",
+      "alt": ""
+    },
+    {
+      "src": "physicalworks/Remains/3.JPG",
+      "alt": ""
+    },
+    {
+      "src": "physicalworks/Remains/4.jpg",
+      "alt": ""
+    }
   ]
 }
