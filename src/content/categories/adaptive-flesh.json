@@ -3,5 +3,7 @@
   "label": "Adaptive Flesh",
   "order": 1,
   "description": "An ongoing research on body architectures designed as aesthetic and functional explorations.\n\nIn a world where reality is no longer coherent, the body becomes a site of adaptation. Natural and simulated environments overlap, producing unstable states of perception where the organic and the artificial can no longer be clearly separated.\n\nDrawing from the idea of forced evolution, Adaptive Flesh imagines bodies pushed beyond their natural limits, becoming enhanced organisms capable of adapting to conditions they were never meant to inhabit.\n\nAt the core of this project is the idea of the threshold: the moment in which one state begins to rupture into another. This is represented via a visual system of \"processes\" through which surfaces are opened and redesigned.",
-  "desktopImage": "adaptiveFlesh/Transfiguration/7.jpg"
+  "descriptionMobile": "",
+  "desktopImage": "adaptiveFlesh/Transfiguration/7.jpg",
+  "overlayTextColor": "dark"
 }
