@@ -155,6 +155,14 @@ collections:
           - { label: Dark, value: dark }
         default: light
         hint: "Choose Dark when the mobile background image is light, so the category name, description and link stay readable."
+      - label: Text colour over the desktop image
+        name: desktopOverlayTextColor
+        widget: select
+        options:
+          - { label: Light, value: light }
+          - { label: Dark, value: dark }
+        default: light
+        hint: "Choose Dark when the desktop background image is light, so the category name stays readable."
 
   # -------------------------------------------------------------------- Projects
   - name: projects

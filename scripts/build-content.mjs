@@ -130,6 +130,8 @@ const copyCategories = categories.map((cat) => ({
   descriptionMobile: cat.descriptionMobile || cat.description,
   // Light/dark colour for the text overlaid on the mobile category image.
   overlayTextColor: cat.overlayTextColor || 'light',
+  // Light/dark colour for the category name overlaid on the desktop image.
+  desktopOverlayTextColor: cat.desktopOverlayTextColor || 'light',
   projects: projects
     .filter((p) => p.category === cat.slug)
     .map((p) => ({

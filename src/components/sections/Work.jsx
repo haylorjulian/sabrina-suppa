@@ -20,6 +20,15 @@ export default function Work() {
   const { categoryIndex, activeCategory, selectCategory, projects } = useWork(c.categories)
   const landingImage = categoryImages[activeCategory.slug]?.desktop
 
+  // Editors pick the overlay text colour per category (dark for light desktop
+  // images, light for dark ones) — same control as the mobile cover, applied
+  // independently since the desktop and mobile images can differ.
+  const dark = activeCategory.desktopOverlayTextColor === 'dark'
+  const overlayText = dark ? 'text-oxidized-graphite' : 'text-white'
+  const overlayShadow = dark
+    ? '[text-shadow:0_2px_18px_rgba(243,238,232,0.65)]'
+    : '[text-shadow:0_2px_18px_rgba(26,26,28,0.55)]'
+
   // The nav colour theme is owned solely by ScrollStage (it maps this section's
   // index → 'light'); sections must not set it themselves, or their mount effects
   // race the stage on first paint. The data-nav-theme marker below stays as the
@@ -48,7 +57,7 @@ export default function Work() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 0.5, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display font-thin text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] text-white [text-shadow:0_2px_18px_rgba(26,26,28,0.55)]"
+            className={`pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display font-thin text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] ${overlayText} ${overlayShadow}`}
           >
             {activeCategory.label}
           </motion.h2>
