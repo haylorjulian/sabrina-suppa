@@ -42,6 +42,13 @@ export default function WorkMobile() {
               <Image src={image} alt={cat.label} fill sizes="100vw" className="object-cover" />
             )}
 
+            {/* Legibility scrim — same treatment as the mobile About cover: a
+                bottom-heavy fade only, so the image reads untouched at the top and
+                just dims enough at the bottom (where the text block sits, anchored
+                via justify-end) to stay readable over the editor's per-category
+                image. */}
+            <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/60 to-transparent" />
+
             <motion.div
               variants={staggerContainer}
               initial="hidden"

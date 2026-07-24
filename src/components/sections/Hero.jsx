@@ -66,14 +66,6 @@ export default function Hero({ sectionId }) {
             <ShimmerLine tone="light" className="h-16" />
           </motion.div>
 
-          {/* Wordmark */}
-          <motion.h1
-            variants={fadeInUp}
-            className={`font-ivyora-display font-thin text-[clamp(28px,7.5vw,46px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
-          >
-            {c.name}
-          </motion.h1>
-
           {/* Footer — same responsive strip as the project pages, tightened to
               sit closer to the hero's bottom edge */}
           <motion.div variants={fadeInUp} className="w-full">

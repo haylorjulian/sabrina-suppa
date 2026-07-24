@@ -82,8 +82,10 @@ export default function Nav() {
   // sections are full-bleed dark, so it follows the bar or it would vanish.
   // Keyed off `theme`, not `barDark` — the latter also goes true for the open
   // mobile menu, which would wrongly flip it at lg if the viewport were resized.
+  // Mobile is full opacity (no /NN alpha) per the wordmark's mobile styling;
+  // desktop keeps its original translucency via the lg: override below.
   const logoColor = [
-    barDark ? 'text-bone-porcelain/80' : 'text-oxidized-graphite/75',
+    barDark ? 'text-bone-porcelain' : 'text-oxidized-graphite',
     isDark ? 'lg:text-oxidized-graphite/75' : 'lg:text-bone-porcelain/80',
   ].join(' ')
 
@@ -104,20 +106,13 @@ export default function Nav() {
         style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
         className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[52px] ${barHiddenClass}`}
       >
-        {/* Both variants render; CSS picks one. Branching on a JS breakpoint here
-            would disagree with the server render and blow up hydration. */}
         <a
           href={isHome ? '#home' : '/'}
           onClick={closeMenu}
           aria-label={t.nav.logoFull}
-          className={`font-ivyora-display font-thin text-[14px] uppercase tracking-[8px] opacity-80 transition-colors duration-300 ${logoColor}`}
+          className={`font-ivyora-display font-light lg:font-thin text-[14px] uppercase tracking-[6px] lg:tracking-[8px] lg:opacity-80 transition-colors duration-300 ${logoColor}`}
         >
-          <span aria-hidden="true" className="lg:hidden">
-            {t.nav.logo}
-          </span>
-          <span aria-hidden="true" className="hidden lg:inline">
-            {t.nav.logoFull}
-          </span>
+          {t.nav.logoFull}
         </a>
 
         {/* Desktop links */}
@@ -149,7 +144,9 @@ export default function Nav() {
 
       {/* Full-screen mobile menu — the site's single wayfinding surface on
           mobile: section links up top, then every project grouped by category,
-          then socials. Scrolls when the project index outgrows the viewport. */}
+          then socials. Spacing is tuned to fit the current project count on one
+          screen (iPhone 14 and up); overflow-y-auto is a safety net if the CMS
+          project list grows past that. */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -159,66 +156,72 @@ export default function Nav() {
             exit="exit"
             className="fixed inset-0 z-40 overflow-y-auto bg-oxidized-graphite md:hidden"
           >
-            <div className="flex min-h-full flex-col gap-12 px-6 pb-14 pt-28">
-              {/* Primary section links */}
-              <div className="flex flex-col items-center gap-7">
-                {t.nav.links.map((link) => (
-                  <motion.a
-                    key={link.href}
-                    variants={overlayItem}
-                    href={resolveHref(link.href)}
-                    onClick={() => handleNavClick(link.href)}
-                    className="nav-link font-neue-haas-display text-2xl uppercase tracking-[0.12em] text-bone-porcelain/85"
-                  >
-                    {link.label}
-                  </motion.a>
-                ))}
-              </div>
+            <div className="flex min-h-full flex-col gap-6 px-6 pb-8 pt-20">
+              {/* Navigation — section links + project index, centred as a group
+                  in the space above the socials. flex-1 claims the remaining
+                  height so the group centres regardless of viewport size, while
+                  the socials below stay pinned to the bottom. */}
+              <div className="flex flex-1 flex-col items-center justify-center gap-6">
+                {/* Primary section links */}
+                <div className="flex flex-col items-center gap-4">
+                  {t.nav.links.map((link) => (
+                    <motion.a
+                      key={link.href}
+                      variants={overlayItem}
+                      href={resolveHref(link.href)}
+                      onClick={() => handleNavClick(link.href)}
+                      className="nav-link font-neue-haas-display text-xl uppercase tracking-[0.12em] text-bone-porcelain/85"
+                    >
+                      {link.label}
+                    </motion.a>
+                  ))}
+                </div>
 
-              {/* Project index — styled distinctly from the section links above:
-                  dimmed category labels over italic project titles (echoing the
-                  desktop ProjectNav rail). The current project gets the one rare
-                  accent as a tick, never a fill (DESIGN.md). */}
-              <div className="flex flex-col gap-9">
-                {projectGroups.map((group) => (
-                  <motion.div
-                    key={group.label}
-                    variants={overlayItem}
-                    className="flex flex-col items-center gap-4"
-                  >
-                    <span className="font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/40">
-                      {group.label}
-                    </span>
-                    <ul className="flex flex-col items-center gap-3">
-                      {group.projects.map((p) => {
-                        const active = pathname === p.href
-                        return (
-                          <li key={p.href}>
-                            <Link
-                              href={p.href}
-                              onClick={closeMenu}
-                              aria-current={active ? 'page' : undefined}
-                              className={`flex items-center gap-3 font-neue-haas-display text-lg font-light italic transition-colors duration-300 ${
-                                active
-                                  ? 'text-bone-porcelain'
-                                  : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'
-                              }`}
-                            >
-                              {p.title}
-                              {active && <span aria-hidden="true" className="h-px w-6 bg-synthetic-flesh" />}
-                            </Link>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </motion.div>
-                ))}
+                {/* Project index — styled distinctly from the section links above:
+                    dimmed category labels over italic project titles (echoing the
+                    desktop ProjectNav rail). The current project gets the one rare
+                    accent as a tick, never a fill (DESIGN.md). */}
+                <div className="flex flex-col gap-6">
+                  {projectGroups.map((group) => (
+                    <motion.div
+                      key={group.label}
+                      variants={overlayItem}
+                      className="flex flex-col items-center gap-3"
+                    >
+                      <span className="font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/40">
+                        {group.label}
+                      </span>
+                      <ul className="flex flex-col items-center gap-2">
+                        {group.projects.map((p) => {
+                          const active = pathname === p.href
+                          return (
+                            <li key={p.href}>
+                              <Link
+                                href={p.href}
+                                onClick={closeMenu}
+                                aria-current={active ? 'page' : undefined}
+                                className={`flex items-center gap-3 font-neue-haas-display text-base font-light italic transition-colors duration-300 ${
+                                  active
+                                    ? 'text-bone-porcelain'
+                                    : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'
+                                }`}
+                              >
+                                {p.title}
+                                {active && <span aria-hidden="true" className="h-px w-6 bg-synthetic-flesh" />}
+                              </Link>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
 
               {/* Social icons — pinned to the bottom */}
               <motion.ul
                 variants={overlayItem}
-                className="mt-auto flex flex-wrap items-center justify-center gap-7 pt-4"
+                className="mt-auto flex flex-wrap items-center justify-center gap-7 pt-2"
               >
                 {t.about.social.map((link) => (
                   <li key={link.label}>
