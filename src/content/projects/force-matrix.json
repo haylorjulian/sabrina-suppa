@@ -4,6 +4,7 @@
   "category": "adaptive-flesh",
   "order": 3,
   "description": "Explores the coexistence of protection and latent force within a single system. \nAn external armor conceals an internal structure that is continuously present yet not visible at first sight. The work proposes that defense and offense are not opposites but reciprocal states of the same morphology.",
+  "descriptionMobile": "",
   "comingSoon": "",
   "media": [
     {
@@ -23,7 +24,7 @@
       "alt": ""
     },
     {
-      "src": "adaptiveFlesh/Force_Matrix/5.jpg",
+      "src": "https://media.sabrinasuppa.com/uploads/5.jpg",
       "alt": ""
     },
     {
