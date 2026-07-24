@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useLanguage } from '@/hooks/useLanguage'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
 import Footer from '@/components/ui/Footer'
+import ShimmerArrow from '@/components/ui/ShimmerArrow'
 
 // ── Gallery density knobs ────────────────────────────────────────────────────
 // The gallery auto-fits items into justified rows (Flickr-style): a row closes
@@ -57,7 +60,9 @@ function computeRows(items, width, gap, targetH, maxColumns) {
   return rows
 }
 
-export default function ProjectGallery({ project, media, siblings = [] }) {
+export default function ProjectGallery({ project, media, siblings = [], nextProject }) {
+  const { t } = useLanguage()
+
   // The home route snaps each section to the viewport (html { scroll-snap-type:
   // y mandatory }). A long gallery must scroll freely — neutralise snap here and
   // restore it on unmount.
@@ -112,9 +117,21 @@ export default function ProjectGallery({ project, media, siblings = [] }) {
       >
         <motion.h1
           variants={fadeInUp}
-          className="-ml-1 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
+          className="-ml-1 flex items-center gap-4 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
         >
           <span className="opacity-80">{project.title}</span>
+          {nextProject && (
+            <Link
+              href={nextProject.href}
+              aria-label={`${t.work.nextProject}: ${nextProject.title}`}
+              className="group inline-flex shrink-0 items-center not-italic lg:hidden"
+            >
+              <ShimmerArrow
+                tone="light"
+                className="h-3 w-9 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          )}
         </motion.h1>
         {project.description && (
           <motion.p
