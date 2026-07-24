@@ -4,6 +4,7 @@
   "category": "adaptive-flesh",
   "order": 1,
   "description": "This project shows a sequence of transitional states compressed into a single organism: the surrounding membrane acts as a regulatory interface that shields the body from external pressure while enabling profound internal reorganization.\nThe process of \"ecdysis\" is metaphor of a trasformation that can only occur through rupture in order to take place.",
+  "descriptionMobile": "",
   "comingSoon": "",
   "media": [
     {
@@ -51,7 +52,7 @@
       "alt": ""
     },
     {
-      "src": "adaptiveFlesh/Transfiguration/13.JPG",
+      "src": "https://media.sabrinasuppa.com/uploads/13.webp",
       "alt": ""
     },
     {
@@ -71,11 +72,11 @@
       "alt": ""
     },
     {
-      "src": "adaptiveFlesh/Transfiguration/18.jpg",
+      "src": "adaptiveFlesh/Transfiguration/19.jpg",
       "alt": ""
     },
     {
-      "src": "adaptiveFlesh/Transfiguration/19.jpg",
+      "src": "adaptiveFlesh/Transfiguration/18.jpg",
       "alt": ""
     }
   ]
