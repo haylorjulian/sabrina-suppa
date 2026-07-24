@@ -91,6 +91,12 @@ collections:
             name: paragraphs
             widget: list
             field: { label: Paragraph, name: paragraph, widget: text }
+          - label: Paragraphs — mobile
+            name: paragraphsMobile
+            widget: list
+            required: false
+            field: { label: Paragraph, name: paragraph, widget: text }
+            hint: "Optional — shown on mobile instead of the paragraphs above. Leave blank to reuse the desktop text."
           - { label: Background image, name: background, widget: image }
           - { label: Background alt text, name: bgAlt, widget: string }
           - label: Social links

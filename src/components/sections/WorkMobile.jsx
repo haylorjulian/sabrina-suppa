@@ -47,7 +47,7 @@ export default function WorkMobile() {
                 just dims enough at the bottom (where the text block sits, anchored
                 via justify-end) to stay readable over the editor's per-category
                 image. */}
-            <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/90 to-oxidized-graphite/20" />
 
             <motion.div
               variants={staggerContainer}

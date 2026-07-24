@@ -161,6 +161,9 @@ const copy = {
     about: {
       sectionLabel: about.sectionLabel,
       paragraphs: about.paragraphs,
+      // Optional per-record mobile copy; falls back to the desktop paragraphs
+      // when the editor leaves it blank (same pattern as category/project copy).
+      paragraphsMobile: about.paragraphsMobile?.length ? about.paragraphsMobile : about.paragraphs,
       bgAlt: about.bgAlt,
       social: about.social,
     },

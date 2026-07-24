@@ -119,7 +119,7 @@ export default function ProjectGallery({ project, media, siblings = [] }) {
         {project.description && (
           <motion.p
             variants={fadeInUp}
-            className="mt-6 max-w-[85ch] whitespace-pre-line text-[1rem] font-light leading-[1.7] tracking-[0.02em] text-pretty text-bone-porcelain/70"
+            className="mt-6 max-w-[85ch] whitespace-pre-line text-[1rem] font-light leading-[1.7] tracking-[0.02em] lg:tracking-[0.04em] text-pretty text-bone-porcelain/70"
           >
             {/* Both variants render; CSS picks one so the static/server markup
                 matches on hydration. descriptionMobile falls back to the desktop

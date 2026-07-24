@@ -101,7 +101,7 @@ export default function About({ sectionId }) {
           natural flowing text (no FitBox scaling). */}
       <div className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:hidden">
         <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/90 to-oxidized-graphite/20" />
         {/* Top seam fade — meets the graphite bottom of the Physical cover above
             so the section change reads as a fade, not a hard line. */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-oxidized-graphite to-transparent" />
@@ -115,13 +115,13 @@ export default function About({ sectionId }) {
         >
           <motion.h2
             variants={fadeInUp}
-            className="font-neue-haas-display text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+            className="font-ivyora-display font-thin text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-bone-porcelain [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
           >
             {c.sectionLabel}
           </motion.h2>
 
           <motion.div variants={fadeInUp} className="max-w-[46ch] space-y-3">
-            {c.paragraphs.map((para, i) => (
+            {c.paragraphsMobile.map((para, i) => (
               <p key={i} className="body-copy whitespace-pre-line font-light text-bone-porcelain/85">
                 {para}
               </p>
