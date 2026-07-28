@@ -28,7 +28,7 @@ export default function WorkMobile() {
         // allowed (DESIGN.md) — keeps the copy legible now that the image carries
         // no scrim behind it.
         const dark = cat.overlayTextColor === 'dark'
-        const overlayText = dark ? 'text-oxidized-graphite' : 'text-bone-porcelain'
+        const overlayText = dark ? 'text-oxidized-graphite' : 'text-[#D8D4CF]'
         const overlayShadow = dark
           ? '[text-shadow:0_2px_18px_rgba(243,238,232,0.65)]'
           : '[text-shadow:0_2px_18px_rgba(26,26,28,0.6)]'
@@ -36,7 +36,7 @@ export default function WorkMobile() {
         return (
           <article
             key={cat.slug}
-            className="relative flex min-h-[100dvh] w-full flex-col justify-end overflow-hidden bg-oxidized-graphite"
+            className="relative flex min-h-[100svh] w-full flex-col justify-end overflow-hidden bg-oxidized-graphite"
           >
             {image && (
               <Image src={image} alt={cat.label} fill sizes="100vw" className="object-cover" />
