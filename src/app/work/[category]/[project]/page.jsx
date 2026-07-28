@@ -46,14 +46,12 @@ export default function ProjectPage({ params }) {
     active: i === pi,
   }))
 
-  // Next project across the whole catalogue (not just this category), wrapping
-  // back to the first project after the last — the header arrow is a single
-  // forward-only stepper through every project on the site.
-  const allProjects = categories.flatMap((c) =>
-    c.projects.map((p) => ({ href: `/work/${c.slug}/${p.slug}`, title: p.title }))
-  )
-  const globalIndex = allProjects.findIndex((p) => p.href === `/work/${cat.slug}/${project.slug}`)
-  const nextProject = allProjects.length > 1 ? allProjects[(globalIndex + 1) % allProjects.length] : undefined
+  // Next project within the selected category, wrapping back to the first after
+  // the last — the mobile header arrow is a forward-only stepper scoped to this
+  // category (matching the desktop within-category project nav above). Undefined
+  // for a single-project category, so the arrow is hidden.
+  const catProjects = cat.projects.map((p) => ({ href: `/work/${cat.slug}/${p.slug}`, title: p.title }))
+  const nextProject = catProjects.length > 1 ? catProjects[(pi + 1) % catProjects.length] : undefined
 
   return (
     <ProjectGallery project={project} media={media} siblings={siblings} nextProject={nextProject} />
