@@ -36,7 +36,7 @@ export default function WorkMobile() {
         return (
           <article
             key={cat.slug}
-            className="relative flex min-h-[100svh] w-full flex-col justify-end overflow-hidden bg-oxidized-graphite"
+            className="relative flex min-h-[100dvh] w-full flex-col justify-end overflow-hidden bg-oxidized-graphite"
           >
             {image && (
               <Image src={image} alt={cat.label} fill sizes="100vw" className="object-cover" />
@@ -65,7 +65,7 @@ export default function WorkMobile() {
 
               <motion.p
                 variants={fadeInUp}
-                className={`body-copy max-w-[46ch] whitespace-pre-line font-light ${dark ? 'text-oxidized-graphite/85' : 'text-bone-porcelain/85'} ${overlayShadow}`}
+                className={`body-copy max-w-[46ch] whitespace-pre-line font-light ${dark ? 'text-oxidized-graphite/85' : 'text-[#D8D4CF]/80'} ${overlayShadow}`}
               >
                 {cat.descriptionMobile}
               </motion.p>

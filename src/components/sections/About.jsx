@@ -31,7 +31,7 @@ export default function About({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="About"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
@@ -99,7 +99,7 @@ export default function About({ sectionId }) {
 
       {/* Mobile (<1024px) — full-bleed image cover with the bio + socials read as
           natural flowing text (no FitBox scaling). */}
-      <div className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:hidden">
+      <div className="relative flex min-h-[100dvh] flex-col justify-end overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:hidden">
         <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/90 to-oxidized-graphite/20" />
         {/* Top seam fade — meets the graphite bottom of the Physical cover above
@@ -122,7 +122,7 @@ export default function About({ sectionId }) {
 
           <motion.div variants={fadeInUp} className="max-w-[46ch] space-y-3">
             {c.paragraphsMobile.map((para, i) => (
-              <p key={i} className="body-copy whitespace-pre-line font-light text-bone-porcelain/85">
+              <p key={i} className="body-copy whitespace-pre-line font-light text-[#D8D4CF]/80 [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]">
                 {para}
               </p>
             ))}

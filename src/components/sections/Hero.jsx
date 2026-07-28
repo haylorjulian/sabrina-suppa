@@ -29,7 +29,7 @@ export default function Hero({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Hero"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
         {/* Background scaled to fill, centred. The source is a 2x master (3840x2160),
             so covering the frame spends those pixels on retina sharpness rather
@@ -58,11 +58,8 @@ export default function Hero({ sectionId }) {
           animate={loading ? 'hidden' : 'visible'}
           className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-6 text-center lg:hidden"
         >
-          {/* Scroll cue */}
+          {/* Scroll cue — line only, no label */}
           <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[10px]">
-            <span className={`vertical-text text-[12px] uppercase tracking-[0.30em] text-bone-porcelain/75 ${shadow}`}>
-              {c.scroll}
-            </span>
             <ShimmerLine tone="light" className="h-16" />
           </motion.div>
 

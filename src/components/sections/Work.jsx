@@ -28,6 +28,10 @@ export default function Work() {
   const overlayShadow = dark
     ? '[text-shadow:0_2px_18px_rgba(243,238,232,0.65)]'
     : '[text-shadow:0_2px_18px_rgba(26,26,28,0.55)]'
+  // Dark style (Physical Works) reads at full weight/opacity; light style keeps
+  // its original thin, translucent treatment.
+  const overlayWeight = dark ? 'font-light' : 'font-thin'
+  const overlayOpacity = dark ? 0.7 : 0.5
 
   // The nav colour theme is owned solely by ScrollStage (it maps this section's
   // index → 'light'); sections must not set it themselves, or their mount effects
@@ -55,9 +59,9 @@ export default function Work() {
           <motion.h2
             key={`title-${activeCategory.slug}`}
             initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 0.5, y: 0 }}
+            animate={{ opacity: overlayOpacity, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className={`pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display font-thin text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] ${overlayText} ${overlayShadow}`}
+            className={`pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display ${overlayWeight} text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] ${overlayText} ${overlayShadow}`}
           >
             {activeCategory.label}
           </motion.h2>
