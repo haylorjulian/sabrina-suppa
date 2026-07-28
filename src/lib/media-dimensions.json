@@ -302,5 +302,17 @@
   "https://media.sabrinasuppa.com/adaptiveFlesh/Force_Matrix/16.mp4": {
     "w": 4,
     "h": 5
+  },
+  "https://media.sabrinasuppa.com/uploads/trio1.webp": {
+    "w": 4803,
+    "h": 2000
+  },
+  "https://media.sabrinasuppa.com/uploads/trio.webp": {
+    "w": 4803,
+    "h": 2000
+  },
+  "https://media.sabrinasuppa.com/uploads/screenshot.jpg": {
+    "w": 1070,
+    "h": 582
   }
 }

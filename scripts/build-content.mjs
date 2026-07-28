@@ -60,6 +60,12 @@ function dimsFor(src, item) {
   if (VIDEO_EXT.has(e)) {
     // Remote video probing is heavy in CI; honor an explicit override, else default.
     d = item.width && item.height ? { w: item.width, h: item.height } : DEFAULT_VIDEO
+  } else if (item.width && item.height) {
+    // Explicit override for images too (same as videos) — lets an editor declare a
+    // remote image's size without a probe, e.g. to flag a 16:9 as a full-row image.
+    // Cache-first (above) still wins, so if you change declared dims later, clear the
+    // stale media-dimensions.json entry for this src.
+    d = { w: item.width, h: item.height }
   } else {
     try {
       let buf

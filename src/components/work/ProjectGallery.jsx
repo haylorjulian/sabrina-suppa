@@ -16,10 +16,15 @@ import ShimmerArrow from '@/components/ui/ShimmerArrow'
 // once its fill-to-width height drops to ≤ TARGET_ROW_HEIGHT, or once it hits
 // MAX_COLUMNS. Density therefore emerges from container width × aspect ratios.
 //
-// In practice every item's aspect ratio is the 0.8 fallback, because
-// media.generated.json carries width/height: null for all but one item (see
-// computeRows). So each row is really N equal-width columns.
+// Most items carry no dimensions in media.generated.json and fall back to the 0.8
+// portrait aspect (see computeRows), so ordinary rows are N equal-width columns.
+// The exception is a WIDE item — one whose declared aspect ratio is ≥ WIDE_AR
+// (a 16:9 or wider image; declare its width/height in the project JSON): it always
+// takes its own full-width row rather than packing 2-up.
 //
+//   WIDE_AR — aspect ratio at/above which an item spans a full row on its own.
+//     0.8 is the portrait fallback and 16:9 is 1.78, so 1.6 catches 16:9/16:10 and
+//     wider while leaving 3:2 (1.5) and 4:3 (1.33) to pack normally.
 //   MAX_COLUMNS — hard ceiling per row, and the only thing that can cap the top
 //     end. TARGET_ROW_HEIGHT alone cannot hold 2-up across the desktop range: at
 //     1024 the row must not close at 1, which needs targetH < ~1180, while at
@@ -34,19 +39,36 @@ import ShimmerArrow from '@/components/ui/ShimmerArrow'
 //  narrower usable width → slightly fewer per row.)
 const TARGET_ROW_HEIGHT = 1000
 const MAX_COLUMNS = 2
+const WIDE_AR = 1.6 // ≥ this ⇒ its own full-width row (portrait fallback 0.8, 16:9 1.78)
 const GAP = 32 // px, matches the gap-4 gutter
 const DEFAULT_WIDTH = 1280 // assumed width for the static/SSR render before measuring
 
 // Greedy justified-rows layout (Flickr-style). A row closes once its
 // fill-to-width height drops to ≤ targetH, or once it hits MAX_COLUMNS cells; the
 // trailing row is kept at targetH (its natural width is < container) and flagged
-// so it can be centered.
+// so it can be centered. A WIDE item (ar ≥ WIDE_AR) breaks out: it flushes any
+// open row and takes its own full-width row.
 function computeRows(items, width, gap, targetH, maxColumns) {
   const rows = []
   let row = []
   let arSum = 0
+  // Close a still-open (unfilled) row as a centered trailing-style row — used when
+  // a wide item interrupts a pending pair, so a lone leftover portrait centers.
+  const flushOpen = () => {
+    if (!row.length) return
+    rows.push({ cells: row, height: targetH, full: false })
+    row = []
+    arSum = 0
+  }
   for (const item of items) {
     const ar = item.width && item.height ? item.width / item.height : 0.8
+    if (ar >= WIDE_AR) {
+      flushOpen()
+      // height = width/ar ⇒ displayWidth (height*ar) = the full container width, so
+      // the image spans the row; GalleryMedia (w-full h-auto) sets its own height.
+      rows.push({ cells: [{ item, ar }], height: width / ar, full: true })
+      continue
+    }
     row.push({ item, ar })
     arSum += ar
     const rowHeight = (width - gap * (row.length - 1)) / arSum
@@ -76,12 +98,21 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
   }, [])
 
   // Measure the content width so rows can be justified; recompute on resize.
+  // clientWidth includes the wrapper's px-* padding, so subtract it — otherwise a
+  // full-width row overflows by the padding. Measure the padded wrapper (whose
+  // width is viewport-driven and stable), NOT the inner flex column: that column
+  // is stretched by any row that overflows, which would feed an inflated width
+  // straight back into the layout.
   const wrapRef = useRef(null)
   const [width, setWidth] = useState(DEFAULT_WIDTH)
   useEffect(() => {
     const el = wrapRef.current
     if (!el) return
-    const update = () => setWidth(el.clientWidth)
+    const update = () => {
+      const cs = getComputedStyle(el)
+      const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+      setWidth(el.clientWidth - pad)
+    }
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
@@ -150,7 +181,11 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
 
       {/* Media — justified rows. Full rows fill the width; a short trailing row is
           kept at target height and centered. */}
-      <div ref={wrapRef} className="px-4 pb-24 sm:px-6 lg:px-10">
+      {/* overflow-x-clip: the imageReveal scale (1.04) on a below-the-fold
+          full-width image would otherwise spill past the viewport and flash a
+          horizontal scrollbar on load; clipping the sub-pixel edge bleed is
+          imperceptible and keeps the page from ever scrolling sideways. */}
+      <div ref={wrapRef} className="overflow-x-clip px-4 pb-24 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-4">
           {rows.map((r, ri) => {
             let imgIndex = 0
