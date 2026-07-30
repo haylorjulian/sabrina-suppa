@@ -3,7 +3,7 @@
   "title": "Transfiguration",
   "category": "adaptive-flesh",
   "order": 1,
-  "description": "Transfiguration condenses a body in transition into a single organism. Its surrounding membrane acts as both protection and limit, shielding the body from external pressure while another body takes form within.\n\nLike an exoskeleton at the moment of ecdysis, the structure must eventually fracture. Rupture becomes not an act of destruction, but the condition of emergence: the moment the body exceeds what once contained, protected and defined it.",
+  "description": "Transfiguration condenses a body in transition into a single organism. Its surrounding membrane acts as both protection and limit, shielding the body from external pressure while another body takes form within.\n\nLike an exoskeleton at the moment of ecdysis, the structure must eventually disappear. Rupture becomes not an act of destruction, but the condition of emergence: the moment the body exceeds what once contained, protected and defined it.",
   "descriptionMobile": "",
   "comingSoon": "",
   "media": [
@@ -61,8 +61,6 @@
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/trio1.webp",
-      "width": 4803,
-      "height": 2000,
       "alt": ""
     },
     {
