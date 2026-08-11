@@ -19,9 +19,23 @@ files into `src/content/copy.generated.json` + `src/lib/media.generated.json`, w
 - **Preloader** — name, descriptor
 - **About** — section label, paragraphs, background image + alt, social links
 - **Work labels** — all the small button/aria strings
-- **Categories** — add/remove; label, order, description paragraphs, cover + landing images
-- **Projects** — add/remove; title, category, order, description, "coming soon" flag, and an ordered
-  gallery of images/videos with alt text
+- **Categories** — add/remove; label, order, **the order of the projects inside the category** (drag the
+  rows of the *Project order* list), description paragraphs, cover + landing images
+- **Projects** — add/remove; title, category, description, "coming soon" flag, and an ordered
+  gallery of images/videos with alt text and a per-item **Hide on mobile** toggle
+
+### Notes on two of those
+
+**Project order lives on the category, not the project.** A project says which category it belongs to; the
+category says in what order its projects appear. Drag the rows of *Project order* to re-sequence a category.
+A newly created project is not in that list yet, so it shows up last until it's added — add it right after
+creating it. The same order drives the desktop project rail, the mobile menu index, and the "next project"
+arrow.
+
+**Formatting in body copy.** The About paragraphs and the category / project descriptions accept **bold**,
+*italic* and links (the three toolbar buttons). Nothing else is supported: pasted headings, lists, images or
+HTML will show up as literal text on the site. Links to anything other than `http(s)://`, `mailto:` or a page
+on this site are dropped and only their text is kept.
 
 ---
 

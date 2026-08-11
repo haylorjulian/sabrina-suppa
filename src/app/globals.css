@@ -11,12 +11,17 @@
   --wet-petroleum: #22262b;
 
   /* Emergent-light control materials (see DESIGN.md — The Emergent-Light Rule).
-     Controls surface from shadow on attention; the light is flesh-toned in the
-     dark world, an ink penumbra in the light world. Not glassmorphism. */
+     Controls surface from shadow on attention; the light is porcelain in the dark
+     world, an ink penumbra in the light world. Not glassmorphism.
+     The hairline rings here are bone-porcelain, not synthetic-flesh: every rule
+     and edge on the site is one hue, and state is carried by opacity alone. */
   --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
-  --glow-flesh: 0 0 26px -6px rgba(201, 164, 143, 0.55), inset 0 0 0 1px rgba(201, 164, 143, 0.22);
+  --glow-bone: 0 0 26px -6px rgba(243, 238, 232, 0.55), inset 0 0 0 1px rgba(243, 238, 232, 0.22);
   --penumbra-ink: 0 8px 22px -12px rgba(26, 26, 28, 0.65);
-  --flesh-halo: 0 0 0 4px rgba(201, 164, 143, 0.05);
+  --bone-halo: 0 0 0 4px rgba(243, 238, 232, 0.05);
+  /* Stays flesh: this is the nav-link bloom, a blurred radial glow rather than a
+     line, and it has to register against the light world too — porcelain on
+     porcelain would erase the hover state on the Work and About sections. */
   --glow-underlay: rgba(201, 164, 143, 0.42);
 }
 
@@ -92,6 +97,30 @@ body {
   .nav-link:focus-visible::after {
     opacity: 0.55;
   }
+
+  /* Editor-authored formatting inside body copy (About, category and project
+     descriptions — see scripts/build-content.mjs). Only <strong>, <em> and <a>
+     can reach the DOM, so this is the whole surface.
+
+     Links inherit their colour from the paragraph, so one rule serves both
+     worlds; the state is carried by the underline and opacity, never a hue
+     change. 500 is the one weight allowed above the 300 body — a deliberate
+     emphasis, not a second body weight. */
+  .rich-text a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: currentColor;
+    opacity: 0.72;
+    transition: opacity 0.3s var(--ease-signature);
+  }
+  .rich-text a:hover,
+  .rich-text a:focus-visible {
+    opacity: 1;
+  }
+  .rich-text strong {
+    font-weight: 500;
+  }
 }
 
 /* Emergent-light controls settle instantly under reduced motion — the lit
@@ -99,7 +128,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ds-control,
   .nav-link,
-  .nav-link::after {
+  .nav-link::after,
+  .rich-text a {
     transition: none !important;
   }
 }

@@ -110,10 +110,15 @@ export default function Work() {
                     i === categoryIndex ? '' : 'pointer-events-none'
                   }`}
                 >
-                  {cat.description.split('\n\n').map((para, j) => (
-                    <p key={j} className="section-desc font-light text-oxidized-graphite/70">
-                      {para}
-                    </p>
+                  {/* Paragraph splitting and any editor formatting (bold /
+                      italic / links) are resolved at build time — see
+                      scripts/build-content.mjs. */}
+                  {cat.descriptionHtml.map((para, j) => (
+                    <p
+                      key={j}
+                      className="section-desc rich-text font-light text-oxidized-graphite/70"
+                      dangerouslySetInnerHTML={{ __html: para }}
+                    />
                   ))}
                 </motion.div>
               ))}

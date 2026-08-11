@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
@@ -119,7 +120,17 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
     return () => ro.disconnect()
   }, [])
 
-  const rows = computeRows(media, width, GAP, TARGET_ROW_HEIGHT, MAX_COLUMNS)
+  // Editors can drop individual assets below lg (wide crops that lose their
+  // subject on a phone). The layout is computed in JS, so hiding with CSS would
+  // leave a hole in the row — the item has to leave the list before it is packed.
+  // The query is inverted deliberately: useMediaQuery returns false until mount,
+  // so the static render is the desktop one, matching DEFAULT_WIDTH above. Mobile
+  // then drops the flagged items on the same post-mount pass that measures the
+  // real container width, rather than adding a second reflow.
+  const isMobile = useMediaQuery('(max-width: 1023.98px)')
+  const visible = isMobile ? media.filter((m) => !m.hideOnMobile) : media
+
+  const rows = computeRows(visible, width, GAP, TARGET_ROW_HEIGHT, MAX_COLUMNS)
 
   return (
     <div className="min-h-[100dvh] bg-oxidized-graphite text-bone-porcelain">
@@ -164,17 +175,26 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
             </Link>
           )}
         </motion.h1>
-        {project.description && (
+        {project.descriptionHtml.length > 0 && (
           <motion.p
             variants={fadeInUp}
-            className="mt-6 max-w-[85ch] whitespace-pre-line text-[1rem] font-light leading-[1.7] tracking-[0.02em] lg:tracking-[0.04em] text-pretty text-bone-porcelain/70"
+            className="rich-text mt-6 max-w-[85ch] text-[1rem] font-light leading-[1.7] tracking-[0.02em] lg:tracking-[0.04em] text-pretty text-bone-porcelain/70"
           >
             {/* Both variants render; CSS picks one so the static/server markup
                 matches on hydration. descriptionMobile falls back to the desktop
                 text at build time, so these are identical until the editor sets
-                a distinct mobile description. */}
-            <span className="lg:hidden">{project.descriptionMobile}</span>
-            <span className="hidden lg:inline">{project.description}</span>
+                a distinct mobile description.
+                The HTML is built by scripts/build-content.mjs from the CMS
+                markdown — escaped there, and limited to <strong>/<em>/<a>.
+                Paragraphs rejoin with <br><br> to keep this one block. */}
+            <span
+              className="lg:hidden"
+              dangerouslySetInnerHTML={{ __html: project.descriptionMobileHtml.join('<br><br>') }}
+            />
+            <span
+              className="hidden lg:inline"
+              dangerouslySetInnerHTML={{ __html: project.descriptionHtml.join('<br><br>') }}
+            />
           </motion.p>
         )}
       </motion.header>

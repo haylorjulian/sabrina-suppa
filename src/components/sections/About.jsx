@@ -55,10 +55,15 @@ export default function About({ sectionId }) {
               transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
               className="mt-8 space-y-3"
             >
-              {c.paragraphs.map((para, i) => (
-                <p key={i} className="section-desc whitespace-pre-line font-light text-oxidized-graphite/70">
-                  {para}
-                </p>
+              {/* Editor prose: bold / italic / links are rendered to HTML at
+                  build time (scripts/build-content.mjs), which also turns the
+                  line breaks into <br> — hence no whitespace-pre-line here. */}
+              {c.paragraphsHtml.map((para, i) => (
+                <p
+                  key={i}
+                  className="section-desc rich-text font-light text-oxidized-graphite/70"
+                  dangerouslySetInnerHTML={{ __html: para }}
+                />
               ))}
             </motion.div>
 
@@ -121,10 +126,12 @@ export default function About({ sectionId }) {
           </motion.h2>
 
           <motion.div variants={fadeInUp} className="max-w-[46ch] space-y-3">
-            {c.paragraphsMobile.map((para, i) => (
-              <p key={i} className="body-copy whitespace-pre-line font-light text-[#D8D4CF]/80 [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]">
-                {para}
-              </p>
+            {c.paragraphsMobileHtml.map((para, i) => (
+              <p
+                key={i}
+                className="body-copy rich-text font-light text-[#D8D4CF]/80 [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+                dangerouslySetInnerHTML={{ __html: para }}
+              />
             ))}
           </motion.div>
 

@@ -63,12 +63,16 @@ export default function WorkMobile() {
                 {cat.label}
               </motion.h2>
 
+              {/* One block, not a stack of <p>: the mobile cover reads as a
+                  single paragraph with blank lines between stanzas, so the
+                  build-time paragraphs are rejoined with <br><br> rather than
+                  taking the desktop panel's space-y-3 rhythm. Editor formatting
+                  (bold / italic / links) rides along inside the HTML. */}
               <motion.p
                 variants={fadeInUp}
-                className={`body-copy max-w-[46ch] whitespace-pre-line font-light ${dark ? 'text-oxidized-graphite/85' : 'text-[#D8D4CF]/80'} ${overlayShadow}`}
-              >
-                {cat.descriptionMobile}
-              </motion.p>
+                className={`body-copy rich-text max-w-[46ch] font-light ${dark ? 'text-oxidized-graphite/85' : 'text-[#D8D4CF]/80'} ${overlayShadow}`}
+                dangerouslySetInnerHTML={{ __html: cat.descriptionMobileHtml.join('<br><br>') }}
+              />
 
               <motion.div variants={fadeInUp} className="pt-2">
                 <Link

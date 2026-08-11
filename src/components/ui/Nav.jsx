@@ -179,8 +179,9 @@ export default function Nav() {
 
                 {/* Project index — styled distinctly from the section links above:
                     dimmed category labels over italic project titles (echoing the
-                    desktop ProjectNav rail). The current project gets the one rare
-                    accent as a tick, never a fill (DESIGN.md). */}
+                    desktop ProjectNav rail). The current project gets a porcelain
+                    tick at full opacity, never a fill (DESIGN.md) — the same
+                    opacity-only state language as the desktop rail. */}
                 <div className="flex flex-col gap-6">
                   {projectGroups.map((group) => (
                     <motion.div
@@ -207,7 +208,7 @@ export default function Nav() {
                                 }`}
                               >
                                 {p.title}
-                                {active && <span aria-hidden="true" className="h-px w-6 bg-synthetic-flesh" />}
+                                {active && <span aria-hidden="true" className="h-px w-6 bg-bone-porcelain" />}
                               </Link>
                             </li>
                           )

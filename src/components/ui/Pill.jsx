@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 // slide between pills (buttons-cta spec).
 //
 // Emergent-light treatment (Vitrine, light world): the active lozenge floats on
-// a soft ink penumbra with a faint flesh halo; idle tabs are quiet forms (no
+// a soft ink penumbra with a faint porcelain halo; idle tabs are quiet forms (no
 // dashes) that warm with a taupe glow and lift on attention — objects settling
 // under museum glass. See DESIGN.md — The Emergent-Light Rule.
 export default function Pill({ label, active, onClick }) {
@@ -20,7 +20,7 @@ export default function Pill({ label, active, onClick }) {
       {active && (
         <motion.span
           layoutId="pill-active"
-          className="absolute inset-0 rounded-full bg-oxidized-graphite [box-shadow:var(--penumbra-ink),var(--flesh-halo)]"
+          className="absolute inset-0 rounded-full bg-oxidized-graphite [box-shadow:var(--penumbra-ink),var(--bone-halo)]"
           transition={{ type: 'spring', stiffness: 380, damping: 34 }}
         />
       )}

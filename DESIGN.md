@@ -96,7 +96,9 @@ A five-tone body-and-instrument palette: two grounds at the extremes (near-black
 ### Named Rules
 **The Two-Worlds Rule.** Every surface is either dark-world (`oxidized-graphite` ground, `bone-porcelain` type, `data-nav-theme="dark"`) or light-world (`bone-porcelain` ground, `oxidized-graphite` type, `data-nav-theme="light"`). There is no third ground. New sections declare their world; they never invent a mid-gray in between.
 
-**The One-Skin Rule.** `synthetic-flesh` is the only accent and it is rare — reserved for moments that reference the body (accents, hovers, the descriptor, and the transient emergent glow that lifts a control on attention). It is prohibited as a *static* button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.
+**The One-Skin Rule.** `synthetic-flesh` is the only accent and it is rare — reserved for moments that reference the body (text accents, hovers, the descriptor, and the nav-link underglow). It is prohibited as a *static* button fill, a background, or a section device. Its scarcity is what makes it read as flesh and not as brand color.
+
+**The One-Line Rule.** Every rule, tick, hairline border and ring on the site is `bone-porcelain` in the dark world and `oxidized-graphite` in the light world — never flesh. Lines carry state through *opacity and length only* (an active project tick is porcelain at full opacity beside siblings at `/25`, `/50` on hover); a line never changes hue to mean something. This is what keeps flesh legible as an accent when it does appear.
 
 ## 3. Typography
 
@@ -122,10 +124,10 @@ A five-tone body-and-instrument palette: two grounds at the extremes (near-black
 
 Structurally flat, softly lit. There are **no directional drop shadows** simulating stacked panels. Surface depth is atmospheric, through four materials: (1) tonal gradients that dissolve imagery into the graphite ground (`bg-gradient-to-t from-oxidized-graphite via-oxidized-graphite/80 to-transparent`), (2) opacity crossfades between gallery images and section states, (3) the `wet-petroleum` tonal step for secondary dark surfaces, and (4) `text-shadow` used *functionally* — only to hold type legible over photography (`0 2px 18px rgba(26,26,28,0.6)`), never as decoration.
 
-**Controls are the one place light is allowed to gather.** They carry an *emergent light*: at rest a control nearly dissolves into its ground, and attention (hover / focus) raises a soft, diffuse glow — a flesh-toned bloom in the dark world (`--glow-flesh`), an ink penumbra in the light world (`--penumbra-ink`), with a ≤3px `backdrop-blur` lifting it off the imagery behind. The glow is soft and non-directional (no offset that reads as elevation); it responds to state and settles back. This is emergent-from-shadow, deliberately **not** glassmorphism.
+**Controls are the one place light is allowed to gather.** They carry an *emergent light*: at rest a control nearly dissolves into its ground, and attention (hover / focus) raises a soft, diffuse glow — a porcelain bloom in the dark world (`--glow-bone`), an ink penumbra in the light world (`--penumbra-ink`), with a ≤3px `backdrop-blur` lifting it off the imagery behind. The glow is soft and non-directional (no offset that reads as elevation); it responds to state and settles back. This is emergent-from-shadow, deliberately **not** glassmorphism.
 
 ### Named Rules
-**The Emergent-Light Rule.** Structural drop shadows are prohibited — no directional offset simulating a lifted panel. Shadow is permitted *only* as emergent light on controls: soft, diffuse, flesh- or ink-toned, tied to state, tokenized as `--glow-flesh` / `--penumbra-ink`. A hard offset drop shadow anywhere is still a bug.
+**The Emergent-Light Rule.** Structural drop shadows are prohibited — no directional offset simulating a lifted panel. Shadow is permitted *only* as emergent light on controls: soft, diffuse, porcelain- or ink-toned, tied to state, tokenized as `--glow-bone` / `--penumbra-ink`. A hard offset drop shadow anywhere is still a bug.
 
 **The Glass-Is-For-Controls Rule.** `backdrop-filter: blur()` is allowed only as a ≤3px functional lift of an *interactive control* off imagery. Frosted panels, glass cards, and decorative blur on surfaces remain prohibited.
 
@@ -137,14 +139,14 @@ Controls are minimal and instrumental — thin lines, tracked caps — that rece
 
 ### Pills (Work category tabs)
 - **Shape:** Fully rounded (`rounded-full`), padding `8px 22px`.
-- **Active:** Solid `oxidized-graphite` lozenge, `bone-porcelain` label, floating on a soft ink penumbra with a faint `flesh-halo` ring (`--penumbra-ink, --flesh-halo`). The fill slides between pills via a shared `layoutId` spring (stiffness 380, damping 34) — a single dark cell migrating across the taxonomy.
+- **Active:** Solid `oxidized-graphite` lozenge, `bone-porcelain` label, floating on a soft ink penumbra with a faint `bone-halo` ring (`--penumbra-ink, --bone-halo`). The fill slides between pills via a shared `layoutId` spring (stiffness 380, damping 34) — a single dark cell migrating across the taxonomy.
 - **Inactive:** A quiet form — hairline `oxidized-graphite/10` border over a `surgical-taupe/5` fill with a 3px `backdrop-blur`, `oxidized-graphite/85` label. On hover/focus it warms (border `surgical-taupe/40`, taupe fill), raises the ink penumbra, and lifts 1px. Settling under glass, not a dashed placeholder.
 - **Label:** 9.5px, uppercase, tracking 0.20em.
 
 ### Arrow Buttons (gallery / Next Project)
 - **Shape:** Square, no radius. 36px default, 38px large.
 - **Rest:** A faint form — 1px border at 10% of the world's ink, a near-invisible tint fill, glyph at ~70% ink, 3px `backdrop-blur` lifting it off imagery.
-- **Hover / Focus (emergent light):** No invert. The control surfaces — glyph brightens to full ink, border warms, a soft glow rises (`--glow-flesh` in the dark world, `--penumbra-ink` in the light world), and it lifts 1px (`scale 1.03, y -1`; `0.94` on tap). Theme-aware: `dark` (flesh bloom over imagery) and `light` (ink penumbra on porcelain).
+- **Hover / Focus (emergent light):** No invert. The control surfaces — glyph brightens to full ink, the border rises in opacity (`/10` → `/40`, same hue), a soft glow rises (`--glow-bone` in the dark world, `--penumbra-ink` in the light world), and it lifts 1px (`scale 1.03, y -1`; `0.94` on tap). Theme-aware: `dark` (porcelain bloom over imagery) and `light` (ink penumbra on porcelain).
 
 ### Navigation
 - **Style:** Single fixed bar, transparent, `px-6 py-7` (`md:px-[52px]`). No background, no border — it floats over whichever world is beneath it.
@@ -162,7 +164,7 @@ Controls are minimal and instrumental — thin lines, tracked caps — that rece
 - **Do** let imagery lead — the specimen holds the room; type, spacing, and motion frame it.
 - **Do** keep all display/label type uppercase and tracked ≥0.20em (Copperplate) and body type Cormorant weight 300.
 - **Do** convey depth with tonal gradients, opacity dissolves, and the `wet-petroleum` step — atmospheric, not stacked.
-- **Do** reserve `synthetic-flesh` (`#C9A48F`) for rare, body-referencing accents and hovers only.
+- **Do** reserve `synthetic-flesh` (`#C9A48F`) for rare, body-referencing text accents and hovers only — never for a rule, tick, border or ring (see The One-Line Rule).
 - **Do** hold body measure at ~60ch and keep the cinematic motion behind a `prefers-reduced-motion` crossfade fallback.
 
 ### Don't:

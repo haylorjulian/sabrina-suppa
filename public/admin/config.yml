@@ -90,12 +90,26 @@ collections:
           - label: Paragraphs
             name: paragraphs
             widget: list
-            field: { label: Paragraph, name: paragraph, widget: text }
+            field:
+              label: Paragraph
+              name: paragraph
+              widget: markdown
+              modes: [rich_text]
+              buttons: [bold, italic, link]
+              editor_components: []
+              minimal: true
           - label: Paragraphs — mobile
             name: paragraphsMobile
             widget: list
             required: false
-            field: { label: Paragraph, name: paragraph, widget: text }
+            field:
+              label: Paragraph
+              name: paragraph
+              widget: markdown
+              modes: [rich_text]
+              buttons: [bold, italic, link]
+              editor_components: []
+              minimal: true
             hint: "Optional — shown on mobile instead of the paragraphs above. Leave blank to reuse the desktop text."
           - { label: Background image, name: background, widget: image }
           - { label: Background alt text, name: bgAlt, widget: string }
@@ -141,14 +155,36 @@ collections:
         pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers and dashes only']
       - { label: Label (display name), name: label, widget: string }
       - { label: Order (lower shows first), name: order, widget: number, value_type: int, default: 1 }
+      - label: Project order
+        name: projectOrder
+        widget: list
+        required: false
+        collapsed: false
+        field:
+          label: Project
+          name: project
+          widget: relation
+          collection: projects
+          value_field: slug
+          search_fields: [title, slug]
+          display_fields: [title]
+        hint: "Drag the rows to set the order projects appear in this category. Add every new project here — anything missing is shown last."
       - label: Description
         name: description
-        widget: text
+        widget: markdown
+        modes: [rich_text]
+        buttons: [bold, italic, link]
+        editor_components: []
+        minimal: true
         hint: "Leave a blank line between paragraphs. Max 923 characters — the length of the Adaptive Flesh description, so the Work panel's pinned controls never shift."
         pattern: ['^[\s\S]{0,923}$', 'Keep the description to 923 characters or fewer (the Adaptive Flesh length).']
       - label: Description — mobile
         name: descriptionMobile
-        widget: text
+        widget: markdown
+        modes: [rich_text]
+        buttons: [bold, italic, link]
+        editor_components: []
+        minimal: true
         required: false
         hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
       - { label: Background image — desktop, name: desktopImage, widget: image, required: false }
@@ -196,14 +232,21 @@ collections:
         value_field: slug
         search_fields: [label, slug]
         display_fields: [label]
-      - { label: Order (within category), name: order, widget: number, value_type: int, default: 1 }
       - label: Description
         name: description
-        widget: text
+        widget: markdown
+        modes: [rich_text]
+        buttons: [bold, italic, link]
+        editor_components: []
+        minimal: true
         hint: Leave a blank line between paragraphs.
       - label: Description — mobile
         name: descriptionMobile
-        widget: text
+        widget: markdown
+        modes: [rich_text]
+        buttons: [bold, italic, link]
+        editor_components: []
+        minimal: true
         required: false
         hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
       - { label: "'Coming soon' label (leave blank if the project is live)", name: comingSoon, widget: string, required: false }
@@ -214,3 +257,9 @@ collections:
         fields:
           - { label: Image or video, name: src, widget: file }
           - { label: Alt text (describe the image), name: alt, widget: string, required: false, default: "" }
+          - label: Hide on mobile
+            name: hideOnMobile
+            widget: boolean
+            required: false
+            default: false
+            hint: "Leave the item out of the gallery on phones and small tablets (below 1024px) — for assets that only read well on a wide screen."

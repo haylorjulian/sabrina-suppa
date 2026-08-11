@@ -104,7 +104,106 @@ function mediaItem(item) {
     width: d?.w ?? null,
     height: d?.h ?? null,
     ...(item.alt ? { alt: item.alt } : {}),
+    // Editor flag: drop this item from the gallery below the lg breakpoint (some
+    // assets only read well on a wide screen). Only emitted when set.
+    ...(item.hideOnMobile ? { hideOnMobile: true } : {}),
   }
+}
+
+// ---- Rich text -------------------------------------------------------------
+//
+// The CMS markdown fields are limited to three constructs (bold, italic, link),
+// so the site ships its own tiny renderer rather than a markdown dependency:
+// escaping first and only ever emitting <strong>/<em>/<a> means authored markup
+// can never reach the DOM through the dangerouslySetInnerHTML the components use.
+// Anything richer that an editor pastes in (headings, lists, images, raw HTML)
+// renders as literal text — deliberately, and visibly, so it gets noticed.
+
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }
+const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => HTML_ESCAPES[c])
+
+// Backslash-escaped markdown (`\-`, `\*`, …) is parked on a sentinel through the
+// inline passes and restored at the end, so an escaped character can never be
+// re-read as syntax. U+0000 cannot occur in the source (JSON forbids it raw).
+const ESCAPABLE = '\\`*_[]()#+-.!'
+// `]`, `-`, `\` and `^` carry meaning inside a character class, so escape them
+// before the list is interpolated into one.
+const ESCAPED_RE = new RegExp(`\\\\([${ESCAPABLE.replace(/[\\\]\-^]/g, '\\$&')}])`, 'g')
+const SENTINEL = '\u0000'
+const PARKED_RE = /\u0000(\d+)\u0000/g
+
+// `[text](url)`. The url part tolerates one level of nested parentheses so that
+// a rejected `javascript:alert(1)` is consumed whole rather than leaving a stray
+// bracket in the copy.
+const LINK_RE = /\[([^\]\n]+)\]\(([^()\s]*(?:\([^()\s]*\)[^()\s]*)*)\)/g
+
+// Emphasis, markdown's own rule: the delimiters must hug their content, so
+// "a * b * c" stays literal asterisks and only "*b*" becomes emphasis. `_` is
+// additionally barred from mid-word, so snake_case survives.
+const BOLD_STAR_RE = /\*\*(?!\s)([^\n]+?)(?<!\s)\*\*/g
+const BOLD_UNDER_RE = /(^|[^\w_])__(?!\s)([^\n]+?)(?<!\s)__(?![\w_])/g
+const ITALIC_STAR_RE = /(^|[^*])\*(?!\s)([^*\n]+?)(?<!\s)\*(?!\*)/g
+const ITALIC_UNDER_RE = /(^|[^\w_])_(?!\s)([^_\n]+?)(?<!\s)_(?![\w_])/g
+
+// Only these schemes may become an href. Everything else (javascript:, data:, …)
+// falls back to rendering the link's text, so a bad paste degrades to plain copy
+// instead of shipping a live hazard.
+function safeHref(raw) {
+  const href = raw.trim()
+  if (/^(https?:|mailto:)/i.test(href)) return href
+  if (href.startsWith('/') || href.startsWith('#')) return href
+  return null
+}
+
+// One line of source → HTML. Newlines become <br>, matching the whitespace-pre-line
+// rendering these fields had before they were markdown.
+function renderInline(src) {
+  let out = escapeHtml(src)
+
+  out = out.replace(ESCAPED_RE, (_, ch) => `${SENTINEL}${ch.charCodeAt(0)}${SENTINEL}`)
+
+  out = out.replace(LINK_RE, (_, text, url) => {
+    const href = safeHref(url)
+    if (!href) return text
+    const external = /^(https?:)/i.test(href)
+    const rel = external ? ' target="_blank" rel="noreferrer"' : ''
+    return `<a href="${href}"${rel}>${text}</a>`
+  })
+
+  out = out
+    .replace(BOLD_STAR_RE, '<strong>$1</strong>')
+    .replace(BOLD_UNDER_RE, '$1<strong>$2</strong>')
+    .replace(ITALIC_STAR_RE, '$1<em>$2</em>')
+    .replace(ITALIC_UNDER_RE, '$1<em>$2</em>')
+
+  out = out.replace(PARKED_RE, (_, code) => String.fromCharCode(+code))
+
+  return out.replace(/\n/g, '<br>')
+}
+
+// Source → array of paragraph HTML strings, split on blank lines. Components map
+// this into one <p> each (or join it with <br><br> where the design wants a single
+// block), so the paragraph rhythm is decided at build time, not per component.
+function richParagraphs(src) {
+  return String(src || '')
+    .split(/\n[ \t]*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map(renderInline)
+}
+
+// Markdown markers stripped, for places that need plain text (meta descriptions).
+// Escapes are parked first, exactly as in renderInline, so `\*literal\*` comes
+// back as `*literal*` rather than losing its asterisks and keeping the slashes.
+function plainText(src) {
+  return String(src || '')
+    .replace(ESCAPED_RE, (_, ch) => `${SENTINEL}${ch.charCodeAt(0)}${SENTINEL}`)
+    .replace(LINK_RE, '$1')
+    .replace(BOLD_STAR_RE, '$1')
+    .replace(BOLD_UNDER_RE, '$1$2')
+    .replace(ITALIC_STAR_RE, '$1$2')
+    .replace(ITALIC_UNDER_RE, '$1$2')
+    .replace(PARKED_RE, (_, code) => String.fromCharCode(+code))
 }
 
 // ---- Read source files -----------------------------------------------------
@@ -126,27 +225,62 @@ const byOrder = (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.slug.localeCompar
 const categories = loadDir('categories').sort(byOrder)
 const projects = loadDir('projects').sort(byOrder)
 
+// Projects belonging to a category, in the sequence the editor dragged them into
+// on the category record (`projectOrder`). A project that isn't listed there —
+// typically one just created in the CMS — is appended rather than dropped, so it
+// always appears somewhere and can be positioned later.
+//
+// This is the ONLY place category membership and order are decided: both the copy
+// and the media assembly below call it, because workMedia[slug][i] is index-aligned
+// with copy.work.categories[].projects[i] (see app/work/[category]/[project]/page.jsx).
+function projectsFor(cat) {
+  const mine = projects.filter((p) => p.category === cat.slug)
+  const listed = []
+  for (const slug of cat.projectOrder || []) {
+    const p = mine.find((m) => m.slug === slug)
+    if (!p) {
+      console.warn(`  ! ${cat.slug}: project order lists "${slug}", which is not in this category — ignored.`)
+      continue
+    }
+    if (!listed.includes(p)) listed.push(p)
+  }
+  const rest = mine.filter((p) => !listed.includes(p))
+  for (const p of rest) {
+    console.warn(`  ! ${cat.slug}: "${p.slug}" is not in the project order — appended at the end.`)
+  }
+  return [...listed, ...rest]
+}
+
+// Resolved once so the two assembly passes below cannot disagree (and so the
+// warnings above print once per category, not twice).
+const categoryProjects = new Map(categories.map((cat) => [cat.slug, projectsFor(cat)]))
+
 // ---- Assemble copy.generated.json (shape identical to the old copy.json) ----
 
+// Editor prose fields ship twice: `*Html` (paragraph-split, bold/italic/link
+// rendered — what the components display) and the plain string (markdown markers
+// stripped — what meta descriptions and any text-only context use).
 const copyCategories = categories.map((cat) => ({
   slug: cat.slug,
   label: cat.label,
-  description: cat.description,
+  description: plainText(cat.description),
+  descriptionHtml: richParagraphs(cat.description),
   // Optional per-record mobile copy; falls back to the desktop text when blank.
-  descriptionMobile: cat.descriptionMobile || cat.description,
+  descriptionMobile: plainText(cat.descriptionMobile || cat.description),
+  descriptionMobileHtml: richParagraphs(cat.descriptionMobile || cat.description),
   // Light/dark colour for the text overlaid on the mobile category image.
   overlayTextColor: cat.overlayTextColor || 'light',
   // Light/dark colour for the category name overlaid on the desktop image.
   desktopOverlayTextColor: cat.desktopOverlayTextColor || 'light',
-  projects: projects
-    .filter((p) => p.category === cat.slug)
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      description: p.description,
-      descriptionMobile: p.descriptionMobile || p.description,
-      ...(p.comingSoon ? { comingSoon: p.comingSoon } : {}),
-    })),
+  projects: categoryProjects.get(cat.slug).map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    description: plainText(p.description),
+    descriptionHtml: richParagraphs(p.description),
+    descriptionMobile: plainText(p.descriptionMobile || p.description),
+    descriptionMobileHtml: richParagraphs(p.descriptionMobile || p.description),
+    ...(p.comingSoon ? { comingSoon: p.comingSoon } : {}),
+  })),
 }))
 
 const copy = {
@@ -166,10 +300,17 @@ const copy = {
     work: { ...workUi, categories: copyCategories },
     about: {
       sectionLabel: about.sectionLabel,
-      paragraphs: about.paragraphs,
+      paragraphs: about.paragraphs.map(plainText),
+      // One entry in, one <p> out — a blank line inside an entry stays a blank
+      // line (joined with <br><br>) rather than splitting into a new paragraph,
+      // which is how these read before markdown.
+      paragraphsHtml: about.paragraphs.map((p) => richParagraphs(p).join('<br><br>')),
       // Optional per-record mobile copy; falls back to the desktop paragraphs
       // when the editor leaves it blank (same pattern as category/project copy).
-      paragraphsMobile: about.paragraphsMobile?.length ? about.paragraphsMobile : about.paragraphs,
+      paragraphsMobile: (about.paragraphsMobile?.length ? about.paragraphsMobile : about.paragraphs).map(plainText),
+      paragraphsMobileHtml: (about.paragraphsMobile?.length ? about.paragraphsMobile : about.paragraphs).map(
+        (p) => richParagraphs(p).join('<br><br>')
+      ),
       bgAlt: about.bgAlt,
       social: about.social,
     },
@@ -190,9 +331,7 @@ for (const cat of categories) {
 // workMedia keyed by category slug, ordered to match copy.work.categories[].projects.
 const workMedia = {}
 for (const cat of categories) {
-  workMedia[cat.slug] = projects
-    .filter((p) => p.category === cat.slug)
-    .map((p) => ({ media: (p.media || []).map(mediaItem) }))
+  workMedia[cat.slug] = categoryProjects.get(cat.slug).map((p) => ({ media: (p.media || []).map(mediaItem) }))
 }
 
 const media = {

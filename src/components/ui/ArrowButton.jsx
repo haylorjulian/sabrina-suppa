@@ -8,13 +8,14 @@ import { motion } from 'framer-motion'
 //
 // Emergent-light treatment (Vitrine): at rest the control is a faint form that
 // nearly dissolves into its ground; attention (hover/focus) raises a soft light —
-// a flesh bloom in the dark world, an ink penumbra in the light world. No hard
-// invert. See DESIGN.md — The Emergent-Light Rule.
+// a porcelain bloom in the dark world, an ink penumbra in the light world. No
+// hard invert. The dark border only changes opacity (/10 → /40), never hue.
+// See DESIGN.md — The Emergent-Light Rule.
 export default function ArrowButton({ glyph, onClick, label, size = 'md', theme = 'light' }) {
   const dims = size === 'lg' ? 'w-[38px] h-[38px] text-sm' : 'w-9 h-9 text-[13px]'
   const palette =
     theme === 'dark'
-      ? 'border-bone-porcelain/10 bg-bone-porcelain/[0.03] text-bone-porcelain/70 backdrop-blur-[3px] hover:border-synthetic-flesh/40 hover:bg-synthetic-flesh/[0.07] hover:text-bone-porcelain hover:[box-shadow:var(--glow-flesh)] focus-visible:border-synthetic-flesh/40 focus-visible:bg-synthetic-flesh/[0.07] focus-visible:text-bone-porcelain focus-visible:[box-shadow:var(--glow-flesh)]'
+      ? 'border-bone-porcelain/10 bg-bone-porcelain/[0.03] text-bone-porcelain/70 backdrop-blur-[3px] hover:border-bone-porcelain/40 hover:bg-bone-porcelain/[0.07] hover:text-bone-porcelain hover:[box-shadow:var(--glow-bone)] focus-visible:border-bone-porcelain/40 focus-visible:bg-bone-porcelain/[0.07] focus-visible:text-bone-porcelain focus-visible:[box-shadow:var(--glow-bone)]'
       : 'border-oxidized-graphite/10 bg-oxidized-graphite/[0.02] text-oxidized-graphite/70 backdrop-blur-[3px] hover:border-surgical-taupe/40 hover:bg-surgical-taupe/[0.08] hover:text-oxidized-graphite hover:[box-shadow:var(--penumbra-ink)] focus-visible:border-surgical-taupe/40 focus-visible:bg-surgical-taupe/[0.08] focus-visible:text-oxidized-graphite focus-visible:[box-shadow:var(--penumbra-ink)]'
 
   return (
