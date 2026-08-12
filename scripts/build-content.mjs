@@ -70,9 +70,10 @@ function dimsFor(src, item) {
     try {
       let buf
       if (isAbsolute(src)) {
-        // Fetched lazily and synchronously is not possible; skip remote probe here.
-        // New R2 images without a cached entry fall back to null and are measured
-        // on load by the gallery. Pre-warm the cache with `node scripts/probe-remote.mjs` if needed.
+        // Remote images are measured by warmDimsCache() before assembly (fetch is
+        // async, dimsFor is sync), so by here their dims are already in the cache and
+        // returned above. Reaching this branch means the warm pass couldn't measure
+        // this src — leave it null so it falls back to the 0.8 portrait ratio.
         buf = null
       } else {
         const local = join(PUBLIC, src.replace(/^\//, ''))
@@ -316,6 +317,74 @@ const copy = {
     },
   },
 }
+
+// ---- Warm the dimensions cache for remote images ---------------------------
+//
+// `dimsFor` can't fetch synchronously, so remote gallery images are measured here,
+// once, before assembly. Only uncached, non-video, non-declared absolute srcs are
+// fetched — a committed cache means steady-state builds fetch nothing, and a newly
+// uploaded CMS image incurs one ranged request. This is what makes any aspect ratio
+// (portrait, 16:9, wider) render correctly without the CMS carrying dimensions,
+// which its schema strips. Failures are non-fatal: an unmeasured src stays uncached
+// and falls back to the 0.8 portrait ratio in `dimsFor`, exactly as before.
+
+const PROBE_TIMEOUT_MS = 15000
+const PROBE_CONCURRENCY = 8
+
+// Fetch just enough of an image to read its header. Ranged first (a few KB); if that
+// can't be parsed, retry the whole file; give up (→ null) on any error or timeout.
+async function measureRemote(src) {
+  for (const headers of [{ Range: 'bytes=0-65535' }, {}]) {
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), PROBE_TIMEOUT_MS)
+    try {
+      const res = await fetch(src, { headers, signal: ctrl.signal })
+      if (res.ok) {
+        const { width, height } = sizeOf(Buffer.from(await res.arrayBuffer()))
+        if (width && height) return { w: width, h: height }
+      }
+    } catch {
+      // fall through to the next strategy, then give up
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+  return null
+}
+
+async function warmDimsCache() {
+  const pending = new Set()
+  for (const list of categoryProjects.values())
+    for (const p of list)
+      for (const item of p.media || []) {
+        const src = resolveSrc(item.src)
+        if (!isAbsolute(src)) continue // local files: dimsFor probes them from disk
+        if (VIDEO_EXT.has(ext(src))) continue // videos keep their default ratio
+        if (cache[src]) continue // already known (committed cache)
+        if (item.width && item.height) continue // explicit override wins
+        pending.add(src)
+      }
+  const srcs = [...pending]
+  if (!srcs.length) return
+  console.log(`  Probing ${srcs.length} uncached image(s) for dimensions…`)
+  let measured = 0
+  for (let i = 0; i < srcs.length; i += PROBE_CONCURRENCY) {
+    const batch = srcs.slice(i, i + PROBE_CONCURRENCY)
+    const dims = await Promise.all(batch.map(measureRemote))
+    batch.forEach((src, j) => {
+      if (dims[j]) {
+        cache[src] = dims[j]
+        cacheDirty = true
+        measured++
+      } else {
+        console.warn(`  ! could not measure ${src} — falls back to portrait ratio`)
+      }
+    })
+  }
+  console.log(`  Measured ${measured}/${srcs.length} image(s).`)
+}
+
+await warmDimsCache()
 
 // ---- Assemble media.generated.json -----------------------------------------
 
