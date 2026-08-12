@@ -98,6 +98,7 @@ collections:
               buttons: [bold, italic, link]
               editor_components: []
               minimal: true
+              hint: "Press Enter for a new paragraph. Use Shift+Enter for a line break within the same paragraph."
           - label: Paragraphs — mobile
             name: paragraphsMobile
             widget: list
@@ -110,6 +111,7 @@ collections:
               buttons: [bold, italic, link]
               editor_components: []
               minimal: true
+              hint: "Press Enter for a new paragraph. Use Shift+Enter for a line break within the same paragraph."
             hint: "Optional — shown on mobile instead of the paragraphs above. Leave blank to reuse the desktop text."
           - { label: Background image, name: background, widget: image }
           - { label: Background alt text, name: bgAlt, widget: string }
@@ -176,7 +178,7 @@ collections:
         buttons: [bold, italic, link]
         editor_components: []
         minimal: true
-        hint: "Leave a blank line between paragraphs. Max 923 characters — the length of the Adaptive Flesh description, so the Work panel's pinned controls never shift."
+        hint: "Press Enter for a new paragraph, Shift+Enter for a line break within a paragraph. Max 923 characters — the length of the Adaptive Flesh description, so the Work panel's pinned controls never shift."
         pattern: ['^[\s\S]{0,923}$', 'Keep the description to 923 characters or fewer (the Adaptive Flesh length).']
       - label: Description — mobile
         name: descriptionMobile
@@ -186,7 +188,7 @@ collections:
         editor_components: []
         minimal: true
         required: false
-        hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
+        hint: "Optional — shown on mobile instead of the description above. Press Enter for a new paragraph, Shift+Enter for a line break within a paragraph. Leave blank to reuse the desktop text."
       - { label: Background image — desktop, name: desktopImage, widget: image, required: false }
       - { label: Background image — mobile (optional — defaults to the desktop image), name: mobileImage, widget: image, required: false }
       - label: Text colour over the mobile image
@@ -239,7 +241,7 @@ collections:
         buttons: [bold, italic, link]
         editor_components: []
         minimal: true
-        hint: Leave a blank line between paragraphs.
+        hint: "Press Enter for a new paragraph, Shift+Enter for a line break within a paragraph."
       - label: Description — mobile
         name: descriptionMobile
         widget: markdown
@@ -248,7 +250,7 @@ collections:
         editor_components: []
         minimal: true
         required: false
-        hint: "Optional — shown on mobile instead of the description above. Leave blank to reuse the desktop text."
+        hint: "Optional — shown on mobile instead of the description above. Press Enter for a new paragraph, Shift+Enter for a line break within a paragraph. Leave blank to reuse the desktop text."
       - { label: "'Coming soon' label (leave blank if the project is live)", name: comingSoon, widget: string, required: false }
       - label: Gallery media (images & videos, shown in this order)
         name: media
