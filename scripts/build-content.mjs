@@ -214,6 +214,7 @@ const nav = readJson(join(CONTENT, 'nav.json'))
 const hero = readJson(join(CONTENT, 'hero.json'))
 const preloader = readJson(join(CONTENT, 'preloader.json'))
 const about = readJson(join(CONTENT, 'about.json'))
+const connect = readJson(join(CONTENT, 'connect.json'))
 const workUi = readJson(join(CONTENT, 'work-ui.json'))
 
 const loadDir = (name) =>
@@ -314,6 +315,16 @@ const copy = {
       ),
       bgAlt: about.bgAlt,
       social: about.social,
+    },
+    // Connect is prose + one address: the address ships plain (it's also the
+    // mailto target), the copy ships as HTML like every other editor field.
+    connect: {
+      sectionLabel: connect.sectionLabel,
+      email: connect.email,
+      intro: plainText(connect.intro),
+      introHtml: richParagraphs(connect.intro).join('<br><br>'),
+      notes: connect.notes.map(plainText),
+      notesHtml: connect.notes.map((p) => richParagraphs(p).join('<br><br>')),
     },
   },
 }

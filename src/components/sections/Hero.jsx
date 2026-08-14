@@ -20,9 +20,10 @@ export default function Hero({ sectionId }) {
   const shadow = '[text-shadow:0_1px_8px_rgba(26,26,28,0.7)]'
   const linkColor = 'text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain'
   const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
-  // Connect is hero-only; the shared list stays the source of truth for the three
-  // section hrefs, which must track ScrollStage's ids.
-  const railLinks = [...t.nav.links, c.connect]
+  // Connect is a section now, so it lives in the shared nav list like the rest —
+  // the rail no longer appends hero.connect's mailto. That list stays the source
+  // of truth for the section hrefs, which must track ScrollStage's ids.
+  const railLinks = t.nav.links
 
   return (
     <section

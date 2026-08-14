@@ -4,6 +4,7 @@ import Hero from '@/components/sections/Hero'
 import Work from '@/components/sections/Work'
 import WorkMobile from '@/components/sections/WorkMobile'
 import About from '@/components/sections/About'
+import Connect from '@/components/sections/Connect'
 
 export default function Home() {
   return (
@@ -12,10 +13,14 @@ export default function Home() {
         {/* Desktop (≥1024px) — triggered slideshow that crossfades one section at
             a time on wheel/keys. ScrollStage owns scroll only at this tier. */}
         <div className="hidden lg:block">
-          <ScrollStage themes={['dark', 'light', 'dark']} ids={['home', 'work', 'about']}>
+          <ScrollStage
+            themes={['dark', 'light', 'dark', 'dark']}
+            ids={['home', 'work', 'about', 'connect']}
+          >
             <Hero />
             <Work />
             <About />
+            <Connect />
           </ScrollStage>
         </div>
 
@@ -25,6 +30,7 @@ export default function Home() {
           <Hero sectionId="home" />
           <WorkMobile />
           <About sectionId="about" />
+          <Connect sectionId="connect" />
         </div>
       </main>
     </PreloaderProvider>

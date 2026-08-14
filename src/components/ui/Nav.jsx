@@ -84,9 +84,14 @@ export default function Nav() {
   // mobile menu, which would wrongly flip it at lg if the viewport were resized.
   // Mobile is full opacity (no /NN alpha) per the wordmark's mobile styling;
   // desktop keeps its original translucency via the lg: override below.
+  //
+  // Connect is the exception: it's a single dark ground with no light column, so
+  // the inversion would paint the wordmark graphite on graphite and it would
+  // vanish. It follows the bar there, exactly as the mobile sections do.
+  const fullBleedDark = isHome && section === 'connect'
   const logoColor = [
     barDark ? 'text-bone-porcelain' : 'text-oxidized-graphite',
-    isDark ? 'lg:text-oxidized-graphite/75' : 'lg:text-bone-porcelain/80',
+    isDark && !fullBleedDark ? 'lg:text-oxidized-graphite/75' : 'lg:text-bone-porcelain/80',
   ].join(' ')
 
   // On home the hero owns its own chrome, so the bar steps aside there — fading
