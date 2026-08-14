@@ -122,6 +122,34 @@ collections:
               - { label: Platform, name: label, widget: select, options: [Email, Instagram, Twitter, Linktree] }
               - { label: URL, name: href, widget: string }
 
+      - name: connect
+        label: Connect
+        file: src/content/connect.json
+        fields:
+          - { label: Section label, name: sectionLabel, widget: string }
+          - { label: Email address, name: email, widget: string, hint: "Shown as the address and used as the mailto: link." }
+          - label: Intro line
+            name: intro
+            widget: markdown
+            modes: [rich_text]
+            buttons: [bold, italic, link]
+            editor_components: []
+            minimal: true
+            hint: "The line above the email address. Shift+Enter for a line break."
+          - label: Notes
+            name: notes
+            widget: list
+            field:
+              label: Note
+              name: note
+              widget: markdown
+              modes: [rich_text]
+              buttons: [bold, italic, link]
+              editor_components: []
+              minimal: true
+              hint: "Press Enter for a new paragraph. Use Shift+Enter for a line break within the same paragraph."
+            hint: "The paragraphs below the email address."
+
       - name: work_ui
         label: Work — buttons & labels
         file: src/content/work-ui.json
