@@ -286,7 +286,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
       {/* 2. Index — the only part that scrolls. overscroll-contain stops the
           locked page behind it from rubber-banding at the ends. */}
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="flex flex-col px-6 py-7">
+        <div className="flex flex-col px-6 pb-7">
           <Rule />
           {t.nav.links.map((link) => (
             <div key={link.href} className="flex flex-col">
@@ -299,7 +299,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
                 href={resolveHref(link.href)}
                 onClick={() => onNavClick(link.href)}
                 aria-current={activeHref === link.href ? 'true' : undefined}
-                className={`block py-[22px] font-neue-haas-display text-xl uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
+                className={`block py-[18px] font-neue-haas-display text-base uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
                   activeHref === link.href ? 'text-bone-porcelain' : 'text-bone-porcelain/85'
                 }`}
               >
@@ -332,19 +332,15 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
         </div>
       </div>
 
-      {/* 3. Base — fixed, so the email and socials survive any amount of work. */}
+      {/* 3. Base — fixed, so the email and socials survive any amount of work.
+          One line: icons left, email right. The email's tracking and size are
+          pulled in from the 11px/0.24em of the stacked version so the pair fits
+          the 375px reference width without wrapping. */}
       <motion.div
         variants={overlayItem}
-        className="flex flex-none flex-col gap-5 border-t border-bone-porcelain/[0.18] px-6 pb-8 pt-[26px]"
+        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-8 pt-[26px]"
       >
-        <a
-          href={`mailto:${t.connect.email}`}
-          onClick={onClose}
-          className="font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
-        >
-          {t.connect.email}
-        </a>
-        <ul className="flex items-center gap-7">
+        <ul className="flex flex-none items-center gap-4">
           {socials.map((link) => (
             <li key={link.label}>
               <a
@@ -355,11 +351,18 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
                 aria-label={link.label}
                 className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
               >
-                <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
+                <SocialIcon label={link.label} className="h-[16.5px] w-[16.5px]" />
               </a>
             </li>
           ))}
         </ul>
+        <a
+          href={`mailto:${t.connect.email}`}
+          onClick={onClose}
+          className="whitespace-nowrap font-neue-haas-display text-[10px] uppercase tracking-[0.14em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
+        >
+          {t.connect.email}
+        </a>
       </motion.div>
     </motion.div>
   )
@@ -394,13 +397,13 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
       >
         <span className="flex items-start gap-1.5">
           <span
-            className={`font-neue-haas-display text-[13px] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
+            className={`font-neue-haas-display text-[10.5px] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
               open ? 'text-bone-porcelain/85' : 'text-bone-porcelain/60'
             }`}
           >
             {cat.label}
           </span>
-          <span className="font-neue-haas-display text-[10px] leading-none tracking-[0.08em] text-bone-porcelain/40">
+          <span className="font-neue-haas-display text-[8px] leading-none tracking-[0.08em] text-bone-porcelain/40">
             ({cat.count})
           </span>
         </span>
@@ -442,7 +445,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
                       href={p.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-base font-light italic leading-[1.35] transition-colors duration-300 ${
+                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[13px] font-light italic leading-[1.35] transition-colors duration-300 ${
                         active
                           ? 'text-bone-porcelain'
                           : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'
