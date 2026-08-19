@@ -265,6 +265,10 @@ const categoryProjects = new Map(categories.map((cat) => [cat.slug, projectsFor(
 const copyCategories = categories.map((cat) => ({
   slug: cat.slug,
   label: cat.label,
+  // One-line précis for the mobile category sheet's collapsed state. Plain text,
+  // not rich: it needs no markup, and shipping it unrendered means the component
+  // can print it as an ordinary React child (escaped) rather than as HTML.
+  summary: cat.summary || '',
   description: plainText(cat.description),
   descriptionHtml: richParagraphs(cat.description),
   // Optional per-record mobile copy; falls back to the desktop text when blank.
