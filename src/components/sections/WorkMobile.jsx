@@ -1,95 +1,429 @@
 'use client'
 
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
+import { useNavTheme } from '@/components/NavThemeProvider'
 import { categoryImages } from '@/lib/assets'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
-import ShimmerArrow from '@/components/ui/ShimmerArrow'
+import SectionFade from '@/components/ui/SectionFade'
+import ShimmerLine from '@/components/ui/ShimmerLine'
 
-// Mobile Work (below lg): one full-screen cover per category, stacked in order
-// (Adaptive Flesh → Physical Works). Each cover is the category image full-bleed
-// with the name, its description, and a "See Projects" cue that jumps straight
-// to the first project's gallery. Natural vertical scroll — no in-page toggle.
+const EASE = [0.22, 1, 0.36, 1]
+const SHEET_TRANSITION = { duration: 0.45, ease: EASE }
+const DESKTOP = '(min-width: 1024px)' // mirrors ScrollStage — the tier that owns the nav theme
+
+// The raised sheet is sized by its own description, so a short category doesn't
+// open a half-empty panel. This is only the ceiling: the mock pins the sheet to
+// top:284px on an 874px frame, and as a ratio that keeps a slice of the cover
+// visible on every phone no matter how long the copy runs. Past it the
+// description scrolls inside the sheet.
+const MAX_RAISED_RATIO = 0.675
+
+// Breathing room under the description. The action row is pinned to the sheet's
+// base by mt-auto, so this lands as open space between the copy and the hairline
+// rather than padding the sheet's bottom edge.
+const RAISED_SLACK = 60
+
+// A drag has to clear one of these to flip the sheet — distance for a slow pull,
+// velocity for a flick.
+const DRAG_DISTANCE = 60
+const DRAG_VELOCITY = 500
+
+// Mobile Work (below lg): one full-viewport cover per category, stacked in order
+// (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
+// the name, a one-line précis and the action row. "Read more" (or a drag up)
+// raises the sheet over the cover to reveal the full description; "See Projects"
+// is a real route and stays on screen in both states, so nothing critical sits
+// behind a gesture.
 export default function WorkMobile() {
   const { t } = useLanguage()
   const c = t.work
+  const { setTheme } = useNavTheme()
+
+  // One sheet open at a time — raising a second collapses the first.
+  const [openSlug, setOpenSlug] = useState(null)
+
+  // The nav bar's colour has to follow the cover currently under it: the light-
+  // world category (a bright photograph) needs graphite chrome or the hamburger
+  // vanishes into it. NavThemeProvider notes that a per-section observer can't
+  // work — that's about the desktop stage, where the cross-dissolving sections
+  // all occupy the viewport at once. Below lg they're sequential, so an observer
+  // is exactly the right tool.
+  const articlesRef = useRef(new Map())
+  const registerArticle = useCallback((slug, node) => {
+    if (node) articlesRef.current.set(slug, node)
+    else articlesRef.current.delete(slug)
+  }, [])
+
+  // Joined into a string so the effect below doesn't re-run on every render from
+  // a fresh array identity.
+  const lightWorldSlugs = c.categories
+    .filter((cat) => cat.overlayTextColor === 'dark')
+    .map((cat) => cat.slug)
+    .join(',')
+
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP)
+    const lightWorld = new Set(lightWorldSlugs ? lightWorldSlugs.split(',') : [])
+    let observer = null
+    let owned = false // true while our light theme is the one on the bar
+
+    const engage = () => {
+      if (observer) return
+      const under = new Set() // light-world covers currently under the bar
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const slug = entry.target.dataset.slug
+            if (entry.isIntersecting) under.add(slug)
+            else under.delete(slug)
+          }
+          // Falling back to dark whenever no light cover is up there is what
+          // keeps About and Connect right on the way past — neither of them
+          // sets the theme itself.
+          owned = under.size > 0
+          setTheme(owned ? 'light' : 'dark')
+        },
+        // Only the top band counts: that's the strip the bar actually sits on.
+        { rootMargin: '0px 0px -85% 0px' }
+      )
+
+      for (const [slug, node] of articlesRef.current) {
+        if (lightWorld.has(slug)) observer.observe(node)
+      }
+    }
+
+    // At lg this whole tree is display:none, so the observer would report
+    // nothing, reset the theme to dark, and fight ScrollStage — which owns the
+    // theme at that tier. Hence the breakpoint gate, mirroring the stage's own.
+    const disengage = () => {
+      if (!observer) return
+      observer.disconnect()
+      observer = null
+      // Only hand the theme back if it was ours to hand back. Crossing the
+      // breakpoint fires this and ScrollStage's own engage in an undefined
+      // order, and an unconditional reset here would stomp the theme the stage
+      // had just set for its current section.
+      if (owned) setTheme('dark')
+      owned = false
+    }
+
+    const sync = () => (mql.matches ? disengage() : engage())
+    sync()
+    mql.addEventListener('change', sync)
+
+    return () => {
+      mql.removeEventListener('change', sync)
+      observer?.disconnect()
+    }
+  }, [lightWorldSlugs, setTheme])
 
   return (
-    // id + scroll-mt (globals) let the nav's #work link land here under the bar.
+    // id + smooth scroll (globals) let the nav's #work link land here.
     <section id="work" aria-label="Work" className="lg:hidden">
-      {c.categories.map((cat) => {
-        const first = cat.projects[0]
-        const image = categoryImages[cat.slug]?.mobile
+      {c.categories.map((cat) => (
+        <SectionFade key={cat.slug}>
+          <CategoryCover
+            cat={cat}
+            ui={c}
+            expanded={openSlug === cat.slug}
+            onToggle={() => setOpenSlug((slug) => (slug === cat.slug ? null : cat.slug))}
+            onClose={() => setOpenSlug((slug) => (slug === cat.slug ? null : slug))}
+            registerArticle={registerArticle}
+          />
+        </SectionFade>
+      ))}
+    </section>
+  )
+}
 
-        // Editors pick the overlay text colour per category (dark for light
-        // images, light for dark ones). A functional text-shadow — the only kind
-        // allowed (DESIGN.md) — keeps the copy legible now that the image carries
-        // no scrim behind it.
-        const dark = cat.overlayTextColor === 'dark'
-        const overlayText = dark ? 'text-oxidized-graphite' : 'text-[#D8D4CF]'
-        const overlayShadow = dark
-          ? '[text-shadow:0_2px_18px_rgba(243,238,232,0.65)]'
-          : '[text-shadow:0_2px_18px_rgba(26,26,28,0.6)]'
+// Per-category cover + docked sheet. `overlayTextColor` is the editor's existing
+// light/dark switch for the cover, and it drives the whole sheet polarity here:
+// "dark" means dark ink, i.e. a bright photograph, i.e. the porcelain sheet.
+function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }) {
+  const reduced = useReducedMotion()
+  const sheetId = useId()
+  const first = cat.projects[0]
+  const image = categoryImages[cat.slug]?.mobile
+  const light = cat.overlayTextColor === 'dark' // light-world sheet (porcelain)
 
-        return (
-          <article
-            key={cat.slug}
-            className="relative flex min-h-[100svh] w-full flex-col justify-end overflow-hidden bg-oxidized-graphite"
+  // Both ends of the height animation have to be pixel values. Animating to
+  // `auto` looked clean for a moment and then snapped: Framer resolves `auto`
+  // once, up front, but this sheet's layout changes in the very same commit (the
+  // copy region swaps between in-flow and absolute), so the tween ran toward a
+  // stale number and the browser corrected it on the final frame.
+  //
+  // So both are measured. The two states differ by exactly one thing — the copy
+  // region holds the précis or the description — and both of those are always in
+  // the DOM at the right width, so one pass yields both heights:
+  //
+  //   chrome    = handle + title + action row + gaps + padding + border
+  //   collapsed = chrome + précis
+  //   raised    = chrome + description + slack, capped at MAX_RAISED_RATIO
+  const sheetRef = useRef(null)
+  const contentRef = useRef(null)
+  const precisRef = useRef(null)
+  const descriptionRef = useRef(null)
+  const chromeRef = useRef(null)
+  const [collapsedHeight, setCollapsedHeight] = useState(null)
+  const [raisedHeight, setRaisedHeight] = useState(null)
+
+  useEffect(() => {
+    const column = contentRef.current
+    const sheet = sheetRef.current
+    const precis = precisRef.current
+    const description = descriptionRef.current
+    if (!column || !sheet || !precis || !description) return
+
+    const measure = () => {
+      const style = getComputedStyle(sheet)
+      // The column sits inside the sheet's padding and the height we set is a
+      // border-box, so padding and the top border have to be added back. Read
+      // rather than hardcoded, so this can't drift out of step with the classes.
+      const box =
+        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth)
+      const precisH = precis.getBoundingClientRect().height
+      const descriptionH = description.getBoundingClientRect().height
+
+      // Chrome is only readable while collapsed — raised, the column is flex-1
+      // and reports the sheet's height back at us instead of its content's. It
+      // doesn't change between states, so the last collapsed reading holds.
+      if (!expanded) chromeRef.current = column.getBoundingClientRect().height - precisH
+      if (chromeRef.current == null) return
+
+      const chrome = chromeRef.current + box
+      const collapsed = Math.ceil(chrome + precisH)
+      setCollapsedHeight(collapsed)
+      setRaisedHeight(
+        Math.max(
+          collapsed,
+          Math.min(
+            Math.ceil(chrome + descriptionH + RAISED_SLACK),
+            Math.round(window.innerHeight * MAX_RAISED_RATIO)
+          )
+        )
+      )
+    }
+
+    // The description is measured off the paragraph itself, not its scroll
+    // container: raised, that container is h-full and would just report the
+    // sheet's height back.
+    const observer = new ResizeObserver(measure)
+    observer.observe(column)
+    observer.observe(precis)
+    observer.observe(description)
+    window.addEventListener('resize', measure) // the cap tracks the viewport
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [expanded])
+
+  const tone = light
+    ? {
+        scrim: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.3) 55%)',
+        scrimRaised: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.24) 55%)',
+        coverOpacity: 0.8,
+        sheet: 'rgba(243,238,232,0.86)',
+        sheetRaised: 'rgba(243,238,232,0.94)',
+        border: 'rgba(26,26,28,0.14)',
+        title: 'font-neue-haas-display text-[28px] leading-[1.15] tracking-[0.12em] text-oxidized-graphite',
+        copy: 'text-oxidized-graphite/[0.78]',
+        hairline: 'bg-oxidized-graphite/[0.16]',
+        ink: 'text-oxidized-graphite',
+        inkQuiet: 'text-oxidized-graphite/60',
+        quietRule: 'bg-oxidized-graphite/60',
+        shimmer: 'dark',
+      }
+    : {
+        scrim: 'linear-gradient(to top, rgba(26,26,28,0.5), rgba(26,26,28,0.05) 50%)',
+        scrimRaised: 'linear-gradient(to top, rgba(26,26,28,0.6), rgba(26,26,28,0.15) 50%)',
+        coverOpacity: 0.75,
+        sheet: 'rgba(26,26,28,0.86)',
+        sheetRaised: 'rgba(26,26,28,0.94)',
+        border: 'rgba(243,238,232,0.18)',
+        title: 'font-ivyora-display font-thin text-[34px] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
+        copy: 'text-[#D8D4CF]/80',
+        hairline: 'bg-bone-porcelain/20',
+        ink: 'text-bone-porcelain',
+        inkQuiet: 'text-[#D8D4CF]/60',
+        quietRule: 'bg-[#D8D4CF]/60',
+        shimmer: 'light',
+      }
+
+  const transition = reduced ? { duration: 0 } : SHEET_TRANSITION
+
+  // Distance or flick, either direction. The sheet rubber-bands on `y` and
+  // springs back to 0 while `expanded` drives the height, so the gesture never
+  // fights the height animation.
+  const handleDragEnd = (_, info) => {
+    const up = info.offset.y < -DRAG_DISTANCE || info.velocity.y < -DRAG_VELOCITY
+    const down = info.offset.y > DRAG_DISTANCE || info.velocity.y > DRAG_VELOCITY
+    if (up && !expanded) onToggle()
+    else if (down && expanded) onClose()
+  }
+
+  return (
+    <article
+      ref={(node) => registerArticle(cat.slug, node)}
+      data-slug={cat.slug}
+      className="relative h-full w-full overflow-hidden bg-oxidized-graphite"
+    >
+      {image && (
+        <motion.div
+          className="absolute inset-0"
+          initial={false}
+          animate={{ opacity: expanded ? tone.coverOpacity : 1 }}
+          transition={transition}
+        >
+          <Image src={image} alt={cat.label} fill sizes="100vw" className="object-cover" />
+        </motion.div>
+      )}
+
+      {/* Two scrims rather than one animated gradient: a background-image can't
+          be tweened, so the raised variant crossfades over the base and both
+          keep their exact stops. */}
+      <div className="absolute inset-0" style={{ backgroundImage: tone.scrim }} />
+      <motion.div
+        className="absolute inset-0"
+        style={{ backgroundImage: tone.scrimRaised }}
+        initial={false}
+        animate={{ opacity: expanded ? 1 : 0 }}
+        transition={transition}
+      />
+
+      {/* Tapping the cover above the sheet dismisses it. Only mounted while
+          raised, so it never eats a tap in the collapsed state. */}
+      {expanded && (
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden="true"
+          onClick={onClose}
+          className="absolute inset-0 z-10 cursor-default"
+        />
+      )}
+
+      {/* Two nested motion elements on purpose: the outer one owns the sheet's
+          own state (height, ground, drag), the inner one is the entrance
+          stagger container. They can't be one element — variant labels and an
+          object `animate` don't coexist, and the labels are what propagate the
+          stagger down to the children. */}
+      <motion.div
+        id={sheetId}
+        ref={sheetRef}
+        initial={false}
+        animate={{
+          height: (expanded ? raisedHeight : collapsedHeight) ?? 'auto',
+          backgroundColor: expanded ? tone.sheetRaised : tone.sheet,
+        }}
+        transition={transition}
+        drag={reduced ? false : 'y'}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0.18}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+        style={{ borderTopColor: tone.border }}
+        className="absolute inset-x-0 bottom-0 z-20 flex flex-col overflow-hidden border-t px-6 pb-[46px] pt-6"
+      >
+        {/* Only claims the sheet's height once raised — collapsed it keeps its
+            natural height, which is what the measurement above reads. */}
+        <motion.div
+          ref={contentRef}
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className={`flex flex-col gap-[18px] ${expanded ? 'min-h-0 flex-1' : ''}`}
+        >
+          {/* Grab handle — only meaningful once raised, where it names the drag.
+              Its own `animate` stops the stagger propagating here, which is what
+              keeps it out of the entrance and on the sheet's state instead. */}
+          <motion.span
+            aria-hidden="true"
+            initial={false}
+            animate={{ opacity: expanded ? 1 : 0 }}
+            transition={transition}
+            className="block shrink-0"
           >
-            {image && (
-              <Image src={image} alt={cat.label} fill sizes="100vw" className="object-cover" />
-            )}
+            <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-[34px]" />
+          </motion.span>
 
-            {/* Legibility scrim — same treatment as the mobile About cover: a
-                bottom-heavy fade only, so the image reads untouched at the top and
-                just dims enough at the bottom (where the text block sits, anchored
-                via justify-end) to stay readable over the editor's per-category
-                image. */}
-            <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/90 to-oxidized-graphite/20" />
+          <motion.h2 variants={fadeInUp} className={`shrink-0 uppercase ${tone.title}`}>
+            {cat.label}
+          </motion.h2>
+
+          {/* Copy region. Whichever state is active sits in normal flow and the
+              other overlays it absolutely — that's what lets the collapsed
+              sheet's `auto` height measure the précis alone, with the long
+              description clipped by the sheet's overflow-hidden until wanted. */}
+          <motion.div variants={fadeInUp} className={`relative ${expanded ? 'min-h-0 flex-1' : ''}`}>
+            <motion.p
+              ref={precisRef}
+              aria-hidden={expanded}
+              initial={false}
+              animate={{ opacity: expanded ? 0 : 1 }}
+              transition={transition}
+              className={`body-copy font-light ${tone.copy} ${
+                expanded ? 'pointer-events-none absolute inset-x-0 top-0' : ''
+              }`}
+            >
+              {cat.summary}
+            </motion.p>
 
             <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.25 }}
-              className="relative z-10 flex flex-col gap-6 px-6 pb-20 pt-28"
+              aria-hidden={!expanded}
+              initial={false}
+              animate={{ opacity: expanded ? 1 : 0 }}
+              transition={transition}
+              className={expanded ? 'h-full overflow-y-auto' : 'pointer-events-none absolute inset-x-0 top-0'}
             >
-              <motion.h2
-                variants={fadeInUp}
-                className={`font-ivyora-display font-thin text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] ${overlayText} ${overlayShadow}`}
-              >
-                {cat.label}
-              </motion.h2>
-
-              {/* One block, not a stack of <p>: the mobile cover reads as a
-                  single paragraph with blank lines between stanzas, so the
-                  build-time paragraphs are rejoined with <br><br> rather than
-                  taking the desktop panel's space-y-3 rhythm. Editor formatting
+              {/* One block, not a stack of <p>: the cover reads as a single
+                  paragraph with blank lines between stanzas, so the build-time
+                  paragraphs are rejoined with <br><br>. Editor formatting
                   (bold / italic / links) rides along inside the HTML. */}
-              <motion.p
-                variants={fadeInUp}
-                className={`body-copy rich-text max-w-[46ch] font-light ${dark ? 'text-oxidized-graphite/85' : 'text-[#D8D4CF]/80'} ${overlayShadow}`}
+              <p
+                ref={descriptionRef}
+                className={`body-copy rich-text font-light ${tone.copy}`}
                 dangerouslySetInnerHTML={{ __html: cat.descriptionMobileHtml.join('<br><br>') }}
               />
-
-              <motion.div variants={fadeInUp} className="pt-2">
-                <Link
-                  href={`/work/${cat.slug}/${first.slug}`}
-                  className={`group inline-flex items-center gap-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] ${overlayText} ${overlayShadow}`}
-                >
-                  {c.seeProjects}
-                  <ShimmerArrow
-                    tone={dark ? 'dark' : 'light'}
-                    className="h-3 w-9 -translate-x-[5px] transition-transform duration-300 group-hover:translate-x-[-1px]"
-                  />
-                </Link>
-              </motion.div>
             </motion.div>
-          </article>
-        )
-      })}
-    </section>
+          </motion.div>
+
+          <motion.div variants={fadeInUp} className="mt-auto flex shrink-0 flex-col gap-[18px]">
+            <div className={`h-px w-full ${tone.hairline}`} />
+
+            <div className="flex items-center justify-between gap-4">
+              {/* py-3 -my-3 on both cues: a ≥44px tap box without growing the
+                  type or opening up the row. */}
+              <Link
+                href={`/work/${cat.slug}/${first.slug}`}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] ${tone.ink}`}
+              >
+                {ui.seeProjects}
+                <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-9" />
+              </Link>
+
+              {/* The quiet sibling gets a plain rule, not a second travelling
+                  beam — two shimmers side by side would compete for the glance. */}
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={expanded}
+                aria-controls={sheetId}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[11px] uppercase tracking-[0.22em] ${tone.inkQuiet}`}
+              >
+                {expanded ? ui.closeSheet : ui.readMore}
+                <span aria-hidden="true" className={`block h-px w-[22px] ${tone.quietRule}`} />
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </article>
   )
 }

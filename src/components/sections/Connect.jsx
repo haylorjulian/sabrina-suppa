@@ -29,7 +29,10 @@ export default function Connect({ sectionId }) {
   )
 
   const plate = (
-    <span className="font-neue-haas-display text-[16px] uppercase leading-none tracking-[0.30em] text-bone-porcelain/80">
+    // Same 16px/1.55 metrics as .section-desc beside it: matching the line box
+    // (not just the size) is what puts the plate's first line on the copy's, since
+    // an unmatched half-leading offsets one against the other.
+    <span className="font-neue-haas-display text-[16px] uppercase leading-[1.55] tracking-[0.30em] text-bone-porcelain/80">
       {c.sectionLabel}
     </span>
   )

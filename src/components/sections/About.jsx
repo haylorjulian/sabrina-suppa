@@ -6,6 +6,7 @@ import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
+import ShimmerLine from '@/components/ui/ShimmerLine'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -102,25 +103,49 @@ export default function About({ sectionId }) {
         </div>
       </div>
 
-      {/* Mobile (<1024px) — full-bleed image cover with the bio + socials read as
-          natural flowing text (no FitBox scaling). */}
-      <div className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-oxidized-graphite text-[#D8D4CF] lg:hidden">
-        <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/90 to-oxidized-graphite/20" />
-        {/* Top seam fade — meets the graphite bottom of the Physical cover above
-            so the section change reads as a fade, not a hard line. */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-oxidized-graphite to-transparent" />
+      {/* Mobile (<1024px) — the same cover + docked sheet as the Work categories
+          (see WorkMobile.jsx), with the sheet permanently open: there's one body
+          of copy here and no second state to reveal, so it carries no toggle and
+          no action row — the shimmer rule above the title stays, as trim rather
+          than as the drag handle it is over there.
+          The copy sits on the sheet's own ground rather than over the
+          photograph, so the functional text-shadows this block used to need are
+          gone with it. */}
+      <div className="relative flex min-h-[100svh] flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
+        {/* Cover takes whatever the sheet leaves, down to a floor. Past that the
+            section grows taller than the viewport and the page simply scrolls on
+            — the alternative, a scroll region inside a scrolling page, is worse
+            for a block of text this long (and globals.css already allows for
+            bio covers running past one screen). */}
+        <div className="relative min-h-[32svh] flex-1">
+          <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
+          {/* The category covers' scrim, at full strength: bottom-weighted, and
+              light enough at the top that the photograph reads untouched. */}
+          <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/50 to-oxidized-graphite/5 to-50%" />
+          {/* Top seam fade — resets to the dark world under the porcelain sheet
+              that now ends the Physical Works cover above, so the section change
+              reads as a fade rather than a hard line. */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-oxidized-graphite to-transparent" />
+        </div>
 
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
-          className="relative z-10 flex flex-col gap-6 px-6 pb-20 pt-28"
+          style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
+          className="relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[46px] pt-6"
         >
+          {/* The sheet's shimmer rule. On the category sheets it doubles as a
+              grab handle; here there's nothing to drag, so it rides the entrance
+              stagger with everything else rather than tracking a state. */}
+          <motion.span variants={fadeInUp} className="block">
+            <ShimmerLine tone="light" orientation="horizontal" className="w-[34px]" />
+          </motion.span>
+
           <motion.h2
             variants={fadeInUp}
-            className="font-ivyora-display font-thin text-[clamp(30px,9vw,46px)] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF] [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+            className="font-ivyora-display font-thin text-[34px] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
           >
             {c.sectionLabel}
           </motion.h2>
@@ -129,27 +154,11 @@ export default function About({ sectionId }) {
             {c.paragraphsMobileHtml.map((para, i) => (
               <p
                 key={i}
-                className="body-copy rich-text font-light text-[#D8D4CF]/80 [text-shadow:0_2px_18px_rgba(26,26,28,0.6)]"
+                className="body-copy rich-text font-light text-[#D8D4CF]/80"
                 dangerouslySetInnerHTML={{ __html: para }}
               />
             ))}
           </motion.div>
-
-          <motion.ul variants={fadeInUp} className="flex flex-wrap items-center gap-7 pt-2">
-            {c.social.map((link) => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel="noreferrer"
-                  aria-label={link.label}
-                  className="block text-bone-porcelain/70 transition-colors duration-300 hover:text-synthetic-flesh"
-                >
-                  <SocialIcon label={link.label} className="h-6 w-6" />
-                </a>
-              </li>
-            ))}
-          </motion.ul>
         </motion.div>
       </div>
     </section>

@@ -160,6 +160,8 @@ collections:
           - { label: Next image (screen-reader), name: nextImageLabel, widget: string }
           - { label: Go to image (screen-reader), name: goToImageLabel, widget: string }
           - { label: See projects, name: seeProjects, widget: string }
+          - { label: "Read more (mobile category sheet)", name: readMore, widget: string }
+          - { label: "Close (mobile category sheet)", name: closeSheet, widget: string }
           - { label: Back, name: back, widget: string }
           - { label: Category label, name: categoryLabel, widget: string }
           - { label: Description label, name: descriptionLabel, widget: string }
@@ -184,6 +186,10 @@ collections:
         hint: Lowercase letters, numbers and dashes only. Used in the page URL — avoid changing it after launch.
         pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers and dashes only']
       - { label: Label (display name), name: label, widget: string }
+      - label: Summary (one line)
+        name: summary
+        widget: string
+        hint: "One line, around 12 words — shown on the mobile category cover before the description is opened."
       - { label: Order (lower shows first), name: order, widget: number, value_type: int, default: 1 }
       - label: Project order
         name: projectOrder
