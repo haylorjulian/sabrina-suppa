@@ -530,5 +530,21 @@
   "https://media.sabrinasuppa.com/physicalworks/Remains/4.jpg": {
     "w": 1601,
     "h": 2000
+  },
+  "https://media.sabrinasuppa.com/uploads/hezen test.webp": {
+    "w": 4596,
+    "h": 3128
+  },
+  "https://media.sabrinasuppa.com/uploads/hezen_crescent_01_upscayl_4x_upscayl-standard-4x.png": {
+    "w": 6092,
+    "h": 3128
+  },
+  "https://media.sabrinasuppa.com/uploads/hezen_crescent_4K_01.webp": {
+    "w": 4803,
+    "h": 2466
+  },
+  "https://media.sabrinasuppa.com/uploads/test3.webp": {
+    "w": 6092,
+    "h": 1112
   }
 }
