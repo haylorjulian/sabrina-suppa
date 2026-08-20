@@ -8,71 +8,93 @@
   "media": [
     {
       "src": "adaptiveFlesh/Force_Matrix/1.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/2.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/3.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/4.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/5.webp",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/5a.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/6.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/7.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/8.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/9.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/10.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/11.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/12.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/13.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/14.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/15.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Force_Matrix/16.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
+    },
+    {
+      "src": "https://media.sabrinasuppa.com/uploads/hezen_crescent_4K_01.webp",
+      "alt": "",
+      "hideOnMobile": false
     }
   ]
 }
