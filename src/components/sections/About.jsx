@@ -32,7 +32,7 @@ export default function About({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="About"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
+      className="relative min-h-[100svh] w-full snap-start snap-always overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">

@@ -27,10 +27,6 @@
 
 html {
   scroll-behavior: smooth;
-  /* No global scroll snapping. Desktop takes over scroll entirely (ScrollStage);
-     mobile scrolls naturally through full-height sections, some of which are
-     taller than the viewport (long category/bio covers) — mandatory snap would
-     trap those. */
 
   /* ── Fluid root ────────────────────────────────────────────────────────────
      The layout is fluid (50/50 columns, full-bleed covers, vw display type) but
@@ -58,6 +54,38 @@ html {
 
 body {
   background: var(--oxidized-graphite);
+}
+
+/* ── Section snapping, mobile only ──────────────────────────────────────────
+   Desktop never scrolls: ScrollStage takes the wheel over and crossfades
+   between absolutely-stacked sections, so a snap type at that tier would have
+   no scrollport to act on. Below lg the page scrolls natively and each section
+   is one screen, which is what makes snapping meaningful here.
+
+   `mandatory`, and it is safe here despite sections that outgrow the screen (a
+   long bio on a short phone, or a category sheet opened to the full height of
+   its description — see WorkMobile). The obvious worry is that mandatory always
+   comes to rest on a snap point and would strand that overflow, but the spec
+   carves it out: a snap area larger than the snapport only has to keep the area
+   covering the snapport, so every scroll offset inside an oversized section is
+   itself a valid resting place. Verified against a section three screens tall —
+   every interior position holds. Proximity was measured side by side and left
+   the page resting mid-section on roughly half of all gestures, which reads as
+   no snapping at all; mandatory landed every gesture on a section edge.
+
+   `scroll-snap-stop: always` (the `snap-always` class on each section) asks that
+   a fling not pass over a snap position, so one gesture advances one section.
+   Treat it as a hint rather than a guarantee: Chrome still carried very fast
+   flings several sections in testing. It costs nothing and is correct per spec,
+   so it stays for the UAs that honour it.
+
+   The project routes opt out at runtime (ProjectGallery sets an inline
+   scroll-snap-type: none, which outranks this rule): a long gallery has to
+   scroll freely. */
+@media (max-width: 1023.98px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
 }
 
 /* Vertical scroll-indicator label (writing-mode can't be expressed as a Tailwind class) */

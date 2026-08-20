@@ -30,7 +30,7 @@ export default function Hero({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Hero"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+      className="relative min-h-[100svh] w-full snap-start snap-always overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
         {/* Background scaled to fill, centred. The source is a 2x master (3840x2160),
             so covering the frame spends those pixels on retina sharpness rather

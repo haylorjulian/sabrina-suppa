@@ -81,7 +81,7 @@ export default function Connect({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Connect"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
+      className="relative min-h-[100svh] w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — one centred row: the label plate and its rule, then
           the copy column. items-stretch is what lets the rule run the exact
