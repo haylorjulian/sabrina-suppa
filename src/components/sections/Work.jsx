@@ -61,7 +61,7 @@ export default function Work() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: overlayOpacity, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className={`pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display ${overlayWeight} text-[clamp(24px,3.4vw,50px)] uppercase leading-[1.1] tracking-[1rem] ${overlayText} ${overlayShadow}`}
+            className={`pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-ivyora-display ${overlayWeight} text-[clamp(1.5rem,3.4vw,3.125rem)] uppercase leading-[1.1] tracking-[1rem] ${overlayText} ${overlayShadow}`}
           >
             {activeCategory.label}
           </motion.h2>
@@ -81,7 +81,7 @@ export default function Work() {
                   type="button"
                   onClick={() => selectCategory(i)}
                   aria-current={i === categoryIndex}
-                  className={`font-neue-haas-display text-[13px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                  className={`font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.18em] transition-colors duration-300 ${
                     i === categoryIndex
                       ? 'text-oxidized-graphite'
                       : 'text-oxidized-graphite/40 hover:text-oxidized-graphite/70'
@@ -135,10 +135,10 @@ export default function Work() {
               >
                 <Link
                   href={projects[0].href}
-                  className="group inline-flex items-center gap-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] text-oxidized-graphite"
+                  className="group inline-flex items-center gap-3 font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.18em] text-oxidized-graphite"
                 >
                   {c.seeProjects}
-                  <ShimmerArrow tone="dark" className="h-3 w-9 -translate-x-[5px] transition-transform duration-300 group-hover:translate-x-[-1px]" />
+                  <ShimmerArrow tone="dark" className="h-3 w-9 -translate-x-[0.3125rem] transition-transform duration-300 group-hover:translate-x-[-1px]" />
                 </Link>
               </motion.div>
             )}

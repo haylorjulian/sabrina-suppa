@@ -15,29 +15,33 @@ const EASE = [0.22, 1, 0.36, 1]
 const SHEET_TRANSITION = { duration: 0.45, ease: EASE }
 const DESKTOP = '(min-width: 1024px)' // mirrors ScrollStage — the tier that owns the nav theme
 
-// The raised sheet is sized by its own description, so a short category doesn't
-// open a half-empty panel. This is only the ceiling: the mock pins the sheet to
-// top:284px on an 874px frame, and as a ratio that keeps a slice of the cover
-// visible on every phone no matter how long the copy runs. Past it the
-// description scrolls inside the sheet.
-const MAX_RAISED_RATIO = 0.675
-
+// The raised sheet is sized by its own description — the whole description, with
+// no ceiling. It used to be capped at a ratio of the viewport, which kept a slice
+// of the cover visible but pushed any longer category into a scroll region nested
+// inside the scrolling page: two scrolls competing for the same drag, and the
+// only way to reach the end of the copy. The cover slice is now held open by the
+// spacer above the sheet instead (COVER_FLOOR), and when the description outruns
+// what is left the section simply grows past the viewport and the page scrolls
+// on — the same trade About's mobile bio already makes, and globals.css already
+// allows for sections taller than one screen.
+//
 // Breathing room under the description. The action row is pinned to the sheet's
 // base by mt-auto, so this lands as open space between the copy and the hairline
 // rather than padding the sheet's bottom edge.
 const RAISED_SLACK = 60
 
-// A drag has to clear one of these to flip the sheet — distance for a slow pull,
-// velocity for a flick.
-const DRAG_DISTANCE = 60
-const DRAG_VELOCITY = 500
+// Minimum slice of cover left visible above the sheet in either state. Mirrors
+// About's mobile bio, whose cover takes whatever its sheet leaves down to a
+// floor.
+const COVER_FLOOR = 'min-h-[32svh]'
 
 // Mobile Work (below lg): one full-viewport cover per category, stacked in order
 // (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
-// the name, a one-line précis and the action row. "Read more" (or a drag up)
-// raises the sheet over the cover to reveal the full description; "See Projects"
-// is a real route and stays on screen in both states, so nothing critical sits
-// behind a gesture.
+// the name, a one-line précis and the action row. "Read more" raises the sheet
+// over the cover to reveal the full description, "Close" lowers it again (as
+// does tapping the cover); "See Projects" is a real route and stays on screen in
+// both states. Every one of those is a button — the sheet itself is inert to
+// touch, so nothing on this page competes with the page scroll.
 export default function WorkMobile() {
   const { t } = useLanguage()
   const c = t.work
@@ -161,9 +165,9 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
   // region holds the précis or the description — and both of those are always in
   // the DOM at the right width, so one pass yields both heights:
   //
-  //   chrome    = handle + title + action row + gaps + padding + border
+  //   chrome    = trim + title + action row + gaps + padding + border
   //   collapsed = chrome + précis
-  //   raised    = chrome + description + slack, capped at MAX_RAISED_RATIO
+  //   raised    = chrome + description + slack (no cap — see RAISED_SLACK)
   const sheetRef = useRef(null)
   const contentRef = useRef(null)
   const precisRef = useRef(null)
@@ -198,29 +202,20 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
       const chrome = chromeRef.current + box
       const collapsed = Math.ceil(chrome + precisH)
       setCollapsedHeight(collapsed)
-      setRaisedHeight(
-        Math.max(
-          collapsed,
-          Math.min(
-            Math.ceil(chrome + descriptionH + RAISED_SLACK),
-            Math.round(window.innerHeight * MAX_RAISED_RATIO)
-          )
-        )
-      )
+      // No viewport cap: the raised sheet is exactly its own description plus
+      // slack, so the copy always fits and never needs to scroll inside.
+      setRaisedHeight(Math.max(collapsed, Math.ceil(chrome + descriptionH + RAISED_SLACK)))
     }
 
-    // The description is measured off the paragraph itself, not its scroll
-    // container: raised, that container is h-full and would just report the
-    // sheet's height back.
+    // The description is measured off the paragraph itself, not its wrapper:
+    // raised, that wrapper is a flex child and would report the region's height
+    // back rather than the copy's. Observing the paragraph is also what catches
+    // a reflow — rotating the phone rewraps it and the new height arrives here.
     const observer = new ResizeObserver(measure)
     observer.observe(column)
     observer.observe(precis)
     observer.observe(description)
-    window.addEventListener('resize', measure) // the cap tracks the viewport
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', measure)
-    }
+    return () => observer.disconnect()
   }, [expanded])
 
   const tone = light
@@ -231,7 +226,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         sheet: 'rgba(243,238,232,0.86)',
         sheetRaised: 'rgba(243,238,232,0.94)',
         border: 'rgba(26,26,28,0.14)',
-        title: 'font-neue-haas-display text-[28px] leading-[1.15] tracking-[0.12em] text-oxidized-graphite',
+        title: 'font-neue-haas-display text-[1.75rem] leading-[1.15] tracking-[0.12em] text-oxidized-graphite',
         copy: 'text-oxidized-graphite/[0.78]',
         hairline: 'bg-oxidized-graphite/[0.16]',
         ink: 'text-oxidized-graphite',
@@ -246,7 +241,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         sheet: 'rgba(26,26,28,0.86)',
         sheetRaised: 'rgba(26,26,28,0.94)',
         border: 'rgba(243,238,232,0.18)',
-        title: 'font-ivyora-display font-thin text-[34px] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
+        title: 'font-ivyora-display font-thin text-[2.125rem] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
         copy: 'text-[#D8D4CF]/80',
         hairline: 'bg-bone-porcelain/20',
         ink: 'text-bone-porcelain',
@@ -257,21 +252,23 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
 
   const transition = reduced ? { duration: 0 } : SHEET_TRANSITION
 
-  // Distance or flick, either direction. The sheet rubber-bands on `y` and
-  // springs back to 0 while `expanded` drives the height, so the gesture never
-  // fights the height animation.
-  const handleDragEnd = (_, info) => {
-    const up = info.offset.y < -DRAG_DISTANCE || info.velocity.y < -DRAG_VELOCITY
-    const down = info.offset.y > DRAG_DISTANCE || info.velocity.y > DRAG_VELOCITY
-    if (up && !expanded) onToggle()
-    else if (down && expanded) onClose()
-  }
-
+  // The sheet is inert to touch. It carried a drag gesture (pull up to raise,
+  // flick down to close) which read every vertical touch that started on it,
+  // so the sheet moved under a finger that was only trying to scroll the page —
+  // and rubber-banded even when it had nowhere to go. "Read more" / "Close" and
+  // the cover tap are the whole interface now, and they are buttons, so the
+  // sheet never intercepts a scroll.
+  //
+  // Laid out in flow rather than absolutely: the sheet has to be able to make
+  // the section taller than the viewport when a long description opens, and an
+  // absolute `bottom-0` child contributes nothing to its parent's height, so it
+  // was clipped instead. The cover behind it stays absolute and spans whatever
+  // the article ends up being.
   return (
     <article
       ref={(node) => registerArticle(cat.slug, node)}
       data-slug={cat.slug}
-      className="relative h-full w-full overflow-hidden bg-oxidized-graphite"
+      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-oxidized-graphite"
     >
       {image && (
         <motion.div
@@ -296,23 +293,27 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         transition={transition}
       />
 
-      {/* Tapping the cover above the sheet dismisses it. Only mounted while
-          raised, so it never eats a tap in the collapsed state. */}
-      {expanded && (
-        <button
-          type="button"
-          tabIndex={-1}
-          aria-hidden="true"
-          onClick={onClose}
-          className="absolute inset-0 z-10 cursor-default"
-        />
-      )}
+      {/* The cover slice above the sheet. It is the flex spacer that takes
+          whatever the sheet leaves, down to COVER_FLOOR — past that the article
+          grows and the page scrolls on. Tapping it dismisses a raised sheet; the
+          button only mounts while raised, so it never eats a tap collapsed. */}
+      <div className={`relative ${COVER_FLOOR} flex-1`}>
+        {expanded && (
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={onClose}
+            className="absolute inset-0 z-10 cursor-default"
+          />
+        )}
+      </div>
 
       {/* Two nested motion elements on purpose: the outer one owns the sheet's
-          own state (height, ground, drag), the inner one is the entrance
-          stagger container. They can't be one element — variant labels and an
-          object `animate` don't coexist, and the labels are what propagate the
-          stagger down to the children. */}
+          own state (height, ground), the inner one is the entrance stagger
+          container. They can't be one element — variant labels and an object
+          `animate` don't coexist, and the labels are what propagate the stagger
+          down to the children. */}
       <motion.div
         id={sheetId}
         ref={sheetRef}
@@ -322,13 +323,8 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           backgroundColor: expanded ? tone.sheetRaised : tone.sheet,
         }}
         transition={transition}
-        drag={reduced ? false : 'y'}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.18}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
         style={{ borderTopColor: tone.border }}
-        className="absolute inset-x-0 bottom-0 z-20 flex flex-col overflow-hidden border-t px-6 pb-[46px] pt-6"
+        className="relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[2.875rem] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}
@@ -338,11 +334,13 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
-          className={`flex flex-col gap-[18px] ${expanded ? 'min-h-0 flex-1' : ''}`}
+          className={`flex flex-col gap-[1.125rem] ${expanded ? 'min-h-0 flex-1' : ''}`}
         >
-          {/* Grab handle — only meaningful once raised, where it names the drag.
-              Its own `animate` stops the stagger propagating here, which is what
-              keeps it out of the entrance and on the sheet's state instead. */}
+          {/* Trim, not a handle — there is no gesture on this sheet any more (see
+              above); it marks the raised state the way the same rule sits above
+              About's mobile bio. Its own `animate` stops the stagger propagating
+              here, which is what keeps it on the sheet's state rather than in
+              the entrance. */}
           <motion.span
             aria-hidden="true"
             initial={false}
@@ -350,7 +348,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
             transition={transition}
             className="block shrink-0"
           >
-            <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-[34px]" />
+            <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-[2.125rem]" />
           </motion.span>
 
           <motion.h2 variants={fadeInUp} className={`shrink-0 uppercase ${tone.title}`}>
@@ -380,7 +378,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
               initial={false}
               animate={{ opacity: expanded ? 1 : 0 }}
               transition={transition}
-              className={expanded ? 'h-full overflow-y-auto' : 'pointer-events-none absolute inset-x-0 top-0'}
+              className={expanded ? '' : 'pointer-events-none absolute inset-x-0 top-0'}
             >
               {/* One block, not a stack of <p>: the cover reads as a single
                   paragraph with blank lines between stanzas, so the build-time
@@ -394,7 +392,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
             </motion.div>
           </motion.div>
 
-          <motion.div variants={fadeInUp} className="mt-auto flex shrink-0 flex-col gap-[18px]">
+          <motion.div variants={fadeInUp} className="mt-auto flex shrink-0 flex-col gap-[1.125rem]">
             <div className={`h-px w-full ${tone.hairline}`} />
 
             <div className="flex items-center justify-between gap-4">
@@ -402,7 +400,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
                   type or opening up the row. */}
               <Link
                 href={`/work/${cat.slug}/${first.slug}`}
-                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] ${tone.ink}`}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.18em] ${tone.ink}`}
               >
                 {ui.seeProjects}
                 <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-9" />
@@ -415,10 +413,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
                 onClick={onToggle}
                 aria-expanded={expanded}
                 aria-controls={sheetId}
-                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[11px] uppercase tracking-[0.22em] ${tone.inkQuiet}`}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[0.6875rem] uppercase tracking-[0.22em] ${tone.inkQuiet}`}
               >
                 {expanded ? ui.closeSheet : ui.readMore}
-                <span aria-hidden="true" className={`block h-px w-[22px] ${tone.quietRule}`} />
+                <span aria-hidden="true" className={`block h-px w-[1.375rem] ${tone.quietRule}`} />
               </button>
             </div>
           </motion.div>

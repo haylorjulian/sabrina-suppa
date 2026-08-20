@@ -318,10 +318,11 @@ const copy = {
         (p) => richParagraphs(p).join('<br><br>')
       ),
       bgAlt: about.bgAlt,
-      social: about.social,
     },
     // Connect is prose + one address: the address ships plain (it's also the
     // mailto target), the copy ships as HTML like every other editor field.
+    // The social links live here rather than on About — Connect is the one place
+    // the site asks to be contacted, so every route out of it sits together.
     connect: {
       sectionLabel: connect.sectionLabel,
       email: connect.email,
@@ -329,6 +330,7 @@ const copy = {
       introHtml: richParagraphs(connect.intro).join('<br><br>'),
       notes: connect.notes.map(plainText),
       notesHtml: connect.notes.map((p) => richParagraphs(p).join('<br><br>')),
+      social: connect.social ?? [],
     },
   },
 }

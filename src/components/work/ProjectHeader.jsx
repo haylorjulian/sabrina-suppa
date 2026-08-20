@@ -17,13 +17,13 @@ export default function ProjectHeader() {
     <header className="fixed inset-x-0 top-0 z-50 hidden md:block">
       {/* Scrim so the bar stays legible over imagery as it scrolls past */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-oxidized-graphite/85 to-transparent" />
-      <nav className="relative flex items-center justify-between px-6 py-7 md:px-[52px]">
+      <nav className="relative flex items-center justify-between px-6 py-7 md:px-[3.25rem]">
         {/* Both variants render; CSS picks one. Branching on a JS breakpoint here
             would disagree with the server render and blow up hydration. */}
         <Link
           href="/"
           aria-label={t.nav.logoFull}
-          className="font-ivyora-display font-thin text-[14px] uppercase tracking-[8px] opacity-80 text-bone-porcelain/80 transition-colors duration-300 hover:text-bone-porcelain"
+          className="font-ivyora-display font-thin text-[0.875rem] uppercase tracking-[0.5rem] opacity-80 text-bone-porcelain/80 transition-colors duration-300 hover:text-bone-porcelain"
         >
           <span aria-hidden="true" className="lg:hidden">
             {t.nav.logo}
@@ -35,7 +35,7 @@ export default function ProjectHeader() {
         <Link
           href="/#work"
           onClick={() => setSectionTarget('work')}
-          className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-bone-porcelain/60 transition-colors duration-300 hover:text-bone-porcelain"
+          className="flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.22em] text-bone-porcelain/60 transition-colors duration-300 hover:text-bone-porcelain"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4" aria-hidden="true">
             <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />

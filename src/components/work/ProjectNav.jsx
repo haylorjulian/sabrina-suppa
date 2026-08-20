@@ -16,19 +16,19 @@ export default function ProjectNav({ siblings = [] }) {
   return (
     <nav
       aria-label="Projects in this category"
-      className="fixed right-6 top-[144px] z-40 hidden flex-col items-end gap-3 md:right-[52px] lg:flex"
+      className="fixed right-6 top-[9rem] z-40 hidden flex-col items-end gap-3 md:right-[3.25rem] lg:flex"
     >
       {siblings.map((p) =>
         p.active ? (
           <span key={p.href} aria-current="page" className="flex items-center gap-3">
-            <span className="font-neue-haas-display text-[15px] font-light italic tracking-[0.01rem] text-bone-porcelain">
+            <span className="font-neue-haas-display text-[0.9375rem] font-light italic tracking-[0.01rem] text-bone-porcelain">
               {p.title}
             </span>
             <span aria-hidden="true" className="h-px w-8 bg-bone-porcelain" />
           </span>
         ) : (
           <Link key={p.href} href={p.href} className="group flex items-center gap-3">
-            <span className="font-neue-haas-display text-[15px] font-light italic tracking-[0.01rem] text-bone-porcelain/40 transition-colors duration-300 group-hover:text-bone-porcelain/80 motion-reduce:transition-none">
+            <span className="font-neue-haas-display text-[0.9375rem] font-light italic tracking-[0.01rem] text-bone-porcelain/40 transition-colors duration-300 group-hover:text-bone-porcelain/80 motion-reduce:transition-none">
               {p.title}
             </span>
             <span

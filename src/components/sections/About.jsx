@@ -4,15 +4,15 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { assets } from '@/lib/assets'
 import { useLanguage } from '@/hooks/useLanguage'
-import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 import ShimmerLine from '@/components/ui/ShimmerLine'
 
 const EASE = [0.22, 1, 0.36, 1]
 
 // About section: the Work two-column layout, mirrored. Left = a centred,
-// shrink-to-fit box with the bio + socials; right = full-height image with the
-// section name centred over it.
+// shrink-to-fit box with the bio; right = full-height image with the section
+// name centred over it. The social links used to close this column and now live
+// on Connect (see Connect.jsx), which is where the site asks to be contacted.
 // `sectionId` is set only by the mobile tree (see Hero) so the nav's #about
 // anchor resolves to the visible section without duplicating ids across trees.
 export default function About({ sectionId }) {
@@ -45,7 +45,7 @@ export default function About({ sectionId }) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE }}
-              className="font-neue-haas-display text-[13px] uppercase tracking-[0.28em] text-oxidized-graphite/80"
+              className="font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.28em] text-oxidized-graphite/80"
             >
               {c.sectionLabel}
             </motion.p>
@@ -67,27 +67,6 @@ export default function About({ sectionId }) {
                 />
               ))}
             </motion.div>
-
-            <motion.ul
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
-              className="mt-8 flex flex-wrap items-center gap-6"
-            >
-              {c.social.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-                    rel="noreferrer"
-                    aria-label={link.label}
-                    className="block text-oxidized-graphite/60 transition-colors duration-300 hover:text-synthetic-flesh"
-                  >
-                    <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
-                  </a>
-                </li>
-              ))}
-            </motion.ul>
           </div>
         </div>
 
@@ -106,8 +85,8 @@ export default function About({ sectionId }) {
       {/* Mobile (<1024px) — the same cover + docked sheet as the Work categories
           (see WorkMobile.jsx), with the sheet permanently open: there's one body
           of copy here and no second state to reveal, so it carries no toggle and
-          no action row — the shimmer rule above the title stays, as trim rather
-          than as the drag handle it is over there.
+          no action row — the shimmer rule above the title stays as trim, which
+          is what it is on the category sheets too now that they have no gesture.
           The copy sits on the sheet's own ground rather than over the
           photograph, so the functional text-shadows this block used to need are
           gone with it. */}
@@ -134,18 +113,18 @@ export default function About({ sectionId }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
-          className="relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[46px] pt-6"
+          className="relative z-10 flex flex-col gap-[1.125rem] border-t px-6 pb-[2.875rem] pt-6"
         >
-          {/* The sheet's shimmer rule. On the category sheets it doubles as a
-              grab handle; here there's nothing to drag, so it rides the entrance
-              stagger with everything else rather than tracking a state. */}
+          {/* The sheet's shimmer rule. There is no second state here, so it
+              rides the entrance stagger with everything else rather than
+              tracking one the way the category sheets' rule does. */}
           <motion.span variants={fadeInUp} className="block">
-            <ShimmerLine tone="light" orientation="horizontal" className="w-[34px]" />
+            <ShimmerLine tone="light" orientation="horizontal" className="w-[2.125rem]" />
           </motion.span>
 
           <motion.h2
             variants={fadeInUp}
-            className="font-ivyora-display font-thin text-[34px] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
+            className="font-ivyora-display font-thin text-[2.125rem] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
           >
             {c.sectionLabel}
           </motion.h2>

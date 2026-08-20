@@ -7,6 +7,10 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 // and fades back out as it leaves, so adjacent sections crossfade through the
 // dark page background during the snap. Opacity only (no transform) — keeps the
 // hero's fixed preloader/nav viewport-fixed.
+//
+// min-h, not h: a category sheet opens to the full height of its description and
+// can push its section past one screen (see WorkMobile). A fixed 100svh here
+// would crop that overflow instead of letting the page scroll to it.
 export default function SectionFade({ children }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -19,7 +23,7 @@ export default function SectionFade({ children }) {
     <motion.div
       ref={ref}
       style={{ opacity }}
-      className="h-[100svh] snap-start snap-always"
+      className="min-h-[100svh] snap-start snap-always"
     >
       {children}
     </motion.div>

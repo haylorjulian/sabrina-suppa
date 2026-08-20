@@ -31,12 +31,12 @@ export default function Preloader({ loading, instant = false }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex w-full max-w-[860px] items-center px-8"
+            className="flex w-full max-w-[53.75rem] items-center px-8"
           >
             <span className="flex-1 opacity-50 -mr-7" style={dissolveLeft}>
               <ShimmerLine orientation="horizontal" reverse className="w-full" />
             </span>
-            <span className="relative z-10 text-[11px] italic uppercase tracking-[0.32em] text-bone-porcelain/40">
+            <span className="relative z-10 text-[0.6875rem] italic uppercase tracking-[0.32em] text-bone-porcelain/40">
               {t.preloader.label}
             </span>
             <span className="flex-1 opacity-50 -ml-7" style={dissolveRight}>

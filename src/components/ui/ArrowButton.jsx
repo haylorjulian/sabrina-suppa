@@ -12,11 +12,11 @@ import { motion } from 'framer-motion'
 // hard invert. The dark border only changes opacity (/10 → /40), never hue.
 // See DESIGN.md — The Emergent-Light Rule.
 export default function ArrowButton({ glyph, onClick, label, size = 'md', theme = 'light' }) {
-  const dims = size === 'lg' ? 'w-[38px] h-[38px] text-sm' : 'w-9 h-9 text-[13px]'
+  const dims = size === 'lg' ? 'w-[2.375rem] h-[2.375rem] text-sm' : 'w-9 h-9 text-[0.8125rem]'
   const palette =
     theme === 'dark'
-      ? 'border-bone-porcelain/10 bg-bone-porcelain/[0.03] text-bone-porcelain/70 backdrop-blur-[3px] hover:border-bone-porcelain/40 hover:bg-bone-porcelain/[0.07] hover:text-bone-porcelain hover:[box-shadow:var(--glow-bone)] focus-visible:border-bone-porcelain/40 focus-visible:bg-bone-porcelain/[0.07] focus-visible:text-bone-porcelain focus-visible:[box-shadow:var(--glow-bone)]'
-      : 'border-oxidized-graphite/10 bg-oxidized-graphite/[0.02] text-oxidized-graphite/70 backdrop-blur-[3px] hover:border-surgical-taupe/40 hover:bg-surgical-taupe/[0.08] hover:text-oxidized-graphite hover:[box-shadow:var(--penumbra-ink)] focus-visible:border-surgical-taupe/40 focus-visible:bg-surgical-taupe/[0.08] focus-visible:text-oxidized-graphite focus-visible:[box-shadow:var(--penumbra-ink)]'
+      ? 'border-bone-porcelain/10 bg-bone-porcelain/[0.03] text-bone-porcelain/70 backdrop-blur-[0.1875rem] hover:border-bone-porcelain/40 hover:bg-bone-porcelain/[0.07] hover:text-bone-porcelain hover:[box-shadow:var(--glow-bone)] focus-visible:border-bone-porcelain/40 focus-visible:bg-bone-porcelain/[0.07] focus-visible:text-bone-porcelain focus-visible:[box-shadow:var(--glow-bone)]'
+      : 'border-oxidized-graphite/10 bg-oxidized-graphite/[0.02] text-oxidized-graphite/70 backdrop-blur-[0.1875rem] hover:border-surgical-taupe/40 hover:bg-surgical-taupe/[0.08] hover:text-oxidized-graphite hover:[box-shadow:var(--penumbra-ink)] focus-visible:border-surgical-taupe/40 focus-visible:bg-surgical-taupe/[0.08] focus-visible:text-oxidized-graphite focus-visible:[box-shadow:var(--penumbra-ink)]'
 
   return (
     <motion.button

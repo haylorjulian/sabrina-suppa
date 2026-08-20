@@ -115,12 +115,6 @@ collections:
             hint: "Optional — shown on mobile instead of the paragraphs above. Leave blank to reuse the desktop text."
           - { label: Background image, name: background, widget: image }
           - { label: Background alt text, name: bgAlt, widget: string }
-          - label: Social links
-            name: social
-            widget: list
-            fields:
-              - { label: Platform, name: label, widget: select, options: [Email, Instagram, Twitter, Linktree] }
-              - { label: URL, name: href, widget: string }
 
       - name: connect
         label: Connect
@@ -149,6 +143,13 @@ collections:
               minimal: true
               hint: "Press Enter for a new paragraph. Use Shift+Enter for a line break within the same paragraph."
             hint: "The paragraphs below the email address."
+          - label: Social links
+            name: social
+            widget: list
+            fields:
+              - { label: Platform, name: label, widget: select, options: [Email, Instagram, Twitter, LinkedIn, Linktree] }
+              - { label: URL, name: href, widget: string }
+            hint: "Shown as the icon column beside the Connect label. Order here is the order on the page."
 
       - name: work_ui
         label: Work — buttons & labels
