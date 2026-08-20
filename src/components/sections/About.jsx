@@ -32,7 +32,7 @@ export default function About({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="About"
-      className="relative min-h-[100vh] w-full snap-start snap-always overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
+      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
@@ -89,8 +89,11 @@ export default function About({ sectionId }) {
           is what it is on the category sheets too now that they have no gesture.
           The copy sits on the sheet's own ground rather than over the
           photograph, so the functional text-shadows this block used to need are
-          gone with it. */}
-      <div className="relative flex min-h-[100vh] flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
+          gone with it.
+          Same bottom-edge treatment as the category sheets: the cover holds
+          still at the section's stable height and only the sheet compensates
+          for the browser chrome (see dvh-bottom-shift in globals.css). */}
+      <div className="section-fullscreen relative flex flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
         {/* Cover takes whatever the sheet leaves, down to a floor. Past that the
             section grows taller than the viewport and the page simply scrolls on
             — the alternative, a scroll region inside a scrolling page, is worse
@@ -113,7 +116,7 @@ export default function About({ sectionId }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
-          className="relative z-10 flex flex-col gap-[1.125rem] border-t px-6 pb-[2.875rem] pt-6"
+          className="dvh-bottom-shift relative z-10 flex flex-col gap-[1.125rem] border-t px-6 pb-[max(2.875rem,env(safe-area-inset-bottom))] pt-6"
         >
           {/* The sheet's shimmer rule. There is no second state here, so it
               rides the entrance stagger with everything else rather than

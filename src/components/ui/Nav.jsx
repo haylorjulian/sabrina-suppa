@@ -114,9 +114,13 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
+      {/* pt keeps the designed 1.75rem and only grows past it on a notched
+          device, where viewport-fit=cover (see layout.jsx) would otherwise let
+          the wordmark and hamburger slide under the status bar. Static — the bar
+          is not browser-chrome-sensitive and must never move. */}
       <nav
         style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
-        className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[3.25rem] ${barHiddenClass}`}
+        className={`flex items-center justify-between px-6 pb-7 pt-[max(1.75rem,env(safe-area-inset-top))] transition-[opacity,visibility] md:px-[3.25rem] ${barHiddenClass}`}
       >
         <a
           href={isHome ? '#home' : '/'}
@@ -338,7 +342,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
           the 375px reference width without wrapping. */}
       <motion.div
         variants={overlayItem}
-        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-8 pt-[1.625rem]"
+        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[1.625rem]"
       >
         <ul className="flex flex-none items-center gap-4">
           {socials.map((link) => (

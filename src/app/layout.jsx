@@ -27,6 +27,17 @@ export const metadata = {
   },
 }
 
+// Next emits the viewport meta from here. `viewport-fit=cover` is what lets a
+// full-screen section paint edge to edge on a notched iPhone instead of being
+// letterboxed by the safe areas — and it is what makes env(safe-area-inset-*)
+// resolve to anything other than 0, which the fixed nav and every bottom-anchored
+// group below rely on to stay clear of the notch and the home indicator.
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

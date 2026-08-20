@@ -94,6 +94,60 @@ body {
 }
 
 @layer components {
+  /* ── Stable full-screen sections vs. moving browser chrome ────────────────
+     A phone's URL bar retracts as you scroll, and every viewport unit answers
+     that differently. None of them alone does what these sections need:
+
+       svh  — the small viewport (bar shown). Stable, but once the bar retracts
+              the section is short of the screen and a seam opens under it.
+       dvh  — the currently visible viewport. Always exact, but it *changes* as
+              the bar animates, so the section, its artwork and its image crop
+              all resize mid-scroll. That is the jump we are avoiding.
+       lvh  — the large viewport (bar retracted). Stable and fills the screen,
+              but while the bar is showing it runs taller than what you can see,
+              hiding whatever sits at the section's bottom edge.
+
+     So the section commits to `lvh` — nothing about the composition, the crop
+     or the header ever moves — and only the content anchored to the bottom
+     edge compensates, by the exact height the chrome is currently stealing.
+
+     `100vh` first as the fallback: a browser without lvh drops the second
+     declaration and keeps a usable full-screen section. Desktop is untouched —
+     Hero/About/Connect override this with `lg:h-full lg:min-h-0` (utilities
+     outrank this layer), and the rest of the mobile tree is `lg:hidden`. */
+  .section-fullscreen {
+    min-height: 100vh;
+    min-height: 100lvh;
+  }
+
+  /* ── Bottom-edge compensation ─────────────────────────────────────────────
+     `100dvh - 100lvh` is zero when the chrome is hidden (dvh == lvh, content
+     rests in its designed position) and negative by exactly the chrome's height
+     when it is showing, lifting the content clear of it. Transform only, so
+     nothing reflows and the element's own spacing is untouched.
+
+     No transition here, deliberately: the browser updates dvh continuously
+     while the bar animates, and a transition would lag that and read as float.
+
+     A browser without dvh/lvh drops the whole declaration as invalid and the
+     content simply stays put — the same graceful outcome as the height fallback
+     above. Mobile-scoped to the project's existing lg breakpoint; on desktop the
+     three units are identical anyway, so this only ever resolves to 0 there. */
+  @media (max-width: 1023.98px) {
+    .dvh-bottom-shift {
+      transform: translateY(calc(100dvh - 100lvh));
+    }
+
+    /* Connect is the one full-screen section whose block is centred rather than
+       anchored to the bottom edge, and it carries no artwork to hold still. Half
+       the correction re-centres it in the *visible* area, which is the same
+       intent applied to a centred composition — a full shift would throw it as
+       far above centre as the chrome had pushed it below. */
+    .dvh-center-shift {
+      transform: translateY(calc((100dvh - 100lvh) / 2));
+    }
+  }
+
   /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).
      15px — one step below the 16px desktop panels (.section-desc), which take
      over at lg. Pair with a max-width measure (e.g. max-w-[60ch]) for line length. */

@@ -268,7 +268,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
     <article
       ref={(node) => registerArticle(cat.slug, node)}
       data-slug={cat.slug}
-      className="relative flex min-h-[100vh] w-full flex-col overflow-hidden bg-oxidized-graphite"
+      className="section-fullscreen relative flex w-full flex-col overflow-hidden bg-oxidized-graphite"
     >
       {image && (
         <motion.div
@@ -313,7 +313,14 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           own state (height, ground), the inner one is the entrance stagger
           container. They can't be one element — variant labels and an object
           `animate` don't coexist, and the labels are what propagate the stagger
-          down to the children. */}
+          down to the children.
+
+          The whole panel — title, description, divider, See Projects, Read more
+          — is this section's bottom-edge group, so the chrome compensation
+          (dvh-bottom-shift) rides the sheet itself and every internal gap is
+          left exactly as designed. It is safe on this element rather than on a
+          wrapper: it animates only height and backgroundColor, so Framer never
+          writes to `transform`. */}
       <motion.div
         id={sheetId}
         ref={sheetRef}
@@ -324,7 +331,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         }}
         transition={transition}
         style={{ borderTopColor: tone.border }}
-        className="relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[2.875rem] pt-6"
+        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(2.875rem,env(safe-area-inset-bottom))] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}

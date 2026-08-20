@@ -14,12 +14,10 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 // tolerates that growth — an oversized snap area stays freely scrollable (see
 // globals.css).
 //
-// vh, matching every other mobile section. Like svh it is stable — it does not
-// track the phone's URL bar, so a section never resizes mid-scroll and never
-// fights the snap — but it resolves to the *large* viewport (the height with the
-// bar retracted) rather than the small one. So a section fills the screen once
-// the bar is gone, and while the bar is still showing it runs slightly taller
-// than the visible area instead of slightly shorter.
+// Height comes from .section-fullscreen (globals.css): the large viewport, held
+// stable so the cover never resizes or recrops as the phone's URL bar moves. The
+// bottom-edge content compensates for the chrome on its own — here that is the
+// category sheet inside CategoryCover.
 //
 // snap-start / snap-always were inert until the mobile snap type landed; they
 // are now the snap point for each category cover.
@@ -35,7 +33,7 @@ export default function SectionFade({ children }) {
     <motion.div
       ref={ref}
       style={{ opacity }}
-      className="min-h-[100vh] snap-start snap-always"
+      className="section-fullscreen snap-start snap-always"
     >
       {children}
     </motion.div>

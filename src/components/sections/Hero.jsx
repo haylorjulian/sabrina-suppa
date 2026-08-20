@@ -30,7 +30,7 @@ export default function Hero({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Hero"
-      className="relative min-h-[100vh] w-full snap-start snap-always overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
         {/* Background scaled to fill, centred. The source is a 2x master (3840x2160),
             so covering the frame spends those pixels on retina sharpness rather
@@ -57,18 +57,27 @@ export default function Hero({ sectionId }) {
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-6 text-center lg:hidden"
+          className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center lg:hidden"
         >
-          {/* Scroll cue — line only, no label */}
+          {/* Scroll cue — line only, no label. Sits at the midpoint, not the
+              bottom edge, so it is not chrome-sensitive and must not move. */}
           <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[0.625rem]">
             <ShimmerLine tone="light" className="h-16" />
           </motion.div>
 
           {/* Footer — same responsive strip as the project pages, tightened to
-              sit closer to the hero's bottom edge */}
-          <motion.div variants={fadeInUp} className="w-full">
-            <Footer shadow rowPadding="pt-[1.125rem] pb-0" />
-          </motion.div>
+              sit closer to the hero's bottom edge.
+              The location / copyright / email row is this section's bottom-edge
+              group, so it rides the chrome compensation as one unit — its
+              internal spacing is untouched. The shift needs its own plain
+              wrapper: the element below animates `y` through fadeInUp, and
+              Framer writes that to the same inline `transform` the compensation
+              would use, so one would silently overwrite the other. */}
+          <div className="dvh-bottom-shift w-full">
+            <motion.div variants={fadeInUp} className="w-full">
+              <Footer shadow rowPadding="pt-[1.125rem] pb-0" />
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Desktop chrome — the hero carries its own, so the nav bar hides here.

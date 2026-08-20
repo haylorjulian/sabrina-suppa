@@ -81,7 +81,7 @@ export default function Connect({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Connect"
-      className="relative min-h-[100vh] w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
+      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — one centred row: the label plate and its rule, then
           the copy column. items-stretch is what lets the rule run the exact
@@ -122,13 +122,19 @@ export default function Connect({ sectionId }) {
 
       {/* Mobile (<1024px) — same composition ranged left: the plate keeps its
           rule (rather than becoming an ivyora heading), the copy stacks under it
-          at the mobile body size. */}
+          at the mobile body size.
+          This block is centred rather than anchored to the bottom edge, and the
+          section carries no artwork to hold still, so it takes the half-strength
+          correction — see dvh-center-shift in globals.css. Without it the block
+          stays centred on the stable section while the chrome eats the bottom of
+          the visible area, which pushes the social row below the fold on a short
+          phone. */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="flex min-h-[100vh] flex-col justify-center gap-7 px-6 py-24 lg:hidden"
+        className="dvh-center-shift section-fullscreen flex flex-col justify-center gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
       >
         <motion.div variants={fadeInUp} className="flex items-center gap-5">
           {plate}
