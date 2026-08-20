@@ -32,7 +32,7 @@ export default function About({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="About"
-      className="relative min-h-[100svh] w-full snap-start snap-always overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
+      className="relative min-h-[100vh] w-full snap-start snap-always overflow-hidden bg-bone-porcelain text-oxidized-graphite lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — mirrored two-column: content left, image right */}
       <div className="hidden h-full grid-cols-[50%_50%] lg:grid">
@@ -90,13 +90,13 @@ export default function About({ sectionId }) {
           The copy sits on the sheet's own ground rather than over the
           photograph, so the functional text-shadows this block used to need are
           gone with it. */}
-      <div className="relative flex min-h-[100svh] flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
+      <div className="relative flex min-h-[100vh] flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
         {/* Cover takes whatever the sheet leaves, down to a floor. Past that the
             section grows taller than the viewport and the page simply scrolls on
             — the alternative, a scroll region inside a scrolling page, is worse
             for a block of text this long (and globals.css already allows for
             bio covers running past one screen). */}
-        <div className="relative min-h-[32svh] flex-1">
+        <div className="relative min-h-[32vh] flex-1">
           <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
           {/* The category covers' scrim, at full strength: bottom-weighted, and
               light enough at the top that the photograph reads untouched. */}

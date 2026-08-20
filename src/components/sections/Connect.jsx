@@ -81,7 +81,7 @@ export default function Connect({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Connect"
-      className="relative min-h-[100svh] w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
+      className="relative min-h-[100vh] w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — one centred row: the label plate and its rule, then
           the copy column. items-stretch is what lets the rule run the exact
@@ -128,7 +128,7 @@ export default function Connect({ sectionId }) {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="flex min-h-[100svh] flex-col justify-center gap-7 px-6 py-24 lg:hidden"
+        className="flex min-h-[100vh] flex-col justify-center gap-7 px-6 py-24 lg:hidden"
       >
         <motion.div variants={fadeInUp} className="flex items-center gap-5">
           {plate}

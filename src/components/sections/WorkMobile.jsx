@@ -33,7 +33,7 @@ const RAISED_SLACK = 60
 // Minimum slice of cover left visible above the sheet in either state. Mirrors
 // About's mobile bio, whose cover takes whatever its sheet leaves down to a
 // floor.
-const COVER_FLOOR = 'min-h-[32svh]'
+const COVER_FLOOR = 'min-h-[32vh]'
 
 // Mobile Work (below lg): one full-viewport cover per category, stacked in order
 // (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
@@ -268,7 +268,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
     <article
       ref={(node) => registerArticle(cat.slug, node)}
       data-slug={cat.slug}
-      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-oxidized-graphite"
+      className="relative flex min-h-[100vh] w-full flex-col overflow-hidden bg-oxidized-graphite"
     >
       {image && (
         <motion.div
