@@ -28,13 +28,32 @@ const probe = (unit) => {
   return Math.round(h)
 }
 
+// Reads an env() safe-area inset by letting the browser resolve it into a length
+// we can measure. env() cannot be read from JS directly.
+const inset = (side) => {
+  const d = document.createElement('div')
+  d.style.cssText = `position:absolute;top:-9999px;left:0;width:1px;height:env(safe-area-inset-${side},0px)`
+  document.body.appendChild(d)
+  const h = d.getBoundingClientRect().height
+  d.remove()
+  return Math.round(h)
+}
+
 export default function ViewportDebug() {
   const [on, setOn] = useState(false)
   const [m, setM] = useState(null)
 
   useEffect(() => {
-    if (!new URLSearchParams(window.location.search).has('vp')) return
+    const q = new URLSearchParams(window.location.search)
+    if (!q.has('vp')) return
     setOn(true)
+
+    // ?cover=0 rewrites the viewport meta to drop viewport-fit=cover, so the two
+    // states can be compared on the device without a redeploy. Diagnostic only.
+    if (q.get('cover') === '0') {
+      const meta = document.querySelector('meta[name="viewport"]')
+      if (meta) meta.setAttribute('content', 'width=device-width, initial-scale=1')
+    }
 
     const read = () => {
       // The full-screen section covering the middle of the screen. Chosen by
@@ -62,6 +81,13 @@ export default function ViewportDebug() {
         shiftY: shift ? getComputedStyle(shift).transform : 'n/a',
         scrollY: Math.round(window.scrollY),
         docH: document.documentElement.scrollHeight,
+        // The painted-vs-reported gap. screen.height is the whole display; the
+        // difference between it and innerHeight is the chrome Safari is drawing
+        // over, some of which it still paints page content into.
+        screenH: window.screen?.height ?? 0,
+        insetTop: inset('top'),
+        insetBottom: inset('bottom'),
+        cover: (document.querySelector('meta[name="viewport"]')?.content ?? '').includes('cover'),
       })
     }
 
@@ -125,6 +151,12 @@ export default function ViewportDebug() {
       {row('chrome (lvh-dvh)', chrome, chrome === 0 ? '(collapsed)' : '(showing)')}
       {row('section height', m.secH ?? '—', clipped ? '⚠ < lvh' : '= lvh ✓')}
       {row('section top', m.secTop ?? '—')}
+      <div style={{ borderTop: '1px solid rgba(243,238,232,0.25)', margin: '5px 0' }} />
+      {row('viewport-fit', m.cover ? 'cover' : 'auto')}
+      {row('inset top/bottom', `${m.insetTop} / ${m.insetBottom}`)}
+      {row('screen.height', m.screenH)}
+      {row('screen - inner', m.screenH - m.inner, '← Safari chrome')}
+      <div style={{ borderTop: '1px solid rgba(243,238,232,0.25)', margin: '5px 0' }} />
       {row('bottom shift', m.shiftY === 'none' ? '0' : m.shiftY.replace(/matrix\([^,]+(?:,[^,]+){4},\s*/, '').replace(')', ''))}
       {row('scrollY', m.scrollY)}
       {row('doc height', m.docH)}
