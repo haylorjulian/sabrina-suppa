@@ -2,7 +2,6 @@ import './globals.css'
 import Providers from '@/components/Providers'
 import PageTransitionWrapper from '@/components/PageTransitionWrapper'
 import Nav from '@/components/ui/Nav'
-import ViewportDebug from '@/components/ui/ViewportDebug'
 import copy from '@/content/copy.generated.json'
 
 export const metadata = {
@@ -54,10 +53,6 @@ export default function RootLayout({ children }) {
           <Nav />
           <PageTransitionWrapper>{children}</PageTransitionWrapper>
         </Providers>
-        {/* TEMPORARY — on-device viewport readout, shown only with ?vp=1 in the
-            URL. Delete this line and the component file once the iPhone
-            behaviour is pinned down. */}
-        <ViewportDebug />
         {/* Bug reporting widget — opt-in, staging only. NEXT_PUBLIC_ENV is set to
             "staging" only in the staging build step (.github/workflows/deploy-staging.yml);
             it's unset everywhere else (production build, local dev on any branch),
