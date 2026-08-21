@@ -35,6 +35,10 @@ const RAISED_SLACK = 60
 // floor.
 const COVER_FLOOR = 'min-h-[32vh]'
 
+// Middle of the bar's ink when it cannot be measured: the nav's 1.75rem top
+// padding plus half the hamburger's h-5.
+const BAR_INK_FALLBACK = 38
+
 // Mobile Work (below lg): one full-viewport cover per category, stacked in order
 // (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
 // the name, a one-line précis and the action row. "Read more" raises the sheet
@@ -72,42 +76,73 @@ export default function WorkMobile() {
   useEffect(() => {
     const mql = window.matchMedia(DESKTOP)
     const lightWorld = new Set(lightWorldSlugs ? lightWorldSlugs.split(',') : [])
-    let observer = null
+    let engaged = false
     let owned = false // true while our light theme is the one on the bar
+    let raf = null
+    let sizes = null
 
-    const engage = () => {
-      if (observer) return
-      const under = new Set() // light-world covers currently under the bar
+    // Which world is behind the bar's ink, read straight off the geometry.
+    //
+    // This was an IntersectionObserver over the light-world covers, with "none
+    // intersecting" standing in for the dark world. Sections share an edge, and
+    // that broke it twice over: a cover that ends at exactly y=0 — where
+    // mandatory snap parks it for the whole of the next section — still counts
+    // as intersecting; and since that boolean never changes as the boundary
+    // crosses the bar, no callback was delivered to correct the reading either.
+    // The bar kept its graphite chrome across the whole of About, over a dark
+    // photograph. Geometry has no such blind spot.
+    const evaluate = () => {
+      raf = null
+      // Measured, not assumed: the bar's top padding tracks
+      // env(safe-area-inset-top), so on a notched phone the ink sits lower.
+      const box = document.querySelector('[data-nav-ink]')?.getBoundingClientRect()
+      // The ink's middle — a boundary has to pass the mark itself before the
+      // bar changes hands, rather than at either edge of the glyph.
+      const mark = box ? (box.top + box.bottom) / 2 : BAR_INK_FALLBACK
 
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            const slug = entry.target.dataset.slug
-            if (entry.isIntersecting) under.add(slug)
-            else under.delete(slug)
-          }
-          // Falling back to dark whenever no light cover is up there is what
-          // keeps About and Connect right on the way past — neither of them
-          // sets the theme itself.
-          owned = under.size > 0
-          setTheme(owned ? 'light' : 'dark')
-        },
-        // Only the top band counts: that's the strip the bar actually sits on.
-        { rootMargin: '0px 0px -85% 0px' }
-      )
-
+      let light = false
       for (const [slug, node] of articlesRef.current) {
-        if (lightWorld.has(slug)) observer.observe(node)
+        if (!lightWorld.has(slug)) continue
+        const r = node.getBoundingClientRect()
+        if (r.top <= mark && r.bottom > mark) {
+          light = true
+          break
+        }
       }
+      owned = light
+      // Setting the same value bails out of the render, so this stays cheap to
+      // call on every frame of a scroll.
+      setTheme(light ? 'light' : 'dark')
     }
 
-    // At lg this whole tree is display:none, so the observer would report
-    // nothing, reset the theme to dark, and fight ScrollStage — which owns the
+    const schedule = () => {
+      if (raf === null) raf = requestAnimationFrame(evaluate)
+    }
+
+    const engage = () => {
+      if (engaged) return
+      engaged = true
+      window.addEventListener('scroll', schedule, { passive: true })
+      window.addEventListener('resize', schedule)
+      // A webfont swap or a sheet's first measurement moves the boundaries
+      // without any scroll, which changes the answer on its own.
+      sizes = new ResizeObserver(schedule)
+      for (const [, node] of articlesRef.current) sizes.observe(node)
+      evaluate()
+    }
+
+    // At lg this whole tree is display:none, so every rect would read zero, the
+    // theme would reset to dark, and it would fight ScrollStage — which owns the
     // theme at that tier. Hence the breakpoint gate, mirroring the stage's own.
     const disengage = () => {
-      if (!observer) return
-      observer.disconnect()
-      observer = null
+      if (!engaged) return
+      engaged = false
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      sizes?.disconnect()
+      sizes = null
+      if (raf !== null) cancelAnimationFrame(raf)
+      raf = null
       // Only hand the theme back if it was ours to hand back. Crossing the
       // breakpoint fires this and ScrollStage's own engage in an undefined
       // order, and an unconditional reset here would stomp the theme the stage
@@ -122,7 +157,7 @@ export default function WorkMobile() {
 
     return () => {
       mql.removeEventListener('change', sync)
-      observer?.disconnect()
+      disengage()
     }
   }, [lightWorldSlugs, setTheme])
 
@@ -226,9 +261,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         sheet: 'rgba(243,238,232,0.66)',
         sheetRaised: 'rgba(243,238,232,0.84)',
         border: 'rgba(26,26,28,0.14)',
-        // Same face as the dark-world title below — the two category headers are
-        // the same object in two worlds, so only the ink changes between them.
-        title: 'font-ivyora-display font-thin text-[1.5rem] leading-[1.1] tracking-[0.06em] text-oxidized-graphite',
+        // Same face and size as the dark-world title below, one weight up: the
+        // thin cut holds against a bright photograph but goes wiry as graphite
+        // ink on the porcelain sheet, so this world carries it at 300.
+        title: 'font-ivyora-display font-light text-[1.5rem] leading-[1.1] tracking-[0.06em] text-oxidized-graphite',
         copy: 'text-oxidized-graphite/[0.78]',
         hairline: 'bg-oxidized-graphite/[0.16]',
         ink: 'text-oxidized-graphite',
@@ -248,7 +284,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         title: 'font-ivyora-display font-thin text-[1.5rem] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
         copy: 'text-[#D8D4CF]/80',
         hairline: 'bg-bone-porcelain/20',
-        ink: 'text-bone-porcelain',
+        // Held just off full porcelain: at 100% "See Projects" was the brightest
+        // thing on the sheet and pulled ahead of the title. Still the loud half
+        // of the action row — inkQuiet beside it sits at 60%.
+        ink: 'text-bone-porcelain/80',
         inkQuiet: 'text-[#D8D4CF]/60',
         quietRule: 'bg-[#D8D4CF]/60',
         shimmer: 'light',

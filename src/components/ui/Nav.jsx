@@ -158,8 +158,12 @@ export default function Nav() {
         </div>
 
         {/* Mobile hamburger */}
+        {/* data-nav-ink: WorkMobile measures this to decide whether a light-world
+            cover still sits behind the bar (see reachesBar there). It is tagged
+            rather than assumed because the bar's top padding tracks the notch. */}
         <button
           ref={hamburgerRef}
+          data-nav-ink=""
           type="button"
           onClick={toggleMenu}
           aria-label={open ? t.nav.closeLabel : t.nav.menuLabel}

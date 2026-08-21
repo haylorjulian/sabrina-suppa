@@ -125,9 +125,12 @@ export default function About({ sectionId }) {
             <ShimmerLine tone="light" orientation="horizontal" className="w-[34px]" />
           </motion.span>
 
+          {/* Same size as the category sheets' titles (see WorkMobile's tone):
+              this sheet is the same object as theirs, so its heading sits at the
+              same step rather than taking a size of its own. */}
           <motion.h2
             variants={fadeInUp}
-            className="font-ivyora-display font-thin text-[34px] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
+            className="font-ivyora-display font-thin text-[1.5rem] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
           >
             {c.sectionLabel}
           </motion.h2>

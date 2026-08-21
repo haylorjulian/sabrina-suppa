@@ -5,6 +5,7 @@ import Work from '@/components/sections/Work'
 import WorkMobile from '@/components/sections/WorkMobile'
 import About from '@/components/sections/About'
 import Connect from '@/components/sections/Connect'
+import MobileSectionTarget from '@/components/ui/MobileSectionTarget'
 
 export default function Home() {
   return (
@@ -27,6 +28,9 @@ export default function Home() {
         {/* Mobile / tablet (<1024px) — natural vertical scroll through full-height
             sections. Work becomes one full-screen cover per category. */}
         <div className="lg:hidden">
+          {/* Lands the page on the section a cross-page link asked for — the
+              mobile counterpart to ScrollStage's index seed. Renders nothing. */}
+          <MobileSectionTarget />
           <Hero sectionId="home" />
           <WorkMobile />
           <About sectionId="about" />
