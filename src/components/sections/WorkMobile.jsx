@@ -223,10 +223,12 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         scrim: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.3) 55%)',
         scrimRaised: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.24) 55%)',
         coverOpacity: 0.8,
-        sheet: 'rgba(243,238,232,0.86)',
-        sheetRaised: 'rgba(243,238,232,0.94)',
+        sheet: 'rgba(243,238,232,0.66)',
+        sheetRaised: 'rgba(243,238,232,0.84)',
         border: 'rgba(26,26,28,0.14)',
-        title: 'font-neue-haas-display text-[1.75rem] leading-[1.15] tracking-[0.12em] text-oxidized-graphite',
+        // Same face as the dark-world title below — the two category headers are
+        // the same object in two worlds, so only the ink changes between them.
+        title: 'font-ivyora-display font-thin text-[1.5rem] leading-[1.1] tracking-[0.06em] text-oxidized-graphite',
         copy: 'text-oxidized-graphite/[0.78]',
         hairline: 'bg-oxidized-graphite/[0.16]',
         ink: 'text-oxidized-graphite',
@@ -238,10 +240,12 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         scrim: 'linear-gradient(to top, rgba(26,26,28,0.5), rgba(26,26,28,0.05) 50%)',
         scrimRaised: 'linear-gradient(to top, rgba(26,26,28,0.6), rgba(26,26,28,0.15) 50%)',
         coverOpacity: 0.75,
-        sheet: 'rgba(26,26,28,0.86)',
-        sheetRaised: 'rgba(26,26,28,0.94)',
+        // #1b1e20 rather than the page ground: a hair cooler, so the sheet reads
+        // as its own plane over the cover instead of a hole cut in it.
+        sheet: 'rgba(27,30,32,0.86)',
+        sheetRaised: 'rgba(27,30,32,0.94)',
         border: 'rgba(243,238,232,0.18)',
-        title: 'font-ivyora-display font-thin text-[2.125rem] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
+        title: 'font-ivyora-display font-thin text-[1.5rem] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
         copy: 'text-[#D8D4CF]/80',
         hairline: 'bg-bone-porcelain/20',
         ink: 'text-bone-porcelain',
@@ -331,7 +335,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         }}
         transition={transition}
         style={{ borderTopColor: tone.border }}
-        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(2.875rem,env(safe-area-inset-bottom))] pt-6"
+        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}
@@ -341,7 +345,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
-          className={`flex flex-col gap-[1.125rem] ${expanded ? 'min-h-0 flex-1' : ''}`}
+          className={`flex flex-col gap-[18px] ${expanded ? 'min-h-0 flex-1' : ''}`}
         >
           {/* Trim, not a handle — there is no gesture on this sheet any more (see
               above); it marks the raised state the way the same rule sits above
@@ -355,7 +359,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
             transition={transition}
             className="block shrink-0"
           >
-            <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-[2.125rem]" />
+            <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-[34px]" />
           </motion.span>
 
           <motion.h2 variants={fadeInUp} className={`shrink-0 uppercase ${tone.title}`}>
@@ -399,7 +403,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
             </motion.div>
           </motion.div>
 
-          <motion.div variants={fadeInUp} className="mt-auto flex shrink-0 flex-col gap-[1.125rem]">
+          <motion.div variants={fadeInUp} className="mt-auto flex shrink-0 flex-col gap-[18px]">
             <div className={`h-px w-full ${tone.hairline}`} />
 
             <div className="flex items-center justify-between gap-4">
@@ -407,7 +411,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
                   type or opening up the row. */}
               <Link
                 href={`/work/${cat.slug}/${first.slug}`}
-                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.18em] ${tone.ink}`}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] ${tone.ink}`}
               >
                 {ui.seeProjects}
                 <ShimmerLine tone={tone.shimmer} orientation="horizontal" className="w-9" />
@@ -420,10 +424,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
                 onClick={onToggle}
                 aria-expanded={expanded}
                 aria-controls={sheetId}
-                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[0.6875rem] uppercase tracking-[0.22em] ${tone.inkQuiet}`}
+                className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[11px] uppercase tracking-[0.22em] ${tone.inkQuiet}`}
               >
                 {expanded ? ui.closeSheet : ui.readMore}
-                <span aria-hidden="true" className={`block h-px w-[1.375rem] ${tone.quietRule}`} />
+                <span aria-hidden="true" className={`block h-px w-[22px] ${tone.quietRule}`} />
               </button>
             </div>
           </motion.div>

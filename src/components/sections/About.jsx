@@ -45,7 +45,7 @@ export default function About({ sectionId }) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE }}
-              className="font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.28em] text-oxidized-graphite/80"
+              className="font-neue-haas-display text-[13px] uppercase tracking-[0.28em] text-oxidized-graphite/80"
             >
               {c.sectionLabel}
             </motion.p>
@@ -116,18 +116,18 @@ export default function About({ sectionId }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
-          className="dvh-bottom-shift relative z-10 flex flex-col gap-[1.125rem] border-t px-6 pb-[max(2.875rem,env(safe-area-inset-bottom))] pt-6"
+          className="dvh-bottom-shift relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
         >
           {/* The sheet's shimmer rule. There is no second state here, so it
               rides the entrance stagger with everything else rather than
               tracking one the way the category sheets' rule does. */}
           <motion.span variants={fadeInUp} className="block">
-            <ShimmerLine tone="light" orientation="horizontal" className="w-[2.125rem]" />
+            <ShimmerLine tone="light" orientation="horizontal" className="w-[34px]" />
           </motion.span>
 
           <motion.h2
             variants={fadeInUp}
-            className="font-ivyora-display font-thin text-[2.125rem] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
+            className="font-ivyora-display font-thin text-[34px] uppercase leading-[1.1] tracking-[0.06em] text-[#D8D4CF]"
           >
             {c.sectionLabel}
           </motion.h2>

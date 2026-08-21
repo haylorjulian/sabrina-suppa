@@ -15,7 +15,7 @@ export default function Pill({ label, active, onClick }) {
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="ds-control group relative whitespace-nowrap rounded-full px-[1.375rem] py-2 text-[0.5938rem] uppercase tracking-[0.20em] transition-transform duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px focus-visible:-translate-y-px focus-visible:outline-none"
+      className="ds-control group relative whitespace-nowrap rounded-full px-[22px] py-2 text-[9.5px] uppercase tracking-[0.20em] transition-transform duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-px focus-visible:-translate-y-px focus-visible:outline-none"
     >
       {active && (
         <motion.span
@@ -25,7 +25,7 @@ export default function Pill({ label, active, onClick }) {
         />
       )}
       {!active && (
-        <span className="absolute inset-0 rounded-full border border-oxidized-graphite/10 bg-surgical-taupe/[0.05] backdrop-blur-[0.1875rem] transition-[background-color,border-color,box-shadow] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-surgical-taupe/40 group-hover:bg-surgical-taupe/[0.09] group-hover:[box-shadow:var(--penumbra-ink)] group-focus-visible:border-surgical-taupe/40 group-focus-visible:bg-surgical-taupe/[0.09] group-focus-visible:[box-shadow:var(--penumbra-ink)]" />
+        <span className="absolute inset-0 rounded-full border border-oxidized-graphite/10 bg-surgical-taupe/[0.05] backdrop-blur-[3px] transition-[background-color,border-color,box-shadow] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-surgical-taupe/40 group-hover:bg-surgical-taupe/[0.09] group-hover:[box-shadow:var(--penumbra-ink)] group-focus-visible:border-surgical-taupe/40 group-focus-visible:bg-surgical-taupe/[0.09] group-focus-visible:[box-shadow:var(--penumbra-ink)]" />
       )}
       <span
         className={`relative z-10 ${

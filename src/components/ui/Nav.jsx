@@ -8,6 +8,7 @@ import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { setSectionTarget } from '@/lib/sectionTarget'
+import { scrollToSection } from '@/lib/scrollToSection'
 import { DURATION } from '@/components/ui/ScrollStage'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
@@ -73,9 +74,20 @@ export default function Nav() {
   // they must jump home first (/#work) and hand the target section off to the
   // home page via setSectionTarget (see sectionTarget.js).
   const resolveHref = (href) => (isHome || !href.startsWith('#') ? href : `/${href}`)
-  const handleNavClick = (href) => {
+
+  // On home, below lg, the fragment jump is driven by hand — the page's
+  // mandatory snap arrests the browser's own animated scroll partway, which is
+  // what made these links land on the wrong section (see scrollToSection).
+  // At lg+ ScrollStage intercepts hash clicks itself and there is no page
+  // scroll to drive; off home the link is a real navigation and the target
+  // section is handed over through sessionStorage instead.
+  const handleNavClick = (e, href) => {
     if (!isHome && href.startsWith('#')) setSectionTarget(href.slice(1))
     closeMenu()
+    if (!isHome || !href.startsWith('#')) return
+    if (window.matchMedia('(min-width: 1024px)').matches) return
+    e.preventDefault()
+    scrollToSection(href.slice(1))
   }
 
   const linkColor = barDark
@@ -120,13 +132,13 @@ export default function Nav() {
           is not browser-chrome-sensitive and must never move. */}
       <nav
         style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
-        className={`flex items-center justify-between px-6 pb-7 pt-[max(1.75rem,env(safe-area-inset-top))] transition-[opacity,visibility] md:px-[3.25rem] ${barHiddenClass}`}
+        className={`flex items-center justify-between px-6 pb-7 pt-[max(1.75rem,env(safe-area-inset-top))] transition-[opacity,visibility] md:px-[52px] ${barHiddenClass}`}
       >
         <a
           href={isHome ? '#home' : '/'}
-          onClick={closeMenu}
+          onClick={(e) => handleNavClick(e, isHome ? '#home' : '/')}
           aria-label={t.nav.logoFull}
-          className={`font-ivyora-display font-light lg:font-thin text-[0.875rem] uppercase tracking-[0.375rem] lg:tracking-[0.5rem] lg:opacity-80 transition-colors duration-300 ${logoColor}`}
+          className={`font-ivyora-display font-light lg:font-thin text-[14px] uppercase tracking-[6px] lg:tracking-[8px] lg:opacity-80 transition-colors duration-300 ${logoColor}`}
         >
           {t.nav.logoFull}
         </a>
@@ -137,8 +149,8 @@ export default function Nav() {
             <a
               key={link.href}
               href={resolveHref(link.href)}
-              onClick={() => handleNavClick(link.href)}
-              className={`nav-link font-neue-haas-display text-[0.875rem] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
+              onClick={(e) => handleNavClick(e, link.href)}
+              className={`nav-link font-neue-haas-display text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
             </a>
@@ -152,10 +164,10 @@ export default function Nav() {
           onClick={toggleMenu}
           aria-label={open ? t.nav.closeLabel : t.nav.menuLabel}
           aria-expanded={open}
-          className="relative z-50 flex h-5 w-6 flex-col justify-center gap-[0.3125rem] md:hidden"
+          className="relative z-50 flex h-5 w-6 flex-col justify-center gap-[5px] md:hidden"
         >
-          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? 'translate-y-[0.1875rem] rotate-45' : ''}`} />
-          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? '-translate-y-[0.1875rem] -rotate-45' : ''}`} />
+          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? 'translate-y-[3px] rotate-45' : ''}`} />
+          <span className={`block h-px w-full transition-transform duration-300 ${hamColor} ${open ? '-translate-y-[3px] -rotate-45' : ''}`} />
         </button>
       </nav>
 
@@ -301,9 +313,9 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
               <motion.a
                 variants={overlayItem}
                 href={resolveHref(link.href)}
-                onClick={() => onNavClick(link.href)}
+                onClick={(e) => onNavClick(e, link.href)}
                 aria-current={activeHref === link.href ? 'true' : undefined}
-                className={`block py-[1.125rem] font-neue-haas-display text-base uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
+                className={`block py-[18px] font-neue-haas-display text-base uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
                   activeHref === link.href ? 'text-bone-porcelain' : 'text-bone-porcelain/85'
                 }`}
               >
@@ -342,7 +354,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
           the 375px reference width without wrapping. */}
       <motion.div
         variants={overlayItem}
-        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[1.625rem]"
+        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[26px]"
       >
         <ul className="flex flex-none items-center gap-4">
           {socials.map((link) => (
@@ -355,7 +367,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
                 aria-label={link.label}
                 className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
               >
-                <SocialIcon label={link.label} className="h-[1.0313rem] w-[1.0313rem]" />
+                <SocialIcon label={link.label} className="h-[16.5px] w-[16.5px]" />
               </a>
             </li>
           ))}
@@ -363,7 +375,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
         <a
           href={`mailto:${t.connect.email}`}
           onClick={onClose}
-          className="whitespace-nowrap font-neue-haas-display text-[0.625rem] uppercase tracking-[0.14em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
+          className="whitespace-nowrap font-neue-haas-display text-[10px] uppercase tracking-[0.14em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
         >
           {t.connect.email}
         </a>
@@ -401,20 +413,20 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
       >
         <span className="flex items-start gap-1.5">
           <span
-            className={`font-neue-haas-display text-[0.6563rem] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
+            className={`font-neue-haas-display text-[10.5px] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
               open ? 'text-bone-porcelain/85' : 'text-bone-porcelain/60'
             }`}
           >
             {cat.label}
           </span>
-          <span className="font-neue-haas-display text-[0.5rem] leading-none tracking-[0.08em] text-bone-porcelain/40">
+          <span className="font-neue-haas-display text-[8px] leading-none tracking-[0.08em] text-bone-porcelain/40">
             ({cat.count})
           </span>
         </span>
 
         {/* Plus → minus: the vertical rule scales to nothing rather than the
             glyph being swapped, so the mark stays one continuous object. */}
-        <span aria-hidden="true" className="relative block h-[0.8125rem] w-[0.8125rem] flex-none">
+        <span aria-hidden="true" className="relative block h-[13px] w-[13px] flex-none">
           <span className="absolute left-0 top-1.5 h-px w-full bg-bone-porcelain/55" />
           <motion.span
             className="absolute left-1.5 top-0 h-full w-px bg-bone-porcelain/55"
@@ -439,7 +451,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
               variants={reduced ? undefined : staggerContainer}
               initial={reduced ? undefined : 'hidden'}
               animate={reduced ? undefined : 'visible'}
-              className="grid grid-cols-2 gap-x-4 gap-y-[0.625rem] pb-5"
+              className="grid grid-cols-2 gap-x-4 gap-y-[10px] pb-5"
             >
               {cat.projects.map((p) => {
                 const active = pathname === p.href
@@ -449,7 +461,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
                       href={p.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[0.8125rem] font-light italic leading-[1.35] transition-colors duration-300 ${
+                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[13px] font-light italic leading-[1.35] transition-colors duration-300 ${
                         active
                           ? 'text-bone-porcelain'
                           : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'
@@ -457,7 +469,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
                     >
                       {p.title}
                       {active && (
-                        <span aria-hidden="true" className="h-px w-[1.125rem] flex-none bg-bone-porcelain" />
+                        <span aria-hidden="true" className="h-px w-[18px] flex-none bg-bone-porcelain" />
                       )}
                     </Link>
                   </motion.li>

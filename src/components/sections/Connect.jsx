@@ -23,7 +23,7 @@ export default function Connect({ sectionId }) {
   const email = (
     <a
       href={`mailto:${c.email}`}
-      className="font-ivyora-display font-thin text-[clamp(1.5rem,3.4vw,2.3125rem)] leading-[1.1] tracking-[0.08em] text-bone-porcelain transition-opacity duration-[350ms] [transition-timing-function:var(--ease-signature)] hover:opacity-[0.72] focus-visible:opacity-[0.72]"
+      className="font-ivyora-display font-thin text-[clamp(24px,3.4vw,37px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain transition-opacity duration-[350ms] [transition-timing-function:var(--ease-signature)] hover:opacity-[0.72] focus-visible:opacity-[0.72]"
     >
       {c.email}
     </a>
@@ -33,7 +33,7 @@ export default function Connect({ sectionId }) {
     // Same 16px/1.55 metrics as .section-desc beside it: matching the line box
     // (not just the size) is what puts the plate's first line on the copy's, since
     // an unmatched half-leading offsets one against the other.
-    <span className="font-neue-haas-display text-[1rem] uppercase leading-[1.55] tracking-[0.30em] text-bone-porcelain/80">
+    <span className="font-neue-haas-display text-[16px] uppercase leading-[1.55] tracking-[0.30em] text-bone-porcelain/80">
       {c.sectionLabel}
     </span>
   )
@@ -58,7 +58,7 @@ export default function Connect({ sectionId }) {
             aria-label={link.label}
             className="block text-bone-porcelain/60 transition-colors duration-300 [transition-timing-function:var(--ease-signature)] hover:text-synthetic-flesh focus-visible:text-synthetic-flesh"
           >
-            <SocialIcon label={link.label} className="h-[1.375rem] w-[1.375rem]" />
+            <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
           </a>
         </li>
       ))}
@@ -90,7 +90,7 @@ export default function Connect({ sectionId }) {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="hidden h-full items-center justify-center px-[3.25rem] lg:flex"
+        className="hidden h-full items-center justify-center px-[52px] lg:flex"
       >
         <div className="flex items-stretch gap-10">
           {/* Label plate + the icon column hang together off the rule, ranged
@@ -106,14 +106,14 @@ export default function Connect({ sectionId }) {
             <ShimmerLine tone="light" orientation="vertical" className="self-stretch" />
           </motion.div>
 
-          <div className="flex w-[33.75rem] flex-col gap-[1.875rem]">
+          <div className="flex w-[540px] flex-col gap-[30px]">
             <motion.p
               variants={fadeInUp}
               className="section-desc rich-text font-light text-bone-porcelain/70"
               dangerouslySetInnerHTML={{ __html: c.introHtml }}
             />
             <motion.div variants={fadeInUp}>{email}</motion.div>
-            <motion.div variants={fadeInUp} className="flex flex-col gap-[0.875rem]">
+            <motion.div variants={fadeInUp} className="flex flex-col gap-[14px]">
               {notes('section-desc')}
             </motion.div>
           </div>
@@ -136,9 +136,12 @@ export default function Connect({ sectionId }) {
         viewport={{ once: true, amount: 0.25 }}
         className="dvh-center-shift section-fullscreen flex flex-col justify-center gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
       >
-        <motion.div variants={fadeInUp} className="flex items-center gap-5">
+        {/* The rule sits above the label rather than beside it, so the block
+            opens the way the mobile sheets do (About and the category covers
+            both lead with the same short trim over their title). */}
+        <motion.div variants={fadeInUp} className="flex flex-col items-start gap-5">
+          <ShimmerLine tone="light" orientation="horizontal" className="w-[34px]" />
           {plate}
-          <ShimmerLine tone="light" orientation="horizontal" className="w-16" />
         </motion.div>
 
         <motion.p
@@ -147,7 +150,7 @@ export default function Connect({ sectionId }) {
           dangerouslySetInnerHTML={{ __html: c.introHtml }}
         />
         <motion.div variants={fadeInUp}>{email}</motion.div>
-        <motion.div variants={fadeInUp} className="flex max-w-[46ch] flex-col gap-[0.875rem]">
+        <motion.div variants={fadeInUp} className="flex max-w-[46ch] flex-col gap-[14px]">
           {notes('body-copy')}
         </motion.div>
         {/* Ranged left in a row here: there is no rule to hang a column off at

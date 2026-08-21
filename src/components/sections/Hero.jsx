@@ -61,7 +61,7 @@ export default function Hero({ sectionId }) {
         >
           {/* Scroll cue — line only, no label. Sits at the midpoint, not the
               bottom edge, so it is not chrome-sensitive and must not move. */}
-          <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[0.625rem]">
+          <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[10px]">
             <ShimmerLine tone="light" className="h-16" />
           </motion.div>
 
@@ -75,7 +75,7 @@ export default function Hero({ sectionId }) {
               would use, so one would silently overwrite the other. */}
           <div className="dvh-bottom-shift w-full">
             <motion.div variants={fadeInUp} className="w-full">
-              <Footer shadow rowPadding="pt-[1.125rem] pb-0" />
+              <Footer shadow rowPadding="pt-[18px] pb-0" />
             </motion.div>
           </div>
         </motion.div>
@@ -89,12 +89,12 @@ export default function Hero({ sectionId }) {
           animate={loading ? 'hidden' : 'visible'}
           className="pointer-events-none absolute inset-0 z-10 hidden lg:block"
         >
-          {/* Wordmark, off-axis bottom-left. bottom-[5.0625rem] = the 60px footer strip
+          {/* Wordmark, off-axis bottom-left. bottom-[81px] = the 60px footer strip
               + the 21px HERO_GAP, so it clears the rule by the same step the strip
               centres the footer row on. */}
           <motion.h1
             variants={fadeInUp}
-            className={`absolute bottom-[5.0625rem] left-[2rem] font-ivyora-display font-thin text-[clamp(1.5rem,3.4vw,2.3125rem)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
+            className={`absolute bottom-[81px] left-[32px] font-ivyora-display font-thin text-[clamp(24px,3.4vw,37px)] leading-[1.1] tracking-[0.08em] text-bone-porcelain ${shadow}`}
           >
             {c.name}
           </motion.h1>
@@ -108,14 +108,14 @@ export default function Hero({ sectionId }) {
               that squeeze; justify-between spends any surplus on top of it. */}
           <motion.div
             variants={fadeInUp}
-            className="pointer-events-auto absolute bottom-[5.0625rem] right-[2rem] flex h-[calc(50%-81px)] min-h-fit flex-col items-end justify-between gap-[1.3125rem]"
+            className="pointer-events-auto absolute bottom-[81px] right-[32px] flex h-[calc(50%-81px)] min-h-fit flex-col items-end justify-between gap-[21px]"
           >
             {/* Icon and line ride one 19px column, so they share a centre axis —
                 the rail is items-end, so aligning their edges instead would leave
                 the line hanging off the icon's right shoulder. Grouping them also
                 pins the gap: as separate justify-between children their spacing
                 came out of leftover space and drifted with viewport height. */}
-            <div className="flex w-[1.1875rem] shrink-0 flex-col items-center gap-[3.875rem]">
+            <div className="flex w-[19px] shrink-0 flex-col items-center gap-[62px]">
               <a
                 href={socialHref('Instagram')}
                 target="_blank"
@@ -123,18 +123,18 @@ export default function Hero({ sectionId }) {
                 aria-label="Instagram"
                 className={linkColor}
               >
-                <InstagramIcon className="h-[1.1875rem] w-[1.1875rem]" />
+                <InstagramIcon className="h-[19px] w-[19px]" />
               </a>
               {/* shrink-0: a fixed-height span in a flex column gets crushed otherwise */}
               <ShimmerLine tone="light" className="h-28 shrink-0" />
             </div>
 
-            <nav aria-label="Hero" className="flex flex-col items-end gap-[0.875rem]">
+            <nav aria-label="Hero" className="flex flex-col items-end gap-[14px]">
               {railLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`nav-link font-neue-haas-display text-[0.8125rem] uppercase tracking-[0.24em] ${linkColor} ${shadow}`}
+                  className={`nav-link font-neue-haas-display text-[13px] uppercase tracking-[0.24em] ${linkColor} ${shadow}`}
                 >
                   {link.label}
                 </a>
@@ -149,7 +149,7 @@ export default function Hero({ sectionId }) {
               it also sets the space above the rule (see the wordmark and rail). */}
           <motion.div
             variants={fadeInUp}
-            className="pointer-events-auto absolute inset-x-[2rem] bottom-0"
+            className="pointer-events-auto absolute inset-x-[32px] bottom-0"
           >
             <Footer shadow />
           </motion.div>

@@ -28,28 +28,13 @@
 html {
   scroll-behavior: smooth;
 
-  /* ── Fluid root ────────────────────────────────────────────────────────────
-     The layout is fluid (50/50 columns, full-bleed covers, vw display type) but
-     the type and spacing were not: every size resolved against a fixed 16px
-     root, so on a viewport much wider than the design reference the text shrank
-     away from the imagery. Browser zoom is the same thing seen from the other
-     side — at 50% the CSS viewport doubles, and fixed-px type halves on screen.
-     CSS cannot tell those two cases apart, and it should not: both want the
-     same answer, which is for the type to keep its proportion to the layout.
-
-     So the root scales with the viewport past REFERENCE_WIDTH = 1512px (the
-     design's 100%-zoom width): 16 / 1512 * 100 = 1.0582vw. The max() is what
-     makes this safe — at or below 1512 the root is exactly 1rem, so every size
-     on the site is byte-for-byte what it was, and narrow/mobile is untouched.
-     Above it, type and Tailwind's rem-based spacing grow in lockstep, so the
-     composition enlarges rather than redistributing.
-
-     This is why arbitrary sizes across the components are authored in rem
-     rather than px: a px value here would opt that one rule out of the scale.
-     1px hairlines are the deliberate exception — a rule is a rule at any size.
-     Keeping the floor in rem (not px) also preserves the user's OS/browser text
-     size below the reference, which a vw-only scale would override. */
-  font-size: max(1rem, 1.0582vw);
+  /* No fluid root here, deliberately. A `font-size: max(1rem, Nvw)` was tried:
+     it scaled the root past a 1512px reference so type and Tailwind's rem
+     spacing grew with the layout. It broke sizing across the site — every
+     component authored against a fixed root drifted, and the effect compounded
+     with browser zoom. The root stays at the browser default; sizes are
+     authored in px where they are design constants and in rem only where they
+     should follow the user's text-size preference (see .body-copy below). */
 }
 
 body {

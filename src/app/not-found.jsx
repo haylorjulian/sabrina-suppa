@@ -12,11 +12,11 @@ export default function NotFound() {
 
   return (
     <main className="flex min-h-[100dvh] w-full flex-col items-center justify-center bg-oxidized-graphite px-6 text-center text-bone-porcelain">
-      <p className="font-neue-haas-display text-[0.75rem] uppercase tracking-[0.34em] text-synthetic-flesh/70 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
+      <p className="font-neue-haas-display text-[12px] uppercase tracking-[0.34em] text-synthetic-flesh/70 [text-shadow:0_1px_8px_rgba(26,26,28,0.7)]">
         {c.code}
       </p>
 
-      <h1 className="mt-6 font-neue-haas-display text-[clamp(1.75rem,5vw,3.25rem)] font-light italic tracking-[0.02em]">
+      <h1 className="mt-6 font-neue-haas-display text-[clamp(28px,5vw,52px)] font-light italic tracking-[0.02em]">
         {c.title}
       </h1>
 
@@ -26,7 +26,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="mt-10 border border-bone-porcelain/40 px-9 py-3 text-[0.6875rem] uppercase tracking-[0.3em] text-bone-porcelain transition-colors duration-300 hover:bg-bone-porcelain hover:text-oxidized-graphite"
+        className="mt-10 border border-bone-porcelain/40 px-9 py-3 text-[11px] uppercase tracking-[0.3em] text-bone-porcelain transition-colors duration-300 hover:bg-bone-porcelain hover:text-oxidized-graphite"
       >
         {c.home}
       </Link>
