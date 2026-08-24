@@ -8,67 +8,83 @@
   "media": [
     {
       "src": "adaptiveFlesh/Transfiguration/2.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/1.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/3.jpg",
-      "alt": "Here is an aesthetic exploration of the results of these ruptures."
+      "alt": "Here is an aesthetic exploration of the results of these ruptures.",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/19.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/5.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/7.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/8.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/side_07_v03.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/9.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/12.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/10.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/11.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/13.webp",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/trio1.webp",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": true
     },
     {
       "src": "adaptiveFlesh/Transfiguration/14.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/18.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     }
   ]
 }
