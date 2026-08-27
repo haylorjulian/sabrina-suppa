@@ -92,9 +92,17 @@ body {
               but while the bar is showing it runs taller than what you can see,
               hiding whatever sits at the section's bottom edge.
 
-     So the section commits to `lvh` — nothing about the composition, the crop
-     or the header ever moves — and only the content anchored to the bottom
-     edge compensates, by the exact height the chrome is currently stealing.
+     So the section commits to `lvh`: nothing about the composition, the crop or
+     the header ever moves as the bar comes and goes.
+
+     The accepted cost is that while the bar is showing, the section's bottom
+     band sits behind it — on an iPhone that is `lvh - dvh`, about 40px, and it
+     is where the Hero's footer strip and the sheets' action rows live. It comes
+     back the moment a scroll retracts the bar. A transform lift
+     (`translateY(calc(100dvh - 100lvh))`) used to correct for it and was
+     removed: Safari does not start its toolbar at the bottom of the reported
+     viewport, so the lift overshot and left a visible gap under the footer on
+     the un-scrolled Hero, which read worse than the clipping it prevented.
 
      `100vh` first as the fallback: a browser without lvh drops the second
      declaration and keeps a usable full-screen section. Desktop is untouched —
@@ -103,25 +111,6 @@ body {
   .section-fullscreen {
     min-height: 100vh;
     min-height: 100lvh;
-  }
-
-  /* ── Bottom-edge compensation ─────────────────────────────────────────────
-     `100dvh - 100lvh` is zero when the chrome is hidden (dvh == lvh, content
-     rests in its designed position) and negative by exactly the chrome's height
-     when it is showing, lifting the content clear of it. Transform only, so
-     nothing reflows and the element's own spacing is untouched.
-
-     No transition here, deliberately: the browser updates dvh continuously
-     while the bar animates, and a transition would lag that and read as float.
-
-     A browser without dvh/lvh drops the whole declaration as invalid and the
-     content simply stays put — the same graceful outcome as the height fallback
-     above. Mobile-scoped to the project's existing lg breakpoint; on desktop the
-     three units are identical anyway, so this only ever resolves to 0 there. */
-  @media (max-width: 1023.98px) {
-    .dvh-bottom-shift {
-      transform: translateY(calc(100dvh - 100lvh));
-    }
   }
 
   /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).
