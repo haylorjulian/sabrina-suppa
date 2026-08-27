@@ -6,6 +6,7 @@ import WorkMobile from '@/components/sections/WorkMobile'
 import About from '@/components/sections/About'
 import Connect from '@/components/sections/Connect'
 import MobileSectionTarget from '@/components/ui/MobileSectionTarget'
+import ConnectScrollHold from '@/components/ui/ConnectScrollHold'
 
 export default function Home() {
   return (
@@ -35,6 +36,11 @@ export default function Home() {
           <WorkMobile />
           <About sectionId="about" />
           <Connect sectionId="connect" />
+          {/* Holds Connect's landing offset across the iOS Safari toolbar
+              animation. Connect is the only section pinned at the document's
+              end, which is what makes it the only one Safari re-resolves after
+              a finger scroll. Renders nothing, and no-ops everywhere else. */}
+          <ConnectScrollHold />
         </div>
       </main>
     </PreloaderProvider>
