@@ -465,7 +465,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
                       href={p.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[13px] font-light italic leading-[1.35] transition-colors duration-300 ${
+                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[13px] font-light italic leading-[1.35] tracking-[0.01rem] transition-colors duration-300 ${
                         active
                           ? 'text-bone-porcelain'
                           : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'

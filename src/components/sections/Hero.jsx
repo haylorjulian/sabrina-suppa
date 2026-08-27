@@ -38,14 +38,26 @@ export default function Hero({ sectionId }) {
             no resampling: that only held while the source matched the viewport 1:1,
             and against a 2x master it renders as a centre-crop zoom. The
             wet-petroleum ground below is now only seen if the image fails to load.
-            No filters/shadows touch it. */}
+            No filters/shadows touch it.
+            Both variants render; CSS picks one so the static/server markup
+            matches on hydration — backgroundMobile falls back to the desktop
+            image at build time when the editor leaves it blank (see
+            scripts/build-content.mjs), so this is a no-op until it's set. */}
+        <Image
+          src={assets.hero.backgroundMobile}
+          alt={c.bgAlt}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center lg:hidden"
+        />
         <Image
           src={assets.hero.background}
           alt={c.bgAlt}
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="hidden object-cover object-center lg:block"
         />
 
         {/* Mobile chrome — scroll cue, wordmark, then the footer strip, stacked
@@ -57,7 +69,7 @@ export default function Hero({ sectionId }) {
           variants={staggerContainer}
           initial="hidden"
           animate={loading ? 'hidden' : 'visible'}
-          className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center lg:hidden"
+          className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-6 text-center lg:hidden"
         >
           {/* Scroll cue — line only, no label. Sits at the midpoint, not the
               bottom edge, so it is not chrome-sensitive and must not move. */}

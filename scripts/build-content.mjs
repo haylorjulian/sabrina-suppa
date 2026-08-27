@@ -420,11 +420,20 @@ for (const cat of categories) {
   workMedia[cat.slug] = categoryProjects.get(cat.slug).map((p) => ({ media: (p.media || []).map(mediaItem) }))
 }
 
+// Hero/About backgrounds: a desktop image plus an optional mobile image that
+// falls back to the desktop one when the editor leaves it blank — same pattern
+// as categoryImages above.
 const media = {
   ASSET_BASE,
   assets: {
-    hero: { background: resolveSrc(hero.background) },
-    about: { background: resolveSrc(about.background) },
+    hero: {
+      background: resolveSrc(hero.background),
+      backgroundMobile: resolveSrc(hero.backgroundMobile || hero.background),
+    },
+    about: {
+      background: resolveSrc(about.background),
+      backgroundMobile: resolveSrc(about.backgroundMobile || about.background),
+    },
   },
   categoryImages,
   workMedia,

@@ -10,7 +10,9 @@ import media from '@/lib/media.generated.json'
 
 export const ASSET_BASE = media.ASSET_BASE
 
-// Section backgrounds — { hero: { background }, about: { background } }
+// Section backgrounds — { hero: { background, backgroundMobile }, about: { background, backgroundMobile } }.
+// `backgroundMobile` falls back to `background` at build time when the editor
+// leaves the mobile image blank (same pattern as categoryImages below).
 export const assets = media.assets
 
 // Category background images by slug — { desktop, mobile }. `mobile` falls back

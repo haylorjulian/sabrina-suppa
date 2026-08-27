@@ -123,18 +123,14 @@ export default function Connect({ sectionId }) {
       {/* Mobile (<1024px) — same composition ranged left: the plate keeps its
           rule (rather than becoming an ivyora heading), the copy stacks under it
           at the mobile body size.
-          This block is centred rather than anchored to the bottom edge, and the
-          section carries no artwork to hold still, so it takes the half-strength
-          correction — see dvh-center-shift in globals.css. Without it the block
-          stays centred on the stable section while the chrome eats the bottom of
-          the visible area, which pushes the social row below the fold on a short
-          phone. */}
+          Anchored to the bottom edge, like the other mobile sections' docked
+          content — see dvh-bottom-shift in globals.css. */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="dvh-center-shift section-fullscreen flex flex-col justify-center gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
+        className="dvh-bottom-shift section-fullscreen flex flex-col justify-end gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
       >
         {/* The rule sits above the label rather than beside it, so the block
             opens the way the mobile sheets do (About and the category covers

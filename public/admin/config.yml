@@ -72,7 +72,8 @@ collections:
           - { label: Name, name: name, widget: string }
           - { label: Descriptor, name: descriptor, widget: string }
           - { label: Scroll cue, name: scroll, widget: string }
-          - { label: Background image, name: background, widget: image }
+          - { label: Background image — desktop, name: background, widget: image }
+          - { label: Background image — mobile (optional — defaults to the desktop image), name: backgroundMobile, widget: image, required: false }
           - { label: Background alt text, name: bgAlt, widget: string }
 
       - name: preloader
@@ -113,7 +114,8 @@ collections:
               minimal: true
               hint: "Press Enter for a new paragraph. Use Shift+Enter for a line break within the same paragraph."
             hint: "Optional — shown on mobile instead of the paragraphs above. Leave blank to reuse the desktop text."
-          - { label: Background image, name: background, widget: image }
+          - { label: Background image — desktop, name: background, widget: image }
+          - { label: Background image — mobile (optional — defaults to the desktop image), name: backgroundMobile, widget: image, required: false }
           - { label: Background alt text, name: bgAlt, widget: string }
 
       - name: connect

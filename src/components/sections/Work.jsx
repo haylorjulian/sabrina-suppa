@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useWork } from '@/hooks/useWork'
 import { categoryImages } from '@/lib/assets'
-import ShimmerArrow from '@/components/ui/ShimmerArrow'
+import ShimmerLine from '@/components/ui/ShimmerLine'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -138,7 +138,7 @@ export default function Work() {
                   className="group inline-flex items-center gap-3 font-neue-haas-display text-[13px] uppercase tracking-[0.18em] text-oxidized-graphite"
                 >
                   {c.seeProjects}
-                  <ShimmerArrow tone="dark" className="h-3 w-9 -translate-x-[5px] transition-transform duration-300 group-hover:translate-x-[-1px]" />
+                  <ShimmerLine tone="dark" orientation="horizontal" className="w-9 -translate-x-[5px] transition-transform duration-300 group-hover:translate-x-[-1px]" />
                 </Link>
               </motion.div>
             )}

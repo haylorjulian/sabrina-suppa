@@ -122,15 +122,6 @@ body {
     .dvh-bottom-shift {
       transform: translateY(calc(100dvh - 100lvh));
     }
-
-    /* Connect is the one full-screen section whose block is centred rather than
-       anchored to the bottom edge, and it carries no artwork to hold still. Half
-       the correction re-centres it in the *visible* area, which is the same
-       intent applied to a centred composition — a full shift would throw it as
-       far above centre as the chrome had pushed it below. */
-    .dvh-center-shift {
-      transform: translateY(calc((100dvh - 100lvh) / 2));
-    }
   }
 
   /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).

@@ -100,7 +100,9 @@ export default function About({ sectionId }) {
             for a block of text this long (and globals.css already allows for
             bio covers running past one screen). */}
         <div className="relative min-h-[32vh] flex-1">
-          <Image src={assets.about.background} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
+          {/* backgroundMobile falls back to the desktop image at build time when
+              the editor leaves it blank (see scripts/build-content.mjs). */}
+          <Image src={assets.about.backgroundMobile} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
           {/* The category covers' scrim, at full strength: bottom-weighted, and
               light enough at the top that the photograph reads untouched. */}
           <div className="absolute inset-0 bg-gradient-to-t from-oxidized-graphite/50 to-oxidized-graphite/5 to-50%" />

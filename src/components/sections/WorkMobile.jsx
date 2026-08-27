@@ -16,23 +16,25 @@ const SHEET_TRANSITION = { duration: 0.45, ease: EASE }
 const DESKTOP = '(min-width: 1024px)' // mirrors ScrollStage — the tier that owns the nav theme
 
 // The raised sheet is sized by its own description — the whole description, with
-// no ceiling. It used to be capped at a ratio of the viewport, which kept a slice
-// of the cover visible but pushed any longer category into a scroll region nested
+// no ceiling, and it is now free to claim the full section height: COVER_FLOOR
+// (below) only holds its slice open while the sheet is collapsed, so a raised
+// sheet can rise edge-to-edge over the cover rather than stopping short of it.
+// It used to be capped at a ratio of the viewport, which kept a slice of the
+// cover visible but pushed any longer category into a scroll region nested
 // inside the scrolling page: two scrolls competing for the same drag, and the
-// only way to reach the end of the copy. The cover slice is now held open by the
-// spacer above the sheet instead (COVER_FLOOR), and when the description outruns
-// what is left the section simply grows past the viewport and the page scrolls
-// on — the same trade About's mobile bio already makes, and globals.css already
-// allows for sections taller than one screen.
+// only way to reach the end of the copy. When the description still outruns a
+// full viewport, the section simply grows past it and the page scrolls on — the
+// same trade About's mobile bio already makes, and globals.css already allows
+// for sections taller than one screen.
 //
 // Breathing room under the description. The action row is pinned to the sheet's
 // base by mt-auto, so this lands as open space between the copy and the hairline
 // rather than padding the sheet's bottom edge.
 const RAISED_SLACK = 60
 
-// Minimum slice of cover left visible above the sheet in either state. Mirrors
-// About's mobile bio, whose cover takes whatever its sheet leaves down to a
-// floor.
+// Minimum slice of cover left visible above the sheet while it's collapsed —
+// applied conditionally below, not while raised, so an expanded sheet can rise
+// all the way to full viewport height instead of stopping at this floor.
 const COVER_FLOOR = 'min-h-[32vh]'
 
 // Middle of the bar's ink when it cannot be measured: the nav's 1.75rem top
@@ -337,10 +339,13 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
       />
 
       {/* The cover slice above the sheet. It is the flex spacer that takes
-          whatever the sheet leaves, down to COVER_FLOOR — past that the article
-          grows and the page scrolls on. Tapping it dismisses a raised sheet; the
-          button only mounts while raised, so it never eats a tap collapsed. */}
-      <div className={`relative ${COVER_FLOOR} flex-1`}>
+          whatever the sheet leaves — down to COVER_FLOOR while collapsed, so a
+          peek of the photograph always shows, but with no floor once raised, so
+          the sheet can rise all the way to the top of the section (full viewport
+          height) before the article has to grow and the page scrolls on.
+          Tapping it dismisses a raised sheet; the button only mounts while
+          raised, so it never eats a tap collapsed. */}
+      <div className={`relative flex-1 ${expanded ? '' : COVER_FLOOR}`}>
         {expanded && (
           <button
             type="button"
