@@ -15,9 +15,10 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 // globals.css).
 //
 // Height comes from .section-fullscreen (globals.css): the large viewport, held
-// stable so the cover never resizes or recrops as the phone's URL bar moves —
-// at the cost of the section's bottom band sitting behind the bar until a
-// scroll retracts it.
+// stable so the cover never resizes or recrops as the phone's URL bar moves. The
+// bottom-edge content lifts clear of the bar on its own — here that is the
+// category sheet inside CategoryCover — except on Safari, where the lift is held
+// back and the sheet sits at the section's bottom edge.
 //
 // snap-start / snap-always were inert until the mobile snap type landed; they
 // are now the snap point for each category cover.

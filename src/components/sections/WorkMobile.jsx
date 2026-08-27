@@ -363,9 +363,13 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           `animate` don't coexist, and the labels are what propagate the stagger
           down to the children.
 
-          The sheet sits at the section's bottom edge and holds there: while
-          the phone's URL bar is showing, the action row is behind it, and a
-          scroll brings it back (see .section-fullscreen in globals.css). */}
+          The whole panel — title, description, divider, See Projects, Read more
+          — is this section's bottom-edge group, so the chrome compensation
+          (dvh-bottom-shift) rides the sheet itself and every internal gap is
+          left exactly as designed. Safe on this element rather than a wrapper:
+          it animates only height and backgroundColor, so Framer never writes to
+          `transform`. On Safari the lift is held back and the sheet simply sits
+          at the section's bottom edge (see globals.css). */}
       <motion.div
         id={sheetId}
         ref={sheetRef}
@@ -376,7 +380,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         }}
         transition={transition}
         style={{ borderTopColor: tone.border }}
-        className="relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
+        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}

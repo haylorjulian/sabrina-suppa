@@ -124,14 +124,14 @@ export default function Connect({ sectionId }) {
           rule (rather than becoming an ivyora heading), the copy stacks under it
           at the mobile body size.
           Anchored to the bottom edge, like the other mobile sections' docked
-          content, and it holds there while the phone's URL bar is showing (see
-          .section-fullscreen in globals.css). */}
+          content, so it rides the same chrome compensation — held back on
+          Safari (see dvh-bottom-shift in globals.css). */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="section-fullscreen flex flex-col justify-end gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
+        className="dvh-bottom-shift section-fullscreen flex flex-col justify-end gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
       >
         {/* The rule sits above the label rather than beside it, so the block
             opens the way the mobile sheets do (About and the category covers

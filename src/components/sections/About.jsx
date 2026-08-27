@@ -91,8 +91,9 @@ export default function About({ sectionId }) {
           photograph, so the functional text-shadows this block used to need are
           gone with it.
           Same bottom-edge treatment as the category sheets: the cover holds
-          still at the section's stable height and the sheet sits at its bottom
-          edge (see .section-fullscreen in globals.css). */}
+          still at the section's stable height and only the sheet compensates
+          for the browser chrome — except on Safari, where that lift is held
+          back (see dvh-bottom-shift in globals.css). */}
       <div className="section-fullscreen relative flex flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
         {/* Cover takes whatever the sheet leaves, down to a floor. Past that the
             section grows taller than the viewport and the page simply scrolls on
@@ -118,7 +119,7 @@ export default function About({ sectionId }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
-          className="relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
+          className="dvh-bottom-shift relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
         >
           {/* The sheet's shimmer rule. There is no second state here, so it
               rides the entrance stagger with everything else rather than

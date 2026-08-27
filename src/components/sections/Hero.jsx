@@ -78,13 +78,21 @@ export default function Hero({ sectionId }) {
           </motion.div>
 
           {/* Footer — same responsive strip as the project pages, tightened to
-              sit closer to the hero's bottom edge. It sits at the section's
-              bottom edge and stays there: while the phone's URL bar is showing
-              it is behind the bar, and a scroll brings it back (see
-              .section-fullscreen in globals.css). */}
-          <motion.div variants={fadeInUp} className="w-full">
-            <Footer shadow rowPadding="pt-[18px] pb-0" />
-          </motion.div>
+              sit closer to the hero's bottom edge.
+              The location / copyright / email row is this section's bottom-edge
+              group, so it rides the chrome compensation as one unit — its
+              internal spacing is untouched. On Safari that lift is held back
+              and the row simply sits at the section's bottom edge, behind the
+              URL bar until a scroll retracts it (see globals.css).
+              The shift needs its own plain wrapper: the element below animates
+              `y` through fadeInUp, and Framer writes that to the same inline
+              `transform` the compensation would use, so one would silently
+              overwrite the other. */}
+          <div className="dvh-bottom-shift w-full">
+            <motion.div variants={fadeInUp} className="w-full">
+              <Footer shadow rowPadding="pt-[18px] pb-0" />
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Desktop chrome — the hero carries its own, so the nav bar hides here.
