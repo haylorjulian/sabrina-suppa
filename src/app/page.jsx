@@ -6,7 +6,7 @@ import WorkMobile from '@/components/sections/WorkMobile'
 import About from '@/components/sections/About'
 import Connect from '@/components/sections/Connect'
 import MobileSectionTarget from '@/components/ui/MobileSectionTarget'
-import ConnectScrollHold from '@/components/ui/ConnectScrollHold'
+import ConnectApproachTail from '@/components/ui/ConnectApproachTail'
 
 export default function Home() {
   return (
@@ -36,11 +36,13 @@ export default function Home() {
           <WorkMobile />
           <About sectionId="about" />
           <Connect sectionId="connect" />
-          {/* Holds Connect's landing offset across the iOS Safari toolbar
-              animation. Connect is the only section pinned at the document's
-              end, which is what makes it the only one Safari re-resolves after
-              a finger scroll. Renders nothing, and no-ops everywhere else. */}
-          <ConnectScrollHold />
+          {/* Trailing scroll room, so Connect's snap point is never the
+              document's maximum scroll offset. See .connect-tail in
+              globals.css — zero height everywhere but iOS Safari. */}
+          <div aria-hidden="true" className="connect-tail" />
+          {/* Keeps that tail present only while Connect is being approached.
+              Renders nothing; no-ops off iOS Safari. */}
+          <ConnectApproachTail />
         </div>
       </main>
     </PreloaderProvider>

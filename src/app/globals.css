@@ -137,6 +137,37 @@ body {
     }
   }
 
+  /* ── Trailing scroll room under the last section (iOS Safari only) ────────
+     Connect is the last mobile section, so without this its snap point sits at
+     exactly the document's maximum scroll offset. That maximum is not stable on
+     iOS Safari: it is `scrollHeight - innerHeight`, and innerHeight swings by
+     the chrome's height as the URL bar retracts. Measured on an iPhone 17 Pro
+     simulator: scrollHeight 3770, innerHeight 714↔754, so the maximum moves
+     between 3056 and 3016 while Connect's snap point is fixed at 3016.
+
+     Safari then has to resolve a mandatory snap against a boundary that is
+     moving underneath it, and lands wherever the timing leaves it — traced
+     resting at 2958 (58px short, no snap), at 3056 (40px past, no snap), and
+     once correcting 2958→3016 in a single frame after the scroll had already
+     stopped, which is the ~50px lurch this fixes. Every other section snaps
+     against a stable interior offset and lands exactly, every time.
+
+     A chrome's worth of room past the last snap point is enough to take that
+     point off the boundary in both toolbar states, so the snap resolves the
+     way it does for the other four. It collapses to 0 wherever lvh and svh
+     agree — every desktop browser, and any mobile browser without retracting
+     chrome — and it carries no scroll-snap-align, so it is headroom and never
+     a stop. Graphite on graphite under a graphite section, so it is invisible.
+
+     Safari-only because Safari is the only engine that resizes the layout
+     viewport for its chrome; Chrome and Firefox on iOS leave innerHeight alone
+     and land the last section correctly without it. */
+  @media (max-width: 1023.98px) {
+    html[data-browser='safari'] .connect-tail {
+      height: var(--connect-tail, calc((100lvh - 100svh) * 3));
+    }
+  }
+
   /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).
      15px — one step below the 16px desktop panels (.section-desc), which take
      over at lg. Pair with a max-width measure (e.g. max-w-[60ch]) for line length. */
