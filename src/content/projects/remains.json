@@ -8,15 +8,13 @@
   "media": [
     {
       "src": "https://media.sabrinasuppa.com/uploads/remains_1.jpg",
-      "alt": ""
-    },
-    {
-      "src": "physicalworks/Remains/3.JPG",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "physicalworks/Remains/4.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     }
   ]
 }
