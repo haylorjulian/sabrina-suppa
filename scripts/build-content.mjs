@@ -318,10 +318,11 @@ const copy = {
         (p) => richParagraphs(p).join('<br><br>')
       ),
       bgAlt: about.bgAlt,
-      social: about.social,
     },
     // Connect is prose + one address: the address ships plain (it's also the
     // mailto target), the copy ships as HTML like every other editor field.
+    // The social links live here rather than on About — Connect is the one place
+    // the site asks to be contacted, so every route out of it sits together.
     connect: {
       sectionLabel: connect.sectionLabel,
       email: connect.email,
@@ -329,6 +330,7 @@ const copy = {
       introHtml: richParagraphs(connect.intro).join('<br><br>'),
       notes: connect.notes.map(plainText),
       notesHtml: connect.notes.map((p) => richParagraphs(p).join('<br><br>')),
+      social: connect.social ?? [],
     },
   },
 }
@@ -418,11 +420,20 @@ for (const cat of categories) {
   workMedia[cat.slug] = categoryProjects.get(cat.slug).map((p) => ({ media: (p.media || []).map(mediaItem) }))
 }
 
+// Hero/About backgrounds: a desktop image plus an optional mobile image that
+// falls back to the desktop one when the editor leaves it blank — same pattern
+// as categoryImages above.
 const media = {
   ASSET_BASE,
   assets: {
-    hero: { background: resolveSrc(hero.background) },
-    about: { background: resolveSrc(about.background) },
+    hero: {
+      background: resolveSrc(hero.background),
+      backgroundMobile: resolveSrc(hero.backgroundMobile || hero.background),
+    },
+    about: {
+      background: resolveSrc(about.background),
+      backgroundMobile: resolveSrc(about.backgroundMobile || about.background),
+    },
   },
   categoryImages,
   workMedia,

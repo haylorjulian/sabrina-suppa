@@ -15,29 +15,39 @@ const EASE = [0.22, 1, 0.36, 1]
 const SHEET_TRANSITION = { duration: 0.45, ease: EASE }
 const DESKTOP = '(min-width: 1024px)' // mirrors ScrollStage — the tier that owns the nav theme
 
-// The raised sheet is sized by its own description, so a short category doesn't
-// open a half-empty panel. This is only the ceiling: the mock pins the sheet to
-// top:284px on an 874px frame, and as a ratio that keeps a slice of the cover
-// visible on every phone no matter how long the copy runs. Past it the
-// description scrolls inside the sheet.
-const MAX_RAISED_RATIO = 0.675
-
+// The raised sheet is sized by its own description — the whole description, with
+// no ceiling, and it is now free to claim the full section height: COVER_FLOOR
+// (below) only holds its slice open while the sheet is collapsed, so a raised
+// sheet can rise edge-to-edge over the cover rather than stopping short of it.
+// It used to be capped at a ratio of the viewport, which kept a slice of the
+// cover visible but pushed any longer category into a scroll region nested
+// inside the scrolling page: two scrolls competing for the same drag, and the
+// only way to reach the end of the copy. When the description still outruns a
+// full viewport, the section simply grows past it and the page scrolls on — the
+// same trade About's mobile bio already makes, and globals.css already allows
+// for sections taller than one screen.
+//
 // Breathing room under the description. The action row is pinned to the sheet's
 // base by mt-auto, so this lands as open space between the copy and the hairline
 // rather than padding the sheet's bottom edge.
 const RAISED_SLACK = 60
 
-// A drag has to clear one of these to flip the sheet — distance for a slow pull,
-// velocity for a flick.
-const DRAG_DISTANCE = 60
-const DRAG_VELOCITY = 500
+// Minimum slice of cover left visible above the sheet while it's collapsed —
+// applied conditionally below, not while raised, so an expanded sheet can rise
+// all the way to full viewport height instead of stopping at this floor.
+const COVER_FLOOR = 'min-h-[32vh]'
+
+// Middle of the bar's ink when it cannot be measured: the nav's 1.75rem top
+// padding plus half the hamburger's h-5.
+const BAR_INK_FALLBACK = 38
 
 // Mobile Work (below lg): one full-viewport cover per category, stacked in order
 // (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
-// the name, a one-line précis and the action row. "Read more" (or a drag up)
-// raises the sheet over the cover to reveal the full description; "See Projects"
-// is a real route and stays on screen in both states, so nothing critical sits
-// behind a gesture.
+// the name, a one-line précis and the action row. "Read more" raises the sheet
+// over the cover to reveal the full description, "Close" lowers it again (as
+// does tapping the cover); "See Projects" is a real route and stays on screen in
+// both states. Every one of those is a button — the sheet itself is inert to
+// touch, so nothing on this page competes with the page scroll.
 export default function WorkMobile() {
   const { t } = useLanguage()
   const c = t.work
@@ -68,42 +78,73 @@ export default function WorkMobile() {
   useEffect(() => {
     const mql = window.matchMedia(DESKTOP)
     const lightWorld = new Set(lightWorldSlugs ? lightWorldSlugs.split(',') : [])
-    let observer = null
+    let engaged = false
     let owned = false // true while our light theme is the one on the bar
+    let raf = null
+    let sizes = null
 
-    const engage = () => {
-      if (observer) return
-      const under = new Set() // light-world covers currently under the bar
+    // Which world is behind the bar's ink, read straight off the geometry.
+    //
+    // This was an IntersectionObserver over the light-world covers, with "none
+    // intersecting" standing in for the dark world. Sections share an edge, and
+    // that broke it twice over: a cover that ends at exactly y=0 — where
+    // mandatory snap parks it for the whole of the next section — still counts
+    // as intersecting; and since that boolean never changes as the boundary
+    // crosses the bar, no callback was delivered to correct the reading either.
+    // The bar kept its graphite chrome across the whole of About, over a dark
+    // photograph. Geometry has no such blind spot.
+    const evaluate = () => {
+      raf = null
+      // Measured, not assumed: the bar's top padding tracks
+      // env(safe-area-inset-top), so on a notched phone the ink sits lower.
+      const box = document.querySelector('[data-nav-ink]')?.getBoundingClientRect()
+      // The ink's middle — a boundary has to pass the mark itself before the
+      // bar changes hands, rather than at either edge of the glyph.
+      const mark = box ? (box.top + box.bottom) / 2 : BAR_INK_FALLBACK
 
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            const slug = entry.target.dataset.slug
-            if (entry.isIntersecting) under.add(slug)
-            else under.delete(slug)
-          }
-          // Falling back to dark whenever no light cover is up there is what
-          // keeps About and Connect right on the way past — neither of them
-          // sets the theme itself.
-          owned = under.size > 0
-          setTheme(owned ? 'light' : 'dark')
-        },
-        // Only the top band counts: that's the strip the bar actually sits on.
-        { rootMargin: '0px 0px -85% 0px' }
-      )
-
+      let light = false
       for (const [slug, node] of articlesRef.current) {
-        if (lightWorld.has(slug)) observer.observe(node)
+        if (!lightWorld.has(slug)) continue
+        const r = node.getBoundingClientRect()
+        if (r.top <= mark && r.bottom > mark) {
+          light = true
+          break
+        }
       }
+      owned = light
+      // Setting the same value bails out of the render, so this stays cheap to
+      // call on every frame of a scroll.
+      setTheme(light ? 'light' : 'dark')
     }
 
-    // At lg this whole tree is display:none, so the observer would report
-    // nothing, reset the theme to dark, and fight ScrollStage — which owns the
+    const schedule = () => {
+      if (raf === null) raf = requestAnimationFrame(evaluate)
+    }
+
+    const engage = () => {
+      if (engaged) return
+      engaged = true
+      window.addEventListener('scroll', schedule, { passive: true })
+      window.addEventListener('resize', schedule)
+      // A webfont swap or a sheet's first measurement moves the boundaries
+      // without any scroll, which changes the answer on its own.
+      sizes = new ResizeObserver(schedule)
+      for (const [, node] of articlesRef.current) sizes.observe(node)
+      evaluate()
+    }
+
+    // At lg this whole tree is display:none, so every rect would read zero, the
+    // theme would reset to dark, and it would fight ScrollStage — which owns the
     // theme at that tier. Hence the breakpoint gate, mirroring the stage's own.
     const disengage = () => {
-      if (!observer) return
-      observer.disconnect()
-      observer = null
+      if (!engaged) return
+      engaged = false
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      sizes?.disconnect()
+      sizes = null
+      if (raf !== null) cancelAnimationFrame(raf)
+      raf = null
       // Only hand the theme back if it was ours to hand back. Crossing the
       // breakpoint fires this and ScrollStage's own engage in an undefined
       // order, and an unconditional reset here would stomp the theme the stage
@@ -118,7 +159,7 @@ export default function WorkMobile() {
 
     return () => {
       mql.removeEventListener('change', sync)
-      observer?.disconnect()
+      disengage()
     }
   }, [lightWorldSlugs, setTheme])
 
@@ -161,9 +202,9 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
   // region holds the précis or the description — and both of those are always in
   // the DOM at the right width, so one pass yields both heights:
   //
-  //   chrome    = handle + title + action row + gaps + padding + border
+  //   chrome    = trim + title + action row + gaps + padding + border
   //   collapsed = chrome + précis
-  //   raised    = chrome + description + slack, capped at MAX_RAISED_RATIO
+  //   raised    = chrome + description + slack (no cap — see RAISED_SLACK)
   const sheetRef = useRef(null)
   const contentRef = useRef(null)
   const precisRef = useRef(null)
@@ -198,29 +239,20 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
       const chrome = chromeRef.current + box
       const collapsed = Math.ceil(chrome + precisH)
       setCollapsedHeight(collapsed)
-      setRaisedHeight(
-        Math.max(
-          collapsed,
-          Math.min(
-            Math.ceil(chrome + descriptionH + RAISED_SLACK),
-            Math.round(window.innerHeight * MAX_RAISED_RATIO)
-          )
-        )
-      )
+      // No viewport cap: the raised sheet is exactly its own description plus
+      // slack, so the copy always fits and never needs to scroll inside.
+      setRaisedHeight(Math.max(collapsed, Math.ceil(chrome + descriptionH + RAISED_SLACK)))
     }
 
-    // The description is measured off the paragraph itself, not its scroll
-    // container: raised, that container is h-full and would just report the
-    // sheet's height back.
+    // The description is measured off the paragraph itself, not its wrapper:
+    // raised, that wrapper is a flex child and would report the region's height
+    // back rather than the copy's. Observing the paragraph is also what catches
+    // a reflow — rotating the phone rewraps it and the new height arrives here.
     const observer = new ResizeObserver(measure)
     observer.observe(column)
     observer.observe(precis)
     observer.observe(description)
-    window.addEventListener('resize', measure) // the cap tracks the viewport
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', measure)
-    }
+    return () => observer.disconnect()
   }, [expanded])
 
   const tone = light
@@ -228,10 +260,13 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         scrim: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.3) 55%)',
         scrimRaised: 'linear-gradient(to bottom, rgba(243,238,232,0.14), rgba(243,238,232,0.24) 55%)',
         coverOpacity: 0.8,
-        sheet: 'rgba(243,238,232,0.86)',
-        sheetRaised: 'rgba(243,238,232,0.94)',
+        sheet: 'rgba(243,238,232,0.66)',
+        sheetRaised: 'rgba(243,238,232,0.84)',
         border: 'rgba(26,26,28,0.14)',
-        title: 'font-neue-haas-display text-[28px] leading-[1.15] tracking-[0.12em] text-oxidized-graphite',
+        // Same face and size as the dark-world title below, one weight up: the
+        // thin cut holds against a bright photograph but goes wiry as graphite
+        // ink on the porcelain sheet, so this world carries it at 300.
+        title: 'font-ivyora-display font-light text-[1.5rem] leading-[1.1] tracking-[0.06em] text-oxidized-graphite',
         copy: 'text-oxidized-graphite/[0.78]',
         hairline: 'bg-oxidized-graphite/[0.16]',
         ink: 'text-oxidized-graphite',
@@ -243,13 +278,18 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         scrim: 'linear-gradient(to top, rgba(26,26,28,0.5), rgba(26,26,28,0.05) 50%)',
         scrimRaised: 'linear-gradient(to top, rgba(26,26,28,0.6), rgba(26,26,28,0.15) 50%)',
         coverOpacity: 0.75,
-        sheet: 'rgba(26,26,28,0.86)',
-        sheetRaised: 'rgba(26,26,28,0.94)',
+        // #1b1e20 rather than the page ground: a hair cooler, so the sheet reads
+        // as its own plane over the cover instead of a hole cut in it.
+        sheet: 'rgba(27,30,32,0.86)',
+        sheetRaised: 'rgba(27,30,32,0.94)',
         border: 'rgba(243,238,232,0.18)',
-        title: 'font-ivyora-display font-thin text-[34px] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
+        title: 'font-ivyora-display font-thin text-[1.5rem] leading-[1.1] tracking-[0.06em] text-[#D8D4CF]',
         copy: 'text-[#D8D4CF]/80',
         hairline: 'bg-bone-porcelain/20',
-        ink: 'text-bone-porcelain',
+        // Held just off full porcelain: at 100% "See Projects" was the brightest
+        // thing on the sheet and pulled ahead of the title. Still the loud half
+        // of the action row — inkQuiet beside it sits at 60%.
+        ink: 'text-bone-porcelain/80',
         inkQuiet: 'text-[#D8D4CF]/60',
         quietRule: 'bg-[#D8D4CF]/60',
         shimmer: 'light',
@@ -257,21 +297,23 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
 
   const transition = reduced ? { duration: 0 } : SHEET_TRANSITION
 
-  // Distance or flick, either direction. The sheet rubber-bands on `y` and
-  // springs back to 0 while `expanded` drives the height, so the gesture never
-  // fights the height animation.
-  const handleDragEnd = (_, info) => {
-    const up = info.offset.y < -DRAG_DISTANCE || info.velocity.y < -DRAG_VELOCITY
-    const down = info.offset.y > DRAG_DISTANCE || info.velocity.y > DRAG_VELOCITY
-    if (up && !expanded) onToggle()
-    else if (down && expanded) onClose()
-  }
-
+  // The sheet is inert to touch. It carried a drag gesture (pull up to raise,
+  // flick down to close) which read every vertical touch that started on it,
+  // so the sheet moved under a finger that was only trying to scroll the page —
+  // and rubber-banded even when it had nowhere to go. "Read more" / "Close" and
+  // the cover tap are the whole interface now, and they are buttons, so the
+  // sheet never intercepts a scroll.
+  //
+  // Laid out in flow rather than absolutely: the sheet has to be able to make
+  // the section taller than the viewport when a long description opens, and an
+  // absolute `bottom-0` child contributes nothing to its parent's height, so it
+  // was clipped instead. The cover behind it stays absolute and spans whatever
+  // the article ends up being.
   return (
     <article
       ref={(node) => registerArticle(cat.slug, node)}
       data-slug={cat.slug}
-      className="relative h-full w-full overflow-hidden bg-oxidized-graphite"
+      className="section-fullscreen relative flex w-full flex-col overflow-hidden bg-oxidized-graphite"
     >
       {image && (
         <motion.div
@@ -296,23 +338,38 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         transition={transition}
       />
 
-      {/* Tapping the cover above the sheet dismisses it. Only mounted while
-          raised, so it never eats a tap in the collapsed state. */}
-      {expanded && (
-        <button
-          type="button"
-          tabIndex={-1}
-          aria-hidden="true"
-          onClick={onClose}
-          className="absolute inset-0 z-10 cursor-default"
-        />
-      )}
+      {/* The cover slice above the sheet. It is the flex spacer that takes
+          whatever the sheet leaves — down to COVER_FLOOR while collapsed, so a
+          peek of the photograph always shows, but with no floor once raised, so
+          the sheet can rise all the way to the top of the section (full viewport
+          height) before the article has to grow and the page scrolls on.
+          Tapping it dismisses a raised sheet; the button only mounts while
+          raised, so it never eats a tap collapsed. */}
+      <div className={`relative flex-1 ${expanded ? '' : COVER_FLOOR}`}>
+        {expanded && (
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={onClose}
+            className="absolute inset-0 z-10 cursor-default"
+          />
+        )}
+      </div>
 
       {/* Two nested motion elements on purpose: the outer one owns the sheet's
-          own state (height, ground, drag), the inner one is the entrance
-          stagger container. They can't be one element — variant labels and an
-          object `animate` don't coexist, and the labels are what propagate the
-          stagger down to the children. */}
+          own state (height, ground), the inner one is the entrance stagger
+          container. They can't be one element — variant labels and an object
+          `animate` don't coexist, and the labels are what propagate the stagger
+          down to the children.
+
+          The whole panel — title, description, divider, See Projects, Read more
+          — is this section's bottom-edge group, so the chrome compensation
+          (dvh-bottom-shift) rides the sheet itself and every internal gap is
+          left exactly as designed. Safe on this element rather than a wrapper:
+          it animates only height and backgroundColor, so Framer never writes to
+          `transform`. On Safari the lift is held back and the sheet simply sits
+          at the section's bottom edge (see globals.css). */}
       <motion.div
         id={sheetId}
         ref={sheetRef}
@@ -322,13 +379,8 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           backgroundColor: expanded ? tone.sheetRaised : tone.sheet,
         }}
         transition={transition}
-        drag={reduced ? false : 'y'}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.18}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
         style={{ borderTopColor: tone.border }}
-        className="absolute inset-x-0 bottom-0 z-20 flex flex-col overflow-hidden border-t px-6 pb-[46px] pt-6"
+        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}
@@ -340,9 +392,11 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           viewport={{ once: true, amount: 0.25 }}
           className={`flex flex-col gap-[18px] ${expanded ? 'min-h-0 flex-1' : ''}`}
         >
-          {/* Grab handle — only meaningful once raised, where it names the drag.
-              Its own `animate` stops the stagger propagating here, which is what
-              keeps it out of the entrance and on the sheet's state instead. */}
+          {/* Trim, not a handle — there is no gesture on this sheet any more (see
+              above); it marks the raised state the way the same rule sits above
+              About's mobile bio. Its own `animate` stops the stagger propagating
+              here, which is what keeps it on the sheet's state rather than in
+              the entrance. */}
           <motion.span
             aria-hidden="true"
             initial={false}
@@ -380,7 +434,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
               initial={false}
               animate={{ opacity: expanded ? 1 : 0 }}
               transition={transition}
-              className={expanded ? 'h-full overflow-y-auto' : 'pointer-events-none absolute inset-x-0 top-0'}
+              className={expanded ? '' : 'pointer-events-none absolute inset-x-0 top-0'}
             >
               {/* One block, not a stack of <p>: the cover reads as a single
                   paragraph with blank lines between stanzas, so the build-time

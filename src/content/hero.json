@@ -2,6 +2,7 @@
   "name": "SABRINA SUPPA",
   "scroll": "Scroll",
   "background": "https://media.sabrinasuppa.com/uploads/hero_homepage_sRGB_fitted.webp",
+  "backgroundMobile": "",
   "bgAlt": "Sculptural form in dark, cinematic light",
   "connect": { "label": "Connect", "href": "mailto:info@sabrinasuppa.com" },
   "footer": {

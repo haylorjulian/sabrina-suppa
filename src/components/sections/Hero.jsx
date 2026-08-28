@@ -19,7 +19,7 @@ export default function Hero({ sectionId }) {
   const c = t.hero
   const shadow = '[text-shadow:0_1px_8px_rgba(26,26,28,0.7)]'
   const linkColor = 'text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain'
-  const socialHref = (label) => t.about.social.find((s) => s.label === label)?.href || '#'
+  const socialHref = (label) => t.connect.social?.find((s) => s.label === label)?.href || '#'
   // Connect is a section now, so it lives in the shared nav list like the rest —
   // the rail no longer appends hero.connect's mailto. That list stays the source
   // of truth for the section hrefs, which must track ScrollStage's ids.
@@ -30,7 +30,7 @@ export default function Hero({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Hero"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
         {/* Background scaled to fill, centred. The source is a 2x master (3840x2160),
             so covering the frame spends those pixels on retina sharpness rather
@@ -38,14 +38,26 @@ export default function Hero({ sectionId }) {
             no resampling: that only held while the source matched the viewport 1:1,
             and against a 2x master it renders as a centre-crop zoom. The
             wet-petroleum ground below is now only seen if the image fails to load.
-            No filters/shadows touch it. */}
+            No filters/shadows touch it.
+            Both variants render; CSS picks one so the static/server markup
+            matches on hydration — backgroundMobile falls back to the desktop
+            image at build time when the editor leaves it blank (see
+            scripts/build-content.mjs), so this is a no-op until it's set. */}
+        <Image
+          src={assets.hero.backgroundMobile}
+          alt={c.bgAlt}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center lg:hidden"
+        />
         <Image
           src={assets.hero.background}
           alt={c.bgAlt}
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="hidden object-cover object-center lg:block"
         />
 
         {/* Mobile chrome — scroll cue, wordmark, then the footer strip, stacked
@@ -59,16 +71,28 @@ export default function Hero({ sectionId }) {
           animate={loading ? 'hidden' : 'visible'}
           className="absolute inset-x-0 bottom-0 top-1/2 z-10 flex flex-col items-center justify-between px-6 pb-6 text-center lg:hidden"
         >
-          {/* Scroll cue — line only, no label */}
+          {/* Scroll cue — line only, no label. Sits at the midpoint, not the
+              bottom edge, so it is not chrome-sensitive and must not move. */}
           <motion.div variants={fadeInUp} className="flex flex-col items-center gap-[10px]">
             <ShimmerLine tone="light" className="h-16" />
           </motion.div>
 
           {/* Footer — same responsive strip as the project pages, tightened to
-              sit closer to the hero's bottom edge */}
-          <motion.div variants={fadeInUp} className="w-full">
-            <Footer shadow rowPadding="pt-[18px] pb-0" />
-          </motion.div>
+              sit closer to the hero's bottom edge.
+              The location / copyright / email row is this section's bottom-edge
+              group, so it rides the chrome compensation as one unit — its
+              internal spacing is untouched. On Safari that lift is held back
+              and the row simply sits at the section's bottom edge, behind the
+              URL bar until a scroll retracts it (see globals.css).
+              The shift needs its own plain wrapper: the element below animates
+              `y` through fadeInUp, and Framer writes that to the same inline
+              `transform` the compensation would use, so one would silently
+              overwrite the other. */}
+          <div className="dvh-bottom-shift w-full">
+            <motion.div variants={fadeInUp} className="w-full">
+              <Footer shadow rowPadding="pt-[18px] pb-0" />
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Desktop chrome — the hero carries its own, so the nav bar hides here.

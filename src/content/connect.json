@@ -5,5 +5,27 @@
   "notes": [
     "When contacting me, please include a brief introduction, an outline of your enquiry, and any relevant timelines and project details.",
     "I am always open to considered proposals, creative exchanges, and new opportunities to work together."
+  ],
+  "social": [
+    {
+      "label": "Email",
+      "href": "mailto:info@sabrinasuppa.com"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://instagram.com/sabrinasuppa"
+    },
+    {
+      "label": "Twitter",
+      "href": "https://x.com/suppa_sabrina"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/in/sabrinasuppa/"
+    },
+    {
+      "label": "Linktree",
+      "href": "https://linktr.ee/sabrinasuppa"
+    }
   ]
 }

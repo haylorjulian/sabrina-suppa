@@ -54,7 +54,7 @@ const ICONS = {
   LinkedIn: LinkedInIcon,
 }
 
-// Resolve an icon by its social label (from src/content/about.json → social).
+// Resolve an icon by its social label (from src/content/connect.json → social).
 export function SocialIcon({ label, className }) {
   const Cmp = ICONS[label]
   return Cmp ? <Cmp className={className} /> : null

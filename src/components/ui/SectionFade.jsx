@@ -7,6 +7,21 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 // and fades back out as it leaves, so adjacent sections crossfade through the
 // dark page background during the snap. Opacity only (no transform) — keeps the
 // hero's fixed preloader/nav viewport-fixed.
+//
+// min-h, not h: a category sheet opens to the full height of its description and
+// can push its section past one screen (see WorkMobile). A fixed height here
+// would crop that overflow instead of letting the page scroll to it. Snapping
+// tolerates that growth — an oversized snap area stays freely scrollable (see
+// globals.css).
+//
+// Height comes from .section-fullscreen (globals.css): the large viewport, held
+// stable so the cover never resizes or recrops as the phone's URL bar moves. The
+// bottom-edge content lifts clear of the bar on its own — here that is the
+// category sheet inside CategoryCover — except on Safari, where the lift is held
+// back and the sheet sits at the section's bottom edge.
+//
+// snap-start / snap-always were inert until the mobile snap type landed; they
+// are now the snap point for each category cover.
 export default function SectionFade({ children }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -19,7 +34,7 @@ export default function SectionFade({ children }) {
     <motion.div
       ref={ref}
       style={{ opacity }}
-      className="h-[100svh] snap-start snap-always"
+      className="section-fullscreen snap-start snap-always"
     >
       {children}
     </motion.div>

@@ -8,6 +8,7 @@ import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { setSectionTarget } from '@/lib/sectionTarget'
+import { scrollToSection } from '@/lib/scrollToSection'
 import { DURATION } from '@/components/ui/ScrollStage'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
@@ -73,9 +74,20 @@ export default function Nav() {
   // they must jump home first (/#work) and hand the target section off to the
   // home page via setSectionTarget (see sectionTarget.js).
   const resolveHref = (href) => (isHome || !href.startsWith('#') ? href : `/${href}`)
-  const handleNavClick = (href) => {
+
+  // On home, below lg, the fragment jump is driven by hand — the page's
+  // mandatory snap arrests the browser's own animated scroll partway, which is
+  // what made these links land on the wrong section (see scrollToSection).
+  // At lg+ ScrollStage intercepts hash clicks itself and there is no page
+  // scroll to drive; off home the link is a real navigation and the target
+  // section is handed over through sessionStorage instead.
+  const handleNavClick = (e, href) => {
     if (!isHome && href.startsWith('#')) setSectionTarget(href.slice(1))
     closeMenu()
+    if (!isHome || !href.startsWith('#')) return
+    if (window.matchMedia('(min-width: 1024px)').matches) return
+    e.preventDefault()
+    scrollToSection(href.slice(1))
   }
 
   const linkColor = barDark
@@ -114,13 +126,17 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
+      {/* pt keeps the designed 1.75rem and only grows past it on a notched
+          device, where viewport-fit=cover (see layout.jsx) would otherwise let
+          the wordmark and hamburger slide under the status bar. Static — the bar
+          is not browser-chrome-sensitive and must never move. */}
       <nav
         style={{ transitionDuration: `${DURATION}s`, transitionTimingFunction: 'var(--ease-signature)' }}
-        className={`flex items-center justify-between px-6 py-7 transition-[opacity,visibility] md:px-[52px] ${barHiddenClass}`}
+        className={`flex items-center justify-between px-6 pb-7 pt-[max(1.75rem,env(safe-area-inset-top))] transition-[opacity,visibility] md:px-[52px] ${barHiddenClass}`}
       >
         <a
           href={isHome ? '#home' : '/'}
-          onClick={closeMenu}
+          onClick={(e) => handleNavClick(e, isHome ? '#home' : '/')}
           aria-label={t.nav.logoFull}
           className={`font-ivyora-display font-light lg:font-thin text-[14px] uppercase tracking-[6px] lg:tracking-[8px] lg:opacity-80 transition-colors duration-300 ${logoColor}`}
         >
@@ -133,7 +149,7 @@ export default function Nav() {
             <a
               key={link.href}
               href={resolveHref(link.href)}
-              onClick={() => handleNavClick(link.href)}
+              onClick={(e) => handleNavClick(e, link.href)}
               className={`nav-link font-neue-haas-display text-[14px] uppercase tracking-[0.20em] transition-colors duration-300 ${linkColor}`}
             >
               {link.label}
@@ -142,8 +158,12 @@ export default function Nav() {
         </div>
 
         {/* Mobile hamburger */}
+        {/* data-nav-ink: WorkMobile measures this to decide whether a light-world
+            cover still sits behind the bar (see reachesBar there). It is tagged
+            rather than assumed because the bar's top padding tracks the notch. */}
         <button
           ref={hamburgerRef}
+          data-nav-ink=""
           type="button"
           onClick={toggleMenu}
           aria-label={open ? t.nav.closeLabel : t.nav.menuLabel}
@@ -202,7 +222,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
 
   // The email ships as a text link in its own right here, so it comes out of the
   // icon row rather than being rendered twice.
-  const socials = t.about.social.filter((s) => !s.href.startsWith('mailto:'))
+  const socials = (t.connect.social ?? []).filter((s) => !s.href.startsWith('mailto:'))
 
   // Which section row reads at full porcelain. NavThemeProvider's `section` is no
   // use here: ScrollStage only drives it from lg up and sets it to null below,
@@ -286,7 +306,7 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
       {/* 2. Index — the only part that scrolls. overscroll-contain stops the
           locked page behind it from rubber-banding at the ends. */}
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        <div className="flex flex-col px-6 py-7">
+        <div className="flex flex-col px-6 pb-7">
           <Rule />
           {t.nav.links.map((link) => (
             <div key={link.href} className="flex flex-col">
@@ -297,9 +317,9 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
               <motion.a
                 variants={overlayItem}
                 href={resolveHref(link.href)}
-                onClick={() => onNavClick(link.href)}
+                onClick={(e) => onNavClick(e, link.href)}
                 aria-current={activeHref === link.href ? 'true' : undefined}
-                className={`block py-[22px] font-neue-haas-display text-xl uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
+                className={`block py-[18px] font-neue-haas-display text-base uppercase tracking-[0.12em] transition-colors duration-300 hover:text-bone-porcelain ${
                   activeHref === link.href ? 'text-bone-porcelain' : 'text-bone-porcelain/85'
                 }`}
               >
@@ -332,19 +352,15 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
         </div>
       </div>
 
-      {/* 3. Base — fixed, so the email and socials survive any amount of work. */}
+      {/* 3. Base — fixed, so the email and socials survive any amount of work.
+          One line: icons left, email right. The email's tracking and size are
+          pulled in from the 11px/0.24em of the stacked version so the pair fits
+          the 375px reference width without wrapping. */}
       <motion.div
         variants={overlayItem}
-        className="flex flex-none flex-col gap-5 border-t border-bone-porcelain/[0.18] px-6 pb-8 pt-[26px]"
+        className="flex flex-none items-center justify-between gap-4 border-t border-bone-porcelain/[0.18] px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[26px]"
       >
-        <a
-          href={`mailto:${t.connect.email}`}
-          onClick={onClose}
-          className="font-neue-haas-display text-[11px] uppercase tracking-[0.24em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
-        >
-          {t.connect.email}
-        </a>
-        <ul className="flex items-center gap-7">
+        <ul className="flex flex-none items-center gap-4">
           {socials.map((link) => (
             <li key={link.label}>
               <a
@@ -355,11 +371,18 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
                 aria-label={link.label}
                 className="block text-bone-porcelain/65 transition-colors duration-300 hover:text-synthetic-flesh"
               >
-                <SocialIcon label={link.label} className="h-[22px] w-[22px]" />
+                <SocialIcon label={link.label} className="h-[16.5px] w-[16.5px]" />
               </a>
             </li>
           ))}
         </ul>
+        <a
+          href={`mailto:${t.connect.email}`}
+          onClick={onClose}
+          className="whitespace-nowrap font-neue-haas-display text-[10px] uppercase tracking-[0.14em] text-bone-porcelain/65 transition-colors duration-300 hover:text-bone-porcelain"
+        >
+          {t.connect.email}
+        </a>
       </motion.div>
     </motion.div>
   )
@@ -394,13 +417,13 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
       >
         <span className="flex items-start gap-1.5">
           <span
-            className={`font-neue-haas-display text-[13px] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
+            className={`font-neue-haas-display text-[10.5px] uppercase leading-none tracking-[0.20em] transition-colors duration-300 ${
               open ? 'text-bone-porcelain/85' : 'text-bone-porcelain/60'
             }`}
           >
             {cat.label}
           </span>
-          <span className="font-neue-haas-display text-[10px] leading-none tracking-[0.08em] text-bone-porcelain/40">
+          <span className="font-neue-haas-display text-[8px] leading-none tracking-[0.08em] text-bone-porcelain/40">
             ({cat.count})
           </span>
         </span>
@@ -442,7 +465,7 @@ function CategoryRow({ cat, open, reduced, pathname, onToggle, onNavigate }) {
                       href={p.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-base font-light italic leading-[1.35] transition-colors duration-300 ${
+                      className={`flex items-center gap-2.5 py-1.5 font-neue-haas-display text-[13px] font-light italic leading-[1.35] tracking-[0.01rem] transition-colors duration-300 ${
                         active
                           ? 'text-bone-porcelain'
                           : 'text-bone-porcelain/55 hover:text-bone-porcelain/85'

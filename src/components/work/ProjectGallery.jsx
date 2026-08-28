@@ -10,7 +10,7 @@ import GalleryMedia from './GalleryMedia'
 import ProjectHeader from './ProjectHeader'
 import ProjectNav from './ProjectNav'
 import Footer from '@/components/ui/Footer'
-import ShimmerArrow from '@/components/ui/ShimmerArrow'
+import ShimmerLine from '@/components/ui/ShimmerLine'
 
 // ── Gallery density knobs ────────────────────────────────────────────────────
 // The gallery auto-fits items into justified rows (Flickr-style): a row closes
@@ -83,7 +83,7 @@ function computeRows(items, width, gap, targetH, maxColumns) {
   return rows
 }
 
-export default function ProjectGallery({ project, media, siblings = [], nextProject }) {
+export default function ProjectGallery({ project, media, siblings = [], nextProject, position }) {
   const { t } = useLanguage()
 
   // The home route snaps each section to the viewport (html { scroll-snap-type:
@@ -161,16 +161,28 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
           variants={fadeInUp}
           className="-ml-1 flex items-center gap-4 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
         >
-          <span className="opacity-80">{project.title}</span>
+          <span className="opacity-80">
+            {project.title}
+            {/* Position within the category, e.g. "1/4" — a true superscript
+                (em-sized, so it scales with the h1's clamp()) riding the
+                title's baseline. Mobile-only, matching the next-project
+                stepper it used to sit beside. */}
+            {position && (
+              <sup className="ml-1 align-super font-neue-haas-display text-[0.4em] font-normal not-italic tracking-[0.08em] text-bone-porcelain/45 lg:hidden">
+                {position.index}/{position.total}
+              </sup>
+            )}
+          </span>
           {nextProject && (
             <Link
               href={nextProject.href}
               aria-label={`${t.work.nextProject}: ${nextProject.title}`}
               className="group inline-flex shrink-0 items-center not-italic lg:hidden"
             >
-              <ShimmerArrow
+              <ShimmerLine
                 tone="light"
-                className="h-3 w-9 transition-transform duration-300 group-hover:translate-x-1"
+                orientation="horizontal"
+                className="w-9 transition-transform duration-300 group-hover:translate-x-1"
               />
             </Link>
           )}

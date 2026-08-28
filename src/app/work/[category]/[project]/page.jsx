@@ -53,7 +53,11 @@ export default function ProjectPage({ params }) {
   const catProjects = cat.projects.map((p) => ({ href: `/work/${cat.slug}/${p.slug}`, title: p.title }))
   const nextProject = catProjects.length > 1 ? catProjects[(pi + 1) % catProjects.length] : undefined
 
+  // Position within the category, e.g. "1/4" — shown beside the mobile header's
+  // next-project stepper (see ProjectGallery).
+  const position = { index: pi + 1, total: cat.projects.length }
+
   return (
-    <ProjectGallery project={project} media={media} siblings={siblings} nextProject={nextProject} />
+    <ProjectGallery project={project} media={media} siblings={siblings} nextProject={nextProject} position={position} />
   )
 }
