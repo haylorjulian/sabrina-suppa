@@ -84,39 +84,6 @@ body {
   visibility: hidden;
 }
 
-/* ── The drag track, snap tier only ─────────────────────────────────────────
-   Where the fade stacks its panels in place, the snap tier lays them end to end
-   in a column and translates the whole column, so a neighbour can be dragged
-   into view before the index changes.
-
-   The track is exactly one panel tall and its children overflow it; .stage-root
-   does the clipping. That is what makes `flex: 0 0 100%` resolve to one viewport
-   per panel and keeps the arithmetic to `y = -index * rootHeight`.
-
-   Only transform is animated, never height or top, so the whole drag stays on
-   the compositor. */
-.stage-track {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  will-change: transform;
-}
-
-.stage-panel--tracked {
-  position: relative;
-  inset: auto;
-  flex: 0 0 100%;
-  /* `min-height: 0` is load-bearing, not tidying. A flex item's automatic
-     minimum size is its content height, so a panel whose content outgrows the
-     viewport (the About bio on a short phone) would ignore the 100% basis and
-     grow — putting the overflow in the track, where it breaks the
-     `y = -index * rootHeight` arithmetic and hands PanelScroll nothing to
-     scroll. Pinned to exactly one panel, the overflow lands inside the scroll
-     region where it belongs. */
-  min-height: 0;
-}
-
 /* Vertical scroll-indicator label (writing-mode can't be expressed as a Tailwind class) */
 .vertical-text {
   writing-mode: vertical-rl;

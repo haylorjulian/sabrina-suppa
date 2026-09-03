@@ -97,9 +97,19 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
   const lastInnerScrollAt = useRef(0)
 
   const rootRef = useRef(null)
-  const trackRef = useRef(null)
   const panelRefs = useRef([])
   const tlRef = useRef(null)
+  // The track is virtual: a single offset that every panel is positioned from.
+  // It was a real DOM element wrapping the panels, and iOS Safari would not place
+  // it where it was told — `position: absolute; top: 0` inside a `position: fixed`
+  // root, with `offsetTop` reporting 0 and the root's own rect at 0, still painted
+  // one whole panel high (measured on the simulator: getBoundingClientRect and
+  // offsetTop disagreeing by exactly 714px, and the rendering following the rect).
+  // Every panel was then off by one, which is what showed Connect while the stage
+  // believed it was on About. Panels are now plain `inset: 0` boxes — the same
+  // ones the fade tier has always rendered correctly — moved only by transform,
+  // so there is no containing block left to disagree about.
+  const trackY = useRef(0)
 
   useEffect(() => {
     disabledRef.current = disabled
@@ -123,6 +133,15 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
     [snap]
   )
 
+  // Lay every panel out from the virtual track offset. Five `gsap.set` calls a
+  // frame is nothing, and it buys a layout that cannot be misplaced.
+  const renderTrack = useCallback(() => {
+    const h = panelHeight()
+    panelRefs.current.forEach((el, i) => {
+      if (el) gsap.set(el, { y: i * h + trackY.current })
+    })
+  }, [panelHeight])
+
   // The transition itself. `from` is -1 on the very first application.
   const applyIndex = useCallback(
     (to, from, instant) => {
@@ -133,12 +152,21 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       tlRef.current = null
 
       if (snap) {
-        const y = -to * panelHeight()
         showWindow(to)
+        const y = -to * panelHeight()
         // Tweens from wherever the track currently sits, which is what lets a
         // released drag continue smoothly into the settle instead of jumping.
-        if (instant) gsap.set(trackRef.current, { y })
-        else tlRef.current = gsap.to(trackRef.current, { y, duration: SNAP_DURATION, ease: SNAP_EASE })
+        if (instant) {
+          trackY.current = y
+          renderTrack()
+        } else {
+          tlRef.current = gsap.to(trackY, {
+            current: y,
+            duration: SNAP_DURATION,
+            ease: SNAP_EASE,
+            onUpdate: renderTrack,
+          })
+        }
         return
       }
 
@@ -163,7 +191,7 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       gsap.set(panelEls[to], { zIndex: 1 })
       tl.fromTo(panelEls[to], { autoAlpha: 0 }, { autoAlpha: 1, duration: DURATION, ease: EASE_IN }, 0)
     },
-    [snap, showWindow, panelHeight]
+    [snap, showWindow, panelHeight, renderTrack]
   )
 
   // `silent` suppresses the hash write: for a seed, a watchdog re-assert or a
@@ -303,10 +331,11 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       // changed, so goTo would bail out, but the track is still offset.
       showWindow(to)
       tlRef.current?.kill()
-      tlRef.current = gsap.to(trackRef.current, {
-        y: -to * panelHeight(),
+      tlRef.current = gsap.to(trackY, {
+        current: -to * panelHeight(),
         duration: SNAP_DURATION,
         ease: SNAP_EASE,
+        onUpdate: renderTrack,
       })
       void from
     }
@@ -350,7 +379,8 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       if (atStart || atEnd) offset *= EDGE_RESISTANCE
 
       dragOffset = offset
-      gsap.set(trackRef.current, { y: -dragFrom * h + offset })
+      trackY.current = -dragFrom * h + offset
+      renderTrack()
     }
 
     const onDragEnd = (self) => {
@@ -404,7 +434,8 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
     // as a transition.
     const onResize = () => {
       if (!snap || dragging) return
-      gsap.set(trackRef.current, { y: -indexRef.current * panelHeight() })
+      trackY.current = -indexRef.current * panelHeight()
+      renderTrack()
     }
 
     const engage = () => {
@@ -488,15 +519,15 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       disengage()
       tlRef.current?.kill()
     }
-  }, [goTo, panels, media, setTheme, setSection, snap, showWindow, panelHeight])
+  }, [goTo, panels, media, setTheme, setSection, snap, showWindow, panelHeight, renderTrack])
 
-  const stack = (
-    <>
+  return (
+    <div ref={rootRef} className="stage-root">
       {items.map((child, i) => (
         <div
           key={panels[i]?.key ?? i}
           ref={(node) => (panelRefs.current[i] = node)}
-          className={snap ? 'stage-panel stage-panel--tracked' : 'stage-panel'}
+          className="stage-panel"
           // The fade tier gets this for free from `autoAlpha` — a panel at
           // opacity 0 is also `visibility: hidden`, so it leaves the
           // accessibility tree and find-in-page. The snap tier cannot: its
@@ -512,20 +543,6 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
           </PanelScroll>
         </div>
       ))}
-    </>
-  )
-
-  return (
-    <div ref={rootRef} className="stage-root">
-      {/* Snap needs the panels laid end to end so one can be dragged into view;
-          fade wants them stacked in place. The track only exists for the former. */}
-      {snap ? (
-        <div ref={trackRef} className="stage-track">
-          {stack}
-        </div>
-      ) : (
-        stack
-      )}
     </div>
   )
 }
