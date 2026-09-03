@@ -84,15 +84,6 @@ body {
   visibility: hidden;
 }
 
-/* The two clip wrappers. `outer` is the window that travels in from the
-   direction of movement; `inner` carries the content the opposite way by the
-   same amount, so it holds still while the window uncovers it. */
-.stage-clip {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
 /* Vertical scroll-indicator label (writing-mode can't be expressed as a Tailwind class) */
 .vertical-text {
   writing-mode: vertical-rl;

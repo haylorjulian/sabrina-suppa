@@ -20,19 +20,32 @@ import PanelScroll from '@/components/ui/PanelScroll'
 // and document height at once. Navigation is now `goTo(index)`: no measurement,
 // no timing, nothing to race.
 //
-// Motion is ported from GSAP's "Animated Continuous Sections" pen
-// (codepen.io/GreenSock/pen/XWzRraJ): the incoming panel's clip window wipes in
-// from the direction of travel while its content counter-slides to stay put, and
-// both panels' contents drift against each other by PARALLAX. Its `SplitText`
-// heading stagger and its `wrap` (which looped last → first) are deliberately
-// not ported — see DESIGN.md on busy maximalism, and a portfolio with a nav must
-// not wrap Connect back to Home.
+// The transition is a dissolve *through the ground* on `autoAlpha` — GSAP core's
+// alias for opacity + visibility, so an off-stage panel also leaves the
+// accessibility tree and find-in-page. No plugin: CSSPlugin is registered by
+// gsap's own entry point.
+//
+// Both panels animate, and the eases are deliberately opposed so they do NOT
+// overlap: the outgoing one leaves early (`power2.out` — most of its opacity is
+// gone by a third of the way) and the incoming one arrives late (`power2.in`).
+// In between, the graphite ground is what you see. This is the site's documented
+// signature — "adjacent sections dissolve through the dark ground" (DESIGN.md) —
+// and it is what the mobile SectionFade did before the stage existed, dipping to
+// 0.15 rather than crossing straight over.
+//
+// It is not only a stylistic choice. A true cross-dissolve superimposes the two
+// panels at the midpoint, and since every panel carries a heading and a body
+// paragraph in the same place, their type overprints and neither is legible for
+// roughly half a second. Passing through the ground means the outgoing copy is
+// gone before the incoming copy arrives.
+//
+// Direction is not expressed: a dissolve reads the same going forward or back.
 //
 // Exported: the Nav fades its bar in/out against this same transition.
-export const DURATION = 1.25 // seconds, panel to panel
+export const DURATION = 1 // seconds, panel to panel
 const COOLDOWN = 250 // ms after a transition before the next trigger is accepted
-const EASE = 'power1.inOut'
-const PARALLAX = 15 // % the panel content drifts against the wipe
+const EASE_OUT = 'power2.out' // outgoing: leaves early
+const EASE_IN = 'power2.in' // incoming: arrives late
 const TOLERANCE = 10 // min gesture delta to count, wheel or touch
 const EDGE_DWELL = 400 // ms of quiet on an inner scroller before it hands the gesture back
 
@@ -66,9 +79,6 @@ export default function SectionStage({ media, panels, disabled = false, children
 
   const rootRef = useRef(null)
   const panelRefs = useRef([])
-  const outerRefs = useRef([])
-  const innerRefs = useRef([])
-  const bgRefs = useRef([])
   const tlRef = useRef(null)
 
   useEffect(() => {
@@ -78,46 +88,36 @@ export default function SectionStage({ media, panels, disabled = false, children
   // The transition itself. `from` is -1 on the very first application.
   const applyIndex = useCallback((to, from, instant) => {
     const panelEls = panelRefs.current
-    const outers = outerRefs.current
-    const inners = innerRefs.current
-    const bgs = bgRefs.current
     if (!panelEls[to]) return
 
     tlRef.current?.kill()
     tlRef.current = null
 
-    // +1 travelling forward (down the list), -1 back.
-    const d = to >= from ? 1 : -1
-
     if (instant) {
       panelEls.forEach((el, i) => {
         if (el) gsap.set(el, { autoAlpha: i === to ? 1 : 0, zIndex: i === to ? 1 : 0 })
       })
-      gsap.set([outers[to], inners[to], bgs[to]].filter(Boolean), { yPercent: 0 })
       return
     }
 
-    const tl = gsap.timeline({ defaults: { duration: DURATION, ease: EASE } })
+    const tl = gsap.timeline()
     tlRef.current = tl
 
+    // Both run the full second, starting together. The opposed eases are what
+    // open the gap between them: at the midpoint each sits near 0.1, so the
+    // ground carries the crossing rather than either panel.
     if (from >= 0 && from !== to && panelEls[from]) {
-      // Drops behind the incoming panel for the whole crossing, then goes fully
-      // hidden — `autoAlpha`, so it leaves the accessibility tree and find-in-page
-      // rather than lingering as a transparent full-screen section.
       gsap.set(panelEls[from], { zIndex: 0 })
-      tl.to(bgs[from], { yPercent: -PARALLAX * d }).set(panelEls[from], { autoAlpha: 0 })
+      tl.to(panelEls[from], { autoAlpha: 0, duration: DURATION, ease: EASE_OUT }, 0)
     }
 
-    gsap.set(panelEls[to], { autoAlpha: 1, zIndex: 1 })
+    gsap.set(panelEls[to], { zIndex: 1 })
     tl.fromTo(
-      [outers[to], inners[to]],
-      // The clip window arrives from the direction of travel; the content inside
-      // it starts equally displaced the other way, so it holds still in the
-      // viewport while the window uncovers it.
-      { yPercent: (i) => (i ? -100 * d : 100 * d) },
-      { yPercent: 0 },
+      panelEls[to],
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: DURATION, ease: EASE_IN },
       0
-    ).fromTo(bgs[to], { yPercent: PARALLAX * d }, { yPercent: 0 }, 0)
+    )
   }, [])
 
   // `silent` suppresses the hash write: for a seed, a watchdog re-assert or a
@@ -355,17 +355,9 @@ export default function SectionStage({ media, panels, disabled = false, children
           ref={(node) => (panelRefs.current[i] = node)}
           className="stage-panel"
         >
-          {/* The pen's two clip wrappers: `outer` is the window that travels,
-              `inner` carries the content the opposite way so it holds still. */}
-          <div ref={(node) => (outerRefs.current[i] = node)} className="stage-clip">
-            <div ref={(node) => (innerRefs.current[i] = node)} className="stage-clip">
-              <div ref={(node) => (bgRefs.current[i] = node)} className="h-full w-full">
-                <PanelScroll active={i === index} label={panels[i]?.label}>
-                  {child}
-                </PanelScroll>
-              </div>
-            </div>
-          </div>
+          <PanelScroll active={i === index} label={panels[i]?.label}>
+            {child}
+          </PanelScroll>
         </div>
       ))}
     </div>
