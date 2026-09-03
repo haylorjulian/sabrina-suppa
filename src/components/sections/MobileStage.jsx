@@ -48,7 +48,7 @@ export default function MobileStage() {
   )
 
   return (
-    <SectionStage media={MOBILE} panels={panels} disabled={loading || open}>
+    <SectionStage media={MOBILE} panels={panels} transition="snap" disabled={loading || open}>
       <Hero sectionId="home" />
       {categories.map((cat) => (
         <WorkCategoryPanel key={cat.slug} cat={cat} ui={t.work} />

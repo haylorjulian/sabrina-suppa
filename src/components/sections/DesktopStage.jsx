@@ -30,7 +30,7 @@ export default function DesktopStage() {
   )
 
   return (
-    <SectionStage media={DESKTOP} panels={panels} disabled={loading || open}>
+    <SectionStage media={DESKTOP} panels={panels} transition="fade" disabled={loading || open}>
       <Hero />
       <Work />
       <About />

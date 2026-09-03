@@ -10,42 +10,56 @@ import PanelScroll from '@/components/ui/PanelScroll'
 
 // The site's one section engine, at every tier.
 //
-// The page does not scroll. Panels are stacked in a fixed root and a GSAP
-// Observer turns wheel/touch into an index change, which a timeline animates.
-// That is the whole point: with no scrollport there is no scroll position to be
-// wrong, no snap point to be arrested on, and no `scrollHeight - innerHeight`
-// boundary moving underneath a jump as iOS Safari's URL bar retracts. Those
-// three were what made the mobile nav land on the wrong section intermittently —
-// five uncoordinated mechanisms all writing scroll position, scroll-snap-type
-// and document height at once. Navigation is now `goTo(index)`: no measurement,
-// no timing, nothing to race.
+// The page does not scroll. Panels live in a fixed root and a GSAP Observer turns
+// wheel/touch into an index change. That is the whole point: with no scrollport
+// there is no scroll position to be wrong, no snap point to be arrested on, and
+// no `scrollHeight - innerHeight` boundary moving underneath a jump as iOS
+// Safari's URL bar retracts. Those three were what made the mobile nav land on
+// the wrong section intermittently — five uncoordinated mechanisms all writing
+// scroll position, scroll-snap-type and document height at once. Navigation is
+// `goTo(index)`: no measurement, no timing, nothing to race.
 //
-// The transition is a dissolve *through the ground* on `autoAlpha` — GSAP core's
-// alias for opacity + visibility, so an off-stage panel also leaves the
-// accessibility tree and find-in-page. No plugin: CSSPlugin is registered by
-// gsap's own entry point.
+// Two transitions, chosen per tier by the `transition` prop. Everything else —
+// input, seeding, the hash, the nav theme, the keyboard, the inner-scroller
+// handoff — is shared, so the tiers differ in what you see and in nothing else.
 //
-// Both panels animate, and the eases are deliberately opposed so they do NOT
-// overlap: the outgoing one leaves early (`power2.out` — most of its opacity is
-// gone by a third of the way) and the incoming one arrives late (`power2.in`).
-// In between, the graphite ground is what you see. This is the site's documented
-// signature — "adjacent sections dissolve through the dark ground" (DESIGN.md) —
-// and it is what the mobile SectionFade did before the stage existed, dipping to
-// 0.15 rather than crossing straight over.
+//   'fade'  (desktop) — a dissolve *through the ground* on `autoAlpha`, GSAP
+//     core's alias for opacity + visibility. Both panels animate over the full
+//     second with opposed eases so they do NOT overlap: the outgoing leaves early
+//     (power2.out) and the incoming arrives late (power2.in), and in between the
+//     graphite ground carries the crossing. That is DESIGN.md's stated signature
+//     ("adjacent sections dissolve through the dark ground"), and it also avoids
+//     a real legibility problem: every panel puts a heading and a paragraph in
+//     the same place, so a true cross-dissolve superimposes two of each and
+//     neither is readable for about half a second.
 //
-// It is not only a stylistic choice. A true cross-dissolve superimposes the two
-// panels at the midpoint, and since every panel carries a heading and a body
-// paragraph in the same place, their type overprints and neither is legible for
-// roughly half a second. Passing through the ground means the outgoing copy is
-// gone before the incoming copy arrives.
+//   'snap'  (mobile) — the panels are a vertical track that follows the finger
+//     and settles on a section boundary when it is released. See DRAG below.
 //
-// Direction is not expressed: a dissolve reads the same going forward or back.
+// Exported: the Nav fades its bar in/out against the desktop transition.
+export const DURATION = 1 // seconds, the fade
+const EASE_OUT = 'power2.out' // fade, outgoing: leaves early
+const EASE_IN = 'power2.in' // fade, incoming: arrives late
+
+// ── DRAG ────────────────────────────────────────────────────────────────────
+// The mobile track follows the finger 1:1 and snaps on release. Observer already
+// reports the gesture lifecycle (onDragStart/onDrag/onDragEnd) with a movement
+// threshold, so no second input system is needed — which matters more here than
+// the physics does: the inner-scroller handoff (shouldIgnore, below) only works
+// because one thing reads every gesture. GSAP's Draggable + InertiaPlugin is the
+// obvious alternative and both ship free now, but Inertia's value is plotting a
+// natural landing position, and a strict one-section-per-gesture rule throws that
+// away — GreenSock's own Draggable snap demo discards it the same way.
 //
-// Exported: the Nav fades its bar in/out against this same transition.
-export const DURATION = 1 // seconds, panel to panel
+// Position is read from the raw touch rather than Observer's deltas so the sign
+// convention is unambiguous: screen coordinates, finger up = negative offset =
+// the track rises = the next panel arrives.
+const SNAP_DURATION = 0.5 // seconds to settle after release — a drag wants to land, not glide
+const SNAP_EASE = 'power2.out'
+const COMMIT_RATIO = 0.18 // fraction of the panel dragged past which the move commits
+const FLICK_VELOCITY = 450 // px/s — a short fast flick commits without reaching COMMIT_RATIO
+const EDGE_RESISTANCE = 0.35 // rubber-band factor when dragging past the first/last panel
 const COOLDOWN = 250 // ms after a transition before the next trigger is accepted
-const EASE_OUT = 'power2.out' // outgoing: leaves early
-const EASE_IN = 'power2.in' // incoming: arrives late
 const TOLERANCE = 10 // min gesture delta to count, wheel or touch
 const EDGE_DWELL = 400 // ms of quiet on an inner scroller before it hands the gesture back
 
@@ -62,9 +76,14 @@ function registerOnce() {
   registered = true
 }
 
-export default function SectionStage({ media, panels, disabled = false, children }) {
+// Pointer y from whichever event shape arrived.
+const pointerY = (e) =>
+  e?.touches?.[0]?.clientY ?? e?.changedTouches?.[0]?.clientY ?? e?.clientY ?? null
+
+export default function SectionStage({ media, panels, transition = 'fade', disabled = false, children }) {
   const items = Children.toArray(children)
   const { setTheme, setSection } = useNavTheme()
+  const snap = transition === 'snap'
 
   // Start on the first panel: the server and the first client render must agree,
   // and the incoming #hash is client-only. The layout effect below reconciles it
@@ -78,6 +97,7 @@ export default function SectionStage({ media, panels, disabled = false, children
   const lastInnerScrollAt = useRef(0)
 
   const rootRef = useRef(null)
+  const trackRef = useRef(null)
   const panelRefs = useRef([])
   const tlRef = useRef(null)
 
@@ -85,40 +105,66 @@ export default function SectionStage({ media, panels, disabled = false, children
     disabledRef.current = disabled
   }, [disabled])
 
-  // The transition itself. `from` is -1 on the very first application.
-  const applyIndex = useCallback((to, from, instant) => {
-    const panelEls = panelRefs.current
-    if (!panelEls[to]) return
+  // One panel's height. Everything about the track is expressed in these.
+  const panelHeight = useCallback(() => rootRef.current?.clientHeight ?? 0, [])
 
-    tlRef.current?.kill()
-    tlRef.current = null
-
-    if (instant) {
-      panelEls.forEach((el, i) => {
-        if (el) gsap.set(el, { autoAlpha: i === to ? 1 : 0, zIndex: i === to ? 1 : 0 })
+  // Which panels may be seen. In fade mode only the active one; in snap mode its
+  // neighbours too, since a drag brings one of them into view before the index
+  // changes. Everything else is autoAlpha 0 — hidden, so it also leaves the
+  // accessibility tree and find-in-page rather than lingering off-screen.
+  const showWindow = useCallback(
+    (active) => {
+      panelRefs.current.forEach((el, i) => {
+        if (!el) return
+        const near = snap ? Math.abs(i - active) <= 1 : i === active
+        gsap.set(el, { autoAlpha: near ? 1 : 0 })
       })
-      return
-    }
+    },
+    [snap]
+  )
 
-    const tl = gsap.timeline()
-    tlRef.current = tl
+  // The transition itself. `from` is -1 on the very first application.
+  const applyIndex = useCallback(
+    (to, from, instant) => {
+      const panelEls = panelRefs.current
+      if (!panelEls[to]) return
 
-    // Both run the full second, starting together. The opposed eases are what
-    // open the gap between them: at the midpoint each sits near 0.1, so the
-    // ground carries the crossing rather than either panel.
-    if (from >= 0 && from !== to && panelEls[from]) {
-      gsap.set(panelEls[from], { zIndex: 0 })
-      tl.to(panelEls[from], { autoAlpha: 0, duration: DURATION, ease: EASE_OUT }, 0)
-    }
+      tlRef.current?.kill()
+      tlRef.current = null
 
-    gsap.set(panelEls[to], { zIndex: 1 })
-    tl.fromTo(
-      panelEls[to],
-      { autoAlpha: 0 },
-      { autoAlpha: 1, duration: DURATION, ease: EASE_IN },
-      0
-    )
-  }, [])
+      if (snap) {
+        const y = -to * panelHeight()
+        showWindow(to)
+        // Tweens from wherever the track currently sits, which is what lets a
+        // released drag continue smoothly into the settle instead of jumping.
+        if (instant) gsap.set(trackRef.current, { y })
+        else tlRef.current = gsap.to(trackRef.current, { y, duration: SNAP_DURATION, ease: SNAP_EASE })
+        return
+      }
+
+      if (instant) {
+        panelEls.forEach((el, i) => {
+          if (el) gsap.set(el, { autoAlpha: i === to ? 1 : 0, zIndex: i === to ? 1 : 0 })
+        })
+        return
+      }
+
+      const tl = gsap.timeline()
+      tlRef.current = tl
+
+      // Both run the full second, starting together. The opposed eases are what
+      // open the gap between them: at the midpoint each sits near 0.1, so the
+      // ground carries the crossing rather than either panel.
+      if (from >= 0 && from !== to && panelEls[from]) {
+        gsap.set(panelEls[from], { zIndex: 0 })
+        tl.to(panelEls[from], { autoAlpha: 0, duration: DURATION, ease: EASE_OUT }, 0)
+      }
+
+      gsap.set(panelEls[to], { zIndex: 1 })
+      tl.fromTo(panelEls[to], { autoAlpha: 0 }, { autoAlpha: 1, duration: DURATION, ease: EASE_IN }, 0)
+    },
+    [snap, showWindow, panelHeight]
+  )
 
   // `silent` suppresses the hash write: for a seed, a watchdog re-assert or a
   // hashchange, the URL is the input, not the output.
@@ -151,11 +197,12 @@ export default function SectionStage({ media, panels, disabled = false, children
 
       // Instant jumps don't animate, so they don't hold the input lock for the
       // length of an animation that isn't running.
+      const seconds = quick ? 0 : snap ? SNAP_DURATION : DURATION
       window.setTimeout(() => {
         lockedRef.current = false
-      }, (quick ? 0 : DURATION) * 1000 + COOLDOWN)
+      }, seconds * 1000 + COOLDOWN)
     },
-    [panels, applyIndex]
+    [panels, applyIndex, snap]
   )
 
   // Seed the starting panel before paint. A client navigation stashes its target
@@ -245,6 +292,79 @@ export default function SectionStage({ media, panels, disabled = false, children
       if (e.target?.matches?.('[data-panel-scroll]')) lastInnerScrollAt.current = performance.now()
     }
 
+    // ── the drag, snap tier only ───────────────────────────────────────────
+    let dragging = false
+    let dragFrom = 0
+    let dragStartY = 0
+    let dragOffset = 0
+
+    const settle = (to, from) => {
+      // Used when the drag is released without committing: the index has not
+      // changed, so goTo would bail out, but the track is still offset.
+      showWindow(to)
+      tlRef.current?.kill()
+      tlRef.current = gsap.to(trackRef.current, {
+        y: -to * panelHeight(),
+        duration: SNAP_DURATION,
+        ease: SNAP_EASE,
+      })
+      void from
+    }
+
+    const onDragStart = (self) => {
+      if (disabledRef.current || lockedRef.current) return
+      const y = pointerY(self.event)
+      if (y === null) return
+      // Direction is known by now — Observer only starts a drag once it has moved
+      // past dragMinimum — so the inner-scroller handoff can use the same test
+      // the discrete tiers use. Standing down here means never setting
+      // `dragging`, so every later onDrag is a no-op and the browser scrolls the
+      // region natively (touch-action: pan-y on it, see PanelScroll).
+      const dir = y < dragStartY ? 1 : -1
+      if (shouldIgnore(dir, self.event)) return
+      tlRef.current?.kill()
+      dragging = true
+      dragFrom = indexRef.current
+      dragOffset = 0
+      showWindow(dragFrom)
+    }
+
+    const onDrag = (self) => {
+      if (!dragging) return
+      const y = pointerY(self.event)
+      if (y === null) return
+      let offset = y - dragStartY
+
+      // Never more than one panel, in either direction: the track is clamped to
+      // a single height, so a long drag cannot expose a third panel and a fast
+      // one cannot skip. This is the guarantee CSS `scroll-snap-stop: always`
+      // was supposed to give and never actually did — Chrome carried fast flings
+      // several sections past their stop.
+      const h = panelHeight()
+      offset = Math.max(-h, Math.min(h, offset))
+
+      // Rubber-band at the two ends rather than letting the track leave the
+      // stage — there is nothing beyond Home or Connect to drag into.
+      const atStart = dragFrom === 0 && offset > 0
+      const atEnd = dragFrom === panels.length - 1 && offset < 0
+      if (atStart || atEnd) offset *= EDGE_RESISTANCE
+
+      dragOffset = offset
+      gsap.set(trackRef.current, { y: -dragFrom * h + offset })
+    }
+
+    const onDragEnd = (self) => {
+      if (!dragging) return
+      dragging = false
+      const h = panelHeight()
+      const committed =
+        Math.abs(dragOffset) > h * COMMIT_RATIO || Math.abs(self.velocityY ?? 0) > FLICK_VELOCITY
+      const dir = dragOffset < 0 ? 1 : -1
+      const target = committed ? dragFrom + dir : dragFrom
+      if (target === dragFrom || target < 0 || target >= panels.length) settle(dragFrom, dragFrom)
+      else goTo(target, { force: true })
+    }
+
     const onKey = (e) => {
       if (disabledRef.current) return
       const forward = ['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key)
@@ -279,6 +399,14 @@ export default function SectionStage({ media, panels, disabled = false, children
       goTo(i, { force: true })
     }
 
+    // A rotation changes the panel height, so the track's offset has to be
+    // re-derived from the new one. Instant: nothing about a resize should read
+    // as a transition.
+    const onResize = () => {
+      if (!snap || dragging) return
+      gsap.set(trackRef.current, { y: -indexRef.current * panelHeight() })
+    }
+
     const engage = () => {
       if (engaged || !root) return
       engaged = true
@@ -293,17 +421,28 @@ export default function SectionStage({ media, panels, disabled = false, children
         wheelSpeed: -1, // so onUp/onDown agree between a wheel and a finger
         tolerance: TOLERANCE,
         dragMinimum: TOLERANCE,
-        // The pen sets this true. Here `touch-action` does the blocking instead
-        // (see .stage-root and PanelScroll): it decides per subtree, on the
-        // compositor, before any JS runs — rather than asking a handler to guess
-        // on the first touchmove whether an inner scroller owns the gesture.
+        // The reference implementation sets this true. Here `touch-action` does
+        // the blocking instead (see .stage-root and PanelScroll): it decides per
+        // subtree, on the compositor, before any JS runs — rather than asking a
+        // handler to guess on the first touchmove whether an inner scroller owns
+        // the gesture.
         preventDefault: false,
-        // Observer's naming is the viewport's, not the list's: dragging the
-        // content up means moving forward through the panels.
+        onPress: (self) => {
+          dragStartY = pointerY(self.event) ?? 0
+        },
+        onDragStart: snap ? onDragStart : undefined,
+        onDrag: snap ? onDrag : undefined,
+        onDragEnd: snap ? onDragEnd : undefined,
+        // Observer's naming is the viewport's, not the list's: moving the content
+        // up means moving forward through the panels. On the snap tier the finger
+        // is handled by the drag callbacks above, so these are left to the wheel
+        // alone — a trackpad in a narrow window still gets a discrete advance.
         onUp: (self) => {
+          if (snap && self.event?.type !== 'wheel') return
           if (!shouldIgnore(1, self.event)) goTo(indexRef.current + 1)
         },
         onDown: (self) => {
+          if (snap && self.event?.type !== 'wheel') return
           if (!shouldIgnore(-1, self.event)) goTo(indexRef.current - 1)
         },
       })
@@ -311,23 +450,27 @@ export default function SectionStage({ media, panels, disabled = false, children
       root.addEventListener('scroll', onInnerScroll, true)
       window.addEventListener('keydown', onKey)
       window.addEventListener('hashchange', onHash)
+      window.addEventListener('resize', onResize)
       document.addEventListener('click', onClick)
       const panel = panels[indexRef.current]
       if (panel) {
         setTheme(panel.theme)
         setSection(panel.hash)
       }
+      onResize() // the track's height was unknown while the tier was display:none
       onHash({ instant: true }) // honour an initial #section, without animating
     }
 
     const disengage = () => {
       if (!engaged) return
       engaged = false
+      dragging = false
       observer?.kill()
       observer = null
       root?.removeEventListener('scroll', onInnerScroll, true)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('hashchange', onHash)
+      window.removeEventListener('resize', onResize)
       document.removeEventListener('click', onClick)
       releaseLock?.()
       releaseLock = null
@@ -345,21 +488,44 @@ export default function SectionStage({ media, panels, disabled = false, children
       disengage()
       tlRef.current?.kill()
     }
-  }, [goTo, panels, media, setTheme, setSection])
+  }, [goTo, panels, media, setTheme, setSection, snap, showWindow, panelHeight])
 
-  return (
-    <div ref={rootRef} className="stage-root">
+  const stack = (
+    <>
       {items.map((child, i) => (
         <div
           key={panels[i]?.key ?? i}
           ref={(node) => (panelRefs.current[i] = node)}
-          className="stage-panel"
+          className={snap ? 'stage-panel stage-panel--tracked' : 'stage-panel'}
+          // The fade tier gets this for free from `autoAlpha` — a panel at
+          // opacity 0 is also `visibility: hidden`, so it leaves the
+          // accessibility tree and find-in-page. The snap tier cannot: its
+          // neighbours are deliberately visible so one can be dragged into view,
+          // which would otherwise put two off-screen sections back into the
+          // reading order. Marked explicitly instead, at both tiers so the rule
+          // is one rule: only the panel on stage is reachable.
+          aria-hidden={i === index ? undefined : 'true'}
+          inert={i === index ? undefined : ''}
         >
           <PanelScroll active={i === index} label={panels[i]?.label}>
             {child}
           </PanelScroll>
         </div>
       ))}
+    </>
+  )
+
+  return (
+    <div ref={rootRef} className="stage-root">
+      {/* Snap needs the panels laid end to end so one can be dragged into view;
+          fade wants them stacked in place. The track only exists for the former. */}
+      {snap ? (
+        <div ref={trackRef} className="stage-track">
+          {stack}
+        </div>
+      ) : (
+        stack
+      )}
     </div>
   )
 }
