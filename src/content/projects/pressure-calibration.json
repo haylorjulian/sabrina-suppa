@@ -8,79 +8,93 @@
   "media": [
     {
       "src": "adaptiveFlesh/Pressure_Calibration/1.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/2.webp",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/3.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/4.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/5a.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/6.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/7.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/8.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/9.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/10.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/11.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/12.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/13.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/14.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/15.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/16.webp",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Pressure_Calibration/17.mp4",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/trio.webp",
-      "alt": ""
-    },
-    {
-      "src": "https://media.sabrinasuppa.com/uploads/trilogy.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     }
   ]
 }
