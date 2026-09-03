@@ -151,11 +151,13 @@ Controls are minimal and instrumental — thin lines, tracked caps — that rece
 ### Navigation
 - **Style:** Single fixed bar, transparent, `px-6 py-7` (`md:px-[52px]`). No background, no border — it floats over whichever world is beneath it.
 - **Typography:** Copperplate, 14px, uppercase, tracking 0.20–0.28em.
-- **States:** Links rest at ~55–65% ink opacity and rise to full on hover/focus (300ms), catching a soft flesh underglow behind the label (`--glow-underlay`, `.nav-link::after`) — the type catches the light rather than snapping on. Color auto-flips via `data-nav-theme` + IntersectionObserver reading the section below.
+- **States:** Links rest at ~55–65% ink opacity and rise to full on hover/focus (300ms), catching a soft flesh underglow behind the label (`--glow-underlay`, `.nav-link::after`) — the type catches the light rather than snapping on. Color auto-flips with the panel on stage: each panel declares its world and `SectionStage` pushes it to `NavThemeProvider` by index (`data-nav-theme` remains on the section as the declarative marker). Nothing is measured — the panels are stacked, so an observer could never tell them apart.
 - **Mobile:** Hamburger (two 1px rules) morphs into an X; opens a full-screen `oxidized-graphite` overlay with large centered Copperplate links (staggered entrance) and social icons at the base. Body scroll locks while open.
 
 ### Signature: The Section Dissolve
-- Each full-viewport section is wrapped in a scroll-linked crossfade (`SectionFade`): opacity maps to scroll progress `[0.15, 1, 1, 0.15]`, opacity-only so fixed elements (nav, preloader) stay anchored. Adjacent sections dissolve *through* the dark ground rather than sliding — the membrane logic of the work, expressed as page transition.
+- The page does not scroll. Every full-viewport section is a panel stacked in a fixed root (`SectionStage`), and a gesture — wheel, or a finger — advances an index rather than a scroll offset. The outgoing panel's content drifts back by 15% and dissolves out; the incoming panel's clip window wipes in from the direction of travel while its content counter-slides to hold still, so the two pass *through* each other rather than one merely sliding over the other. 1.25s, `power1.inOut`. The membrane logic of the work, expressed as page transition.
+- Driven by GSAP (`Observer` for input, a timeline for the motion) — the one place GSAP is used. Everything inside a panel is still Framer Motion.
+- Sections that outgrow a panel (a long bio, a raised category sheet on a short phone) get a scroll region of their own (`PanelScroll`); the stage stands down for as long as that region has somewhere to go.
 
 ## 6. Do's and Don'ts
 

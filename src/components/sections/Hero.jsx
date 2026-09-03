@@ -11,7 +11,7 @@ import Footer from '@/components/ui/Footer'
 import { InstagramIcon } from '@/components/ui/icons'
 
 // `sectionId` is set only by the mobile tree so the nav's #home anchor resolves
-// to the visible section — the desktop tree navigates by index (ScrollStage) and
+// to the visible section — the desktop tree navigates by index (SectionStage) and
 // omits the id to avoid duplicate ids across the two trees.
 export default function Hero({ sectionId }) {
   const { t } = useLanguage()
@@ -22,7 +22,7 @@ export default function Hero({ sectionId }) {
   const socialHref = (label) => t.connect.social?.find((s) => s.label === label)?.href || '#'
   // Connect is a section now, so it lives in the shared nav list like the rest —
   // the rail no longer appends hero.connect's mailto. That list stays the source
-  // of truth for the section hrefs, which must track ScrollStage's ids.
+  // of truth for the section hrefs, which must track the stage's panel hashes.
   const railLinks = t.nav.links
 
   return (
@@ -30,7 +30,7 @@ export default function Hero({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Hero"
-      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
+      className="section-fullscreen relative w-full overflow-hidden bg-wet-petroleum lg:h-full lg:min-h-0"
     >
         {/* Background scaled to fill, centred. The source is a 2x master (3840x2160),
             so covering the frame spends those pixels on retina sharpness rather
@@ -88,7 +88,7 @@ export default function Hero({ sectionId }) {
               `y` through fadeInUp, and Framer writes that to the same inline
               `transform` the compensation would use, so one would silently
               overwrite the other. */}
-          <div className="dvh-bottom-shift w-full">
+          <div className="w-full">
             <motion.div variants={fadeInUp} className="w-full">
               <Footer shadow rowPadding="pt-[18px] pb-0" />
             </motion.div>

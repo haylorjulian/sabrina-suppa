@@ -4,7 +4,7 @@
 // smooth instead of abrupt. Keying the motion element on the pathname re-mounts
 // (and re-fades) the page whenever the route changes — home ↔ project, and
 // project ↔ project via prev/next. In-page section nav on home (#work etc.)
-// doesn't change the pathname, so those keep ScrollStage's own crossfade.
+// doesn't change the pathname, so those keep SectionStage's own transition.
 //
 // App Router unmounts the outgoing page synchronously, so this is an enter-fade
 // (the reliable pattern here) rather than a true old+new cross-dissolve.

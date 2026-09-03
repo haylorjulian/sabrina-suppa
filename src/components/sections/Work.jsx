@@ -33,17 +33,21 @@ export default function Work() {
   const overlayWeight = dark ? 'font-light' : 'font-thin'
   const overlayOpacity = dark ? 0.7 : 0.5
 
-  // The nav colour theme is owned solely by ScrollStage (it maps this section's
+  // The nav colour theme is owned solely by SectionStage (it maps this section's
   // index → 'light'); sections must not set it themselves, or their mount effects
   // race the stage on first paint. The data-nav-theme marker below stays as the
   // declarative source of truth.
+  // section-fullscreen (flex: 1) is what fills the panel. `h-full` alone can't:
+  // the panel's content column is min-height:100% with an auto height, so a
+  // percentage height on a child resolves to auto and the section collapses to
+  // its content, leaving bare ground below it.
   return (
     <section
       data-nav-theme="light"
       aria-label="Work"
-      className="relative h-full w-full overflow-hidden bg-bone-porcelain text-oxidized-graphite"
+      className="section-fullscreen relative flex w-full flex-col overflow-hidden bg-bone-porcelain text-oxidized-graphite"
     >
-      <div className="grid h-full grid-cols-1 lg:grid-cols-[50%_50%]">
+      <div className="grid h-full flex-1 grid-cols-1 lg:grid-cols-[50%_50%]">
         {/* Left — full-viewport-height category image, with the category name
             centred over it (hero name's font + size) */}
         <div className="relative hidden h-full lg:block">

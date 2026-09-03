@@ -86,18 +86,6 @@ function computeRows(items, width, gap, targetH, maxColumns) {
 export default function ProjectGallery({ project, media, siblings = [], nextProject, position }) {
   const { t } = useLanguage()
 
-  // The home route snaps each section to the viewport (html { scroll-snap-type:
-  // y mandatory }). A long gallery must scroll freely — neutralise snap here and
-  // restore it on unmount.
-  useEffect(() => {
-    const html = document.documentElement
-    const prevSnap = html.style.scrollSnapType
-    html.style.scrollSnapType = 'none'
-    return () => {
-      html.style.scrollSnapType = prevSnap
-    }
-  }, [])
-
   // Measure the content width so rows can be justified; recompute on resize.
   // clientWidth includes the wrapper's px-* padding, so subtract it — otherwise a
   // full-width row overflows by the padding. Measure the padded wrapper (whose
