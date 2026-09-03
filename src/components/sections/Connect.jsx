@@ -12,7 +12,7 @@ import ShimmerLine from '@/components/ui/ShimmerLine'
 // column under the bar here, unlike Work and About).
 //
 // `sectionId` is set only by the mobile tree — the desktop tree navigates by
-// index through ScrollStage and omits the id to avoid duplicates across trees.
+// index through SectionStage and omits the id to avoid duplicates across trees.
 export default function Connect({ sectionId }) {
   const { t } = useLanguage()
   const c = t.connect
@@ -81,7 +81,7 @@ export default function Connect({ sectionId }) {
       id={sectionId}
       data-nav-theme="dark"
       aria-label="Connect"
-      className="section-fullscreen relative w-full snap-start snap-always overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
+      className="section-fullscreen relative flex w-full flex-col overflow-hidden bg-oxidized-graphite text-bone-porcelain lg:h-full lg:min-h-0"
     >
       {/* Desktop (≥1024px) — one centred row: the label plate and its rule, then
           the copy column. items-stretch is what lets the rule run the exact
@@ -90,7 +90,7 @@ export default function Connect({ sectionId }) {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="hidden h-full items-center justify-center px-[52px] lg:flex"
+        className="hidden h-full flex-1 items-center justify-center px-[52px] lg:flex"
       >
         <div className="flex items-stretch gap-10">
           {/* Label plate + the icon column hang together off the rule, ranged
@@ -124,14 +124,14 @@ export default function Connect({ sectionId }) {
           rule (rather than becoming an ivyora heading), the copy stacks under it
           at the mobile body size.
           Anchored to the bottom edge, like the other mobile sections' docked
-          content, so it rides the same chrome compensation — held back on
-          Safari (see dvh-bottom-shift in globals.css). */}
+          content. Nothing compensates for browser chrome any more — the stage
+          doesn't scroll, so the URL bar never moves. */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="dvh-bottom-shift section-fullscreen flex flex-col justify-end gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
+        className="section-fullscreen flex flex-col justify-end gap-7 px-6 pb-[max(6rem,env(safe-area-inset-bottom))] pt-24 lg:hidden"
       >
         {/* The rule sits above the label rather than beside it, so the block
             opens the way the mobile sheets do (About and the category covers

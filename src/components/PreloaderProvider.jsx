@@ -8,7 +8,7 @@ import Preloader from '@/components/ui/Preloader'
 // session flag / scroll lock) and shares `loading` so the hero can gate its
 // entrance on it. Critically, the overlay is rendered HERE — a sibling of <Nav>
 // and <main>, not inside a section — so its z-100 sits above the nav's z-50.
-// Inside ScrollStage each section is an absolutely-positioned motion.div with its
+// Inside SectionStage each panel is an absolutely-positioned element with its
 // own z-index (a stacking context), which would otherwise trap the overlay
 // beneath the nav.
 const PreloaderContext = createContext({ loading: true, instant: false })

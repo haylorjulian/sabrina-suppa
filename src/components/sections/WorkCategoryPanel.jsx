@@ -1,191 +1,42 @@
 'use client'
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useLanguage } from '@/hooks/useLanguage'
-import { useNavTheme } from '@/components/NavThemeProvider'
 import { categoryImages } from '@/lib/assets'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
-import SectionFade from '@/components/ui/SectionFade'
 import ShimmerLine from '@/components/ui/ShimmerLine'
 
 const EASE = [0.22, 1, 0.36, 1]
 const SHEET_TRANSITION = { duration: 0.45, ease: EASE }
-const DESKTOP = '(min-width: 1024px)' // mirrors ScrollStage — the tier that owns the nav theme
 
-// The raised sheet is sized by its own description — the whole description, with
-// no ceiling, and it is now free to claim the full section height: COVER_FLOOR
-// (below) only holds its slice open while the sheet is collapsed, so a raised
-// sheet can rise edge-to-edge over the cover rather than stopping short of it.
-// It used to be capped at a ratio of the viewport, which kept a slice of the
-// cover visible but pushed any longer category into a scroll region nested
-// inside the scrolling page: two scrolls competing for the same drag, and the
-// only way to reach the end of the copy. When the description still outruns a
-// full viewport, the section simply grows past it and the page scrolls on — the
-// same trade About's mobile bio already makes, and globals.css already allows
-// for sections taller than one screen.
-//
-// Breathing room under the description. The action row is pinned to the sheet's
-// base by mt-auto, so this lands as open space between the copy and the hairline
-// rather than padding the sheet's bottom edge.
+// Breathing room under the raised description. The action row is pinned to the
+// sheet's base by mt-auto, so this lands as open space between the copy and the
+// hairline rather than padding the sheet's bottom edge.
 const RAISED_SLACK = 60
 
 // Minimum slice of cover left visible above the sheet while it's collapsed —
 // applied conditionally below, not while raised, so an expanded sheet can rise
-// all the way to full viewport height instead of stopping at this floor.
+// all the way up instead of stopping at this floor.
 const COVER_FLOOR = 'min-h-[32vh]'
 
-// Middle of the bar's ink when it cannot be measured: the nav's 1.75rem top
-// padding plus half the hamburger's h-5.
-const BAR_INK_FALLBACK = 38
-
-// Mobile Work (below lg): one full-viewport cover per category, stacked in order
-// (Exteneral → Physical Works), each with a docked sheet at the bottom carrying
-// the name, a one-line précis and the action row. "Read more" raises the sheet
-// over the cover to reveal the full description, "Close" lowers it again (as
-// does tapping the cover); "See Projects" is a real route and stays on screen in
-// both states. Every one of those is a button — the sheet itself is inert to
-// touch, so nothing on this page competes with the page scroll.
-export default function WorkMobile() {
-  const { t } = useLanguage()
-  const c = t.work
-  const { setTheme } = useNavTheme()
-
-  // One sheet open at a time — raising a second collapses the first.
-  const [openSlug, setOpenSlug] = useState(null)
-
-  // The nav bar's colour has to follow the cover currently under it: the light-
-  // world category (a bright photograph) needs graphite chrome or the hamburger
-  // vanishes into it. NavThemeProvider notes that a per-section observer can't
-  // work — that's about the desktop stage, where the cross-dissolving sections
-  // all occupy the viewport at once. Below lg they're sequential, so an observer
-  // is exactly the right tool.
-  const articlesRef = useRef(new Map())
-  const registerArticle = useCallback((slug, node) => {
-    if (node) articlesRef.current.set(slug, node)
-    else articlesRef.current.delete(slug)
-  }, [])
-
-  // Joined into a string so the effect below doesn't re-run on every render from
-  // a fresh array identity.
-  const lightWorldSlugs = c.categories
-    .filter((cat) => cat.overlayTextColor === 'dark')
-    .map((cat) => cat.slug)
-    .join(',')
-
-  useEffect(() => {
-    const mql = window.matchMedia(DESKTOP)
-    const lightWorld = new Set(lightWorldSlugs ? lightWorldSlugs.split(',') : [])
-    let engaged = false
-    let owned = false // true while our light theme is the one on the bar
-    let raf = null
-    let sizes = null
-
-    // Which world is behind the bar's ink, read straight off the geometry.
-    //
-    // This was an IntersectionObserver over the light-world covers, with "none
-    // intersecting" standing in for the dark world. Sections share an edge, and
-    // that broke it twice over: a cover that ends at exactly y=0 — where
-    // mandatory snap parks it for the whole of the next section — still counts
-    // as intersecting; and since that boolean never changes as the boundary
-    // crosses the bar, no callback was delivered to correct the reading either.
-    // The bar kept its graphite chrome across the whole of About, over a dark
-    // photograph. Geometry has no such blind spot.
-    const evaluate = () => {
-      raf = null
-      // Measured, not assumed: the bar's top padding tracks
-      // env(safe-area-inset-top), so on a notched phone the ink sits lower.
-      const box = document.querySelector('[data-nav-ink]')?.getBoundingClientRect()
-      // The ink's middle — a boundary has to pass the mark itself before the
-      // bar changes hands, rather than at either edge of the glyph.
-      const mark = box ? (box.top + box.bottom) / 2 : BAR_INK_FALLBACK
-
-      let light = false
-      for (const [slug, node] of articlesRef.current) {
-        if (!lightWorld.has(slug)) continue
-        const r = node.getBoundingClientRect()
-        if (r.top <= mark && r.bottom > mark) {
-          light = true
-          break
-        }
-      }
-      owned = light
-      // Setting the same value bails out of the render, so this stays cheap to
-      // call on every frame of a scroll.
-      setTheme(light ? 'light' : 'dark')
-    }
-
-    const schedule = () => {
-      if (raf === null) raf = requestAnimationFrame(evaluate)
-    }
-
-    const engage = () => {
-      if (engaged) return
-      engaged = true
-      window.addEventListener('scroll', schedule, { passive: true })
-      window.addEventListener('resize', schedule)
-      // A webfont swap or a sheet's first measurement moves the boundaries
-      // without any scroll, which changes the answer on its own.
-      sizes = new ResizeObserver(schedule)
-      for (const [, node] of articlesRef.current) sizes.observe(node)
-      evaluate()
-    }
-
-    // At lg this whole tree is display:none, so every rect would read zero, the
-    // theme would reset to dark, and it would fight ScrollStage — which owns the
-    // theme at that tier. Hence the breakpoint gate, mirroring the stage's own.
-    const disengage = () => {
-      if (!engaged) return
-      engaged = false
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
-      sizes?.disconnect()
-      sizes = null
-      if (raf !== null) cancelAnimationFrame(raf)
-      raf = null
-      // Only hand the theme back if it was ours to hand back. Crossing the
-      // breakpoint fires this and ScrollStage's own engage in an undefined
-      // order, and an unconditional reset here would stomp the theme the stage
-      // had just set for its current section.
-      if (owned) setTheme('dark')
-      owned = false
-    }
-
-    const sync = () => (mql.matches ? disengage() : engage())
-    sync()
-    mql.addEventListener('change', sync)
-
-    return () => {
-      mql.removeEventListener('change', sync)
-      disengage()
-    }
-  }, [lightWorldSlugs, setTheme])
-
-  return (
-    // id + smooth scroll (globals) let the nav's #work link land here.
-    <section id="work" aria-label="Work" className="lg:hidden">
-      {c.categories.map((cat) => (
-        <SectionFade key={cat.slug}>
-          <CategoryCover
-            cat={cat}
-            ui={c}
-            expanded={openSlug === cat.slug}
-            onToggle={() => setOpenSlug((slug) => (slug === cat.slug ? null : cat.slug))}
-            onClose={() => setOpenSlug((slug) => (slug === cat.slug ? null : slug))}
-            registerArticle={registerArticle}
-          />
-        </SectionFade>
-      ))}
-    </section>
-  )
-}
-
-// Per-category cover + docked sheet. `overlayTextColor` is the editor's existing
-// light/dark switch for the cover, and it drives the whole sheet polarity here:
-// "dark" means dark ink, i.e. a bright photograph, i.e. the porcelain sheet.
-function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }) {
+// One Work category, as a full-screen stage panel: a cover photograph with a
+// docked sheet carrying the name, a one-line précis and the action row. "Read
+// more" raises the sheet over the cover to reveal the full description, "Close"
+// lowers it again (as does tapping the cover); "See Projects" is a real route and
+// stays on screen in both states.
+//
+// `overlayTextColor` is the editor's existing light/dark switch for the cover and
+// it drives the whole sheet polarity: "dark" means dark ink, i.e. a bright
+// photograph, i.e. the porcelain sheet. SectionStage reads the same field to pick
+// this panel's nav theme.
+//
+// The sheet is inert to touch. It carried a drag gesture (pull up to raise, flick
+// down to close) which read every vertical touch that started on it, so the sheet
+// moved under a finger that was only trying to move the page. "Read more" /
+// "Close" and the cover tap are the whole interface now, and they are buttons.
+export default function WorkCategoryPanel({ cat, ui }) {
   const reduced = useReducedMotion()
   const sheetId = useId()
   const first = cat.projects[0]
@@ -204,7 +55,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
   //
   //   chrome    = trim + title + action row + gaps + padding + border
   //   collapsed = chrome + précis
-  //   raised    = chrome + description + slack (no cap — see RAISED_SLACK)
+  //   raised    = chrome + description + slack
   const sheetRef = useRef(null)
   const contentRef = useRef(null)
   const precisRef = useRef(null)
@@ -212,6 +63,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
   const chromeRef = useRef(null)
   const [collapsedHeight, setCollapsedHeight] = useState(null)
   const [raisedHeight, setRaisedHeight] = useState(null)
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const column = contentRef.current
@@ -240,7 +92,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
       const collapsed = Math.ceil(chrome + precisH)
       setCollapsedHeight(collapsed)
       // No viewport cap: the raised sheet is exactly its own description plus
-      // slack, so the copy always fits and never needs to scroll inside.
+      // slack. Where that overruns the panel, PanelScroll takes the overflow.
       setRaisedHeight(Math.max(collapsed, Math.ceil(chrome + descriptionH + RAISED_SLACK)))
     }
 
@@ -287,8 +139,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         copy: 'text-[#D8D4CF]/80',
         hairline: 'bg-bone-porcelain/20',
         // Held just off full porcelain: at 100% "See Projects" was the brightest
-        // thing on the sheet and pulled ahead of the title. Still the loud half
-        // of the action row — inkQuiet beside it sits at 60%.
+        // thing on the sheet and pulled ahead of the title.
         ink: 'text-bone-porcelain/80',
         inkQuiet: 'text-[#D8D4CF]/60',
         quietRule: 'bg-[#D8D4CF]/60',
@@ -297,22 +148,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
 
   const transition = reduced ? { duration: 0 } : SHEET_TRANSITION
 
-  // The sheet is inert to touch. It carried a drag gesture (pull up to raise,
-  // flick down to close) which read every vertical touch that started on it,
-  // so the sheet moved under a finger that was only trying to scroll the page —
-  // and rubber-banded even when it had nowhere to go. "Read more" / "Close" and
-  // the cover tap are the whole interface now, and they are buttons, so the
-  // sheet never intercepts a scroll.
-  //
-  // Laid out in flow rather than absolutely: the sheet has to be able to make
-  // the section taller than the viewport when a long description opens, and an
-  // absolute `bottom-0` child contributes nothing to its parent's height, so it
-  // was clipped instead. The cover behind it stays absolute and spans whatever
-  // the article ends up being.
   return (
     <article
-      ref={(node) => registerArticle(cat.slug, node)}
-      data-slug={cat.slug}
+      data-nav-theme={light ? 'light' : 'dark'}
+      aria-label={cat.label}
       className="section-fullscreen relative flex w-full flex-col overflow-hidden bg-oxidized-graphite"
     >
       {image && (
@@ -338,20 +177,18 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         transition={transition}
       />
 
-      {/* The cover slice above the sheet. It is the flex spacer that takes
-          whatever the sheet leaves — down to COVER_FLOOR while collapsed, so a
-          peek of the photograph always shows, but with no floor once raised, so
-          the sheet can rise all the way to the top of the section (full viewport
-          height) before the article has to grow and the page scrolls on.
-          Tapping it dismisses a raised sheet; the button only mounts while
-          raised, so it never eats a tap collapsed. */}
+      {/* The cover slice above the sheet — the flex spacer that takes whatever
+          the sheet leaves, down to COVER_FLOOR while collapsed so a peek of the
+          photograph always shows, with no floor once raised. Tapping it dismisses
+          a raised sheet; the button only mounts while raised, so it never eats a
+          tap collapsed. */}
       <div className={`relative flex-1 ${expanded ? '' : COVER_FLOOR}`}>
         {expanded && (
           <button
             type="button"
             tabIndex={-1}
             aria-hidden="true"
-            onClick={onClose}
+            onClick={() => setExpanded(false)}
             className="absolute inset-0 z-10 cursor-default"
           />
         )}
@@ -361,15 +198,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           own state (height, ground), the inner one is the entrance stagger
           container. They can't be one element — variant labels and an object
           `animate` don't coexist, and the labels are what propagate the stagger
-          down to the children.
-
-          The whole panel — title, description, divider, See Projects, Read more
-          — is this section's bottom-edge group, so the chrome compensation
-          (dvh-bottom-shift) rides the sheet itself and every internal gap is
-          left exactly as designed. Safe on this element rather than a wrapper:
-          it animates only height and backgroundColor, so Framer never writes to
-          `transform`. On Safari the lift is held back and the sheet simply sits
-          at the section's bottom edge (see globals.css). */}
+          down to the children. */}
       <motion.div
         id={sheetId}
         ref={sheetRef}
@@ -380,7 +209,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
         }}
         transition={transition}
         style={{ borderTopColor: tone.border }}
-        className="dvh-bottom-shift relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
+        className="relative z-20 flex shrink-0 flex-col overflow-hidden border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
       >
         {/* Only claims the sheet's height once raised — collapsed it keeps its
             natural height, which is what the measurement above reads. */}
@@ -392,11 +221,10 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
           viewport={{ once: true, amount: 0.25 }}
           className={`flex flex-col gap-[18px] ${expanded ? 'min-h-0 flex-1' : ''}`}
         >
-          {/* Trim, not a handle — there is no gesture on this sheet any more (see
-              above); it marks the raised state the way the same rule sits above
-              About's mobile bio. Its own `animate` stops the stagger propagating
-              here, which is what keeps it on the sheet's state rather than in
-              the entrance. */}
+          {/* Trim, not a handle — there is no gesture on this sheet; it marks the
+              raised state the way the same rule sits above About's bio. Its own
+              `animate` stops the stagger propagating here, which is what keeps it
+              on the sheet's state rather than in the entrance. */}
           <motion.span
             aria-hidden="true"
             initial={false}
@@ -452,7 +280,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
             <div className={`h-px w-full ${tone.hairline}`} />
 
             <div className="flex items-center justify-between gap-4">
-              {/* py-3 -my-3 on both cues: a ≥44px tap box without growing the
+              {/* py-3 -my-3 on both cues: a >=44px tap box without growing the
                   type or opening up the row. */}
               <Link
                 href={`/work/${cat.slug}/${first.slug}`}
@@ -466,7 +294,7 @@ function CategoryCover({ cat, ui, expanded, onToggle, onClose, registerArticle }
                   beam — two shimmers side by side would compete for the glance. */}
               <button
                 type="button"
-                onClick={onToggle}
+                onClick={() => setExpanded((v) => !v)}
                 aria-expanded={expanded}
                 aria-controls={sheetId}
                 className={`-my-3 inline-flex items-center gap-3 py-3 font-neue-haas-display text-[11px] uppercase tracking-[0.22em] ${tone.inkQuiet}`}

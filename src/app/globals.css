@@ -26,7 +26,9 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* No `scroll-behavior: smooth` any more, and nothing to apply it to: the
+     document does not scroll. SectionStage stacks the sections in a fixed root
+     and moves between them by index. See .stage-root below. */
 
   /* No fluid root here, deliberately. A `font-size: max(1rem, Nvw)` was tried:
      it scaled the root past a 1512px reference so type and Tailwind's rem
@@ -41,36 +43,45 @@ body {
   background: var(--oxidized-graphite);
 }
 
-/* ── Section snapping, mobile only ──────────────────────────────────────────
-   Desktop never scrolls: ScrollStage takes the wheel over and crossfades
-   between absolutely-stacked sections, so a snap type at that tier would have
-   no scrollport to act on. Below lg the page scrolls natively and each section
-   is one screen, which is what makes snapping meaningful here.
+/* ── The section stage ──────────────────────────────────────────────────────
+   The home sections live here, stacked and fixed, at every tier. This replaces
+   a mobile scroll-snap column that could never be made reliable: `y mandatory`
+   snapping, a smooth fragment scroll, an rAF offset hold and a document whose
+   height changed on scroll idle all wrote to the same scroll position, and the
+   nav landed on whichever section the timing left it on. There is now no scroll
+   position to disagree about.
 
-   `mandatory`, and it is safe here despite sections that outgrow the screen (a
-   long bio on a short phone, or a category sheet opened to the full height of
-   its description — see WorkMobile). The obvious worry is that mandatory always
-   comes to rest on a snap point and would strand that overflow, but the spec
-   carves it out: a snap area larger than the snapport only has to keep the area
-   covering the snapport, so every scroll offset inside an oversized section is
-   itself a valid resting place. Verified against a section three screens tall —
-   every interior position holds. Proximity was measured side by side and left
-   the page resting mid-section on roughly half of all gestures, which reads as
-   no snapping at all; mandatory landed every gesture on a section edge.
+   Fixed rather than a `height: 100%` chain — it needs no unbroken run of
+   full-height ancestors and it tracks the layout viewport exactly.
 
-   `scroll-snap-stop: always` (the `snap-always` class on each section) asks that
-   a fling not pass over a snap position, so one gesture advances one section.
-   Treat it as a hint rather than a guarantee: Chrome still carried very fast
-   flings several sections in testing. It costs nothing and is correct per spec,
-   so it stays for the UAs that honour it.
+   LOAD-BEARING INVARIANT: no ancestor of .stage-root may take a `transform`,
+   `filter` or `backdrop-filter`. Any of those makes it the containing block for
+   fixed descendants and this stops sizing to the viewport. PageTransitionWrapper
+   animates opacity only, which is safe; keep it that way.
 
-   The project routes opt out at runtime (ProjectGallery sets an inline
-   scroll-snap-type: none, which outranks this rule): a long gallery has to
-   scroll freely. */
-@media (max-width: 1023.98px) {
-  html {
-    scroll-snap-type: y mandatory;
-  }
+   `touch-action: pinch-zoom` is what stops a single finger panning the page,
+   in place of the preventDefault the reference implementation used. It is
+   declarative, resolved per subtree on the compositor before any JS runs, so a
+   scroll region inside a panel can opt back in with `pan-y` (see PanelScroll)
+   and no handler has to guess who owns a gesture on its first frame. Pinch-zoom
+   deliberately survives — a blanket `none` would take page zoom with it. */
+.stage-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pinch-zoom;
+}
+
+/* Hidden until the stage says otherwise. GSAP writes `autoAlpha`, which drives
+   visibility as well as opacity, so an off-stage panel leaves the accessibility
+   tree and find-in-page instead of lingering as a transparent full-screen
+   section. The seed runs in a layout effect, before paint, so the starting panel
+   never flashes. */
+.stage-panel {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
 }
 
 /* Vertical scroll-indicator label (writing-mode can't be expressed as a Tailwind class) */
@@ -79,93 +90,25 @@ body {
 }
 
 @layer components {
-  /* ── Stable full-screen sections vs. moving browser chrome ────────────────
-     A phone's URL bar retracts as you scroll, and every viewport unit answers
-     that differently. None of them alone does what these sections need:
+  /* ── Panel sizing inside the stage ────────────────────────────────────────
+     A section is a flex item inside its PanelScroll column. `flex: 1 1 0%` makes
+     short content grow to exactly one panel, so a docked sheet still lands on the
+     bottom edge as designed; a flex item's automatic minimum size (min-height:
+     auto) floors it at its content height, so long content grows past the panel
+     instead and PanelScroll takes the overflow.
 
-       svh  — the small viewport (bar shown). Stable, but once the bar retracts
-              the section is short of the screen and a seam opens under it.
-       dvh  — the currently visible viewport. Always exact, but it *changes* as
-              the bar animates, so the section, its artwork and its image crop
-              all resize mid-scroll. That is the jump we are avoiding.
-       lvh  — the large viewport (bar retracted). Stable and fills the screen,
-              but while the bar is showing it runs taller than what you can see,
-              hiding whatever sits at the section's bottom edge.
+     This replaces a 100vh/100lvh pair and the two workarounds that hung off it —
+     a transform that lifted bottom-edge content clear of the URL bar everywhere
+     but Safari, and a spacer that kept the last section's snap point off the
+     document's maximum scroll offset. All three existed because the document
+     scrolled and iOS Safari resized its layout viewport as the toolbar moved.
+     Nothing scrolls now, so the toolbar never retracts and the viewport never
+     changes size: the sections simply fill what is actually visible.
 
-     So the section commits to `lvh`: nothing about the composition, the crop or
-     the header ever moves as the bar comes and goes.
-
-     The cost is that while the bar is showing, the section's bottom band sits
-     behind it — on an iPhone that is `lvh - dvh`, about 40px, and it is where
-     the Hero's footer strip and the sheets' action rows live. It comes back the
-     moment a scroll retracts the bar. `.dvh-bottom-shift` below corrects for it
-     everywhere except Safari.
-
-     `100vh` first as the fallback: a browser without lvh drops the second
-     declaration and keeps a usable full-screen section. Desktop is untouched —
-     Hero/About/Connect override this with `lg:h-full lg:min-h-0` (utilities
-     outrank this layer), and the rest of the mobile tree is `lg:hidden`. */
+     Desktop is untouched — Hero/About/Connect override this with
+     `lg:h-full lg:min-h-0` and utilities outrank this layer. */
   .section-fullscreen {
-    min-height: 100vh;
-    min-height: 100lvh;
-  }
-
-  /* ── Bottom-edge compensation, everywhere but Safari ──────────────────────
-     `100dvh - 100lvh` is zero while the chrome is hidden (content rests in its
-     designed position) and negative by exactly the chrome's height while it is
-     showing, lifting the content clear of it. Transform only, so nothing
-     reflows and the element's own spacing is untouched.
-
-     Held back from Safari, which is the one browser it makes worse. It assumes
-     the chrome begins at the bottom of the reported viewport; Safari paints
-     roughly 60px of page content below that before its toolbar starts, so the
-     lift overshoots and opens a visible gap under the Hero's footer on the
-     un-scrolled page — worse than the clipping it set out to prevent. The
-     `data-browser` attribute is set by an inline script in layout.jsx, before
-     first paint; see there for why this needs a UA test rather than @supports.
-
-     No transition, deliberately: the browser updates dvh continuously while the
-     bar animates, and a transition would lag that and read as float.
-
-     A browser without dvh/lvh drops the declaration as invalid and the content
-     simply stays put — the same graceful outcome as the height fallback above.
-     Mobile-scoped to the project's lg breakpoint; on desktop the three units are
-     identical, so this only ever resolves to 0 there anyway. */
-  @media (max-width: 1023.98px) {
-    html:not([data-browser='safari']) .dvh-bottom-shift {
-      transform: translateY(calc(100dvh - 100lvh));
-    }
-  }
-
-  /* ── Trailing scroll room under the last section (iOS Safari only) ────────
-     Connect is the last mobile section, so without this its snap point sits at
-     exactly the document's maximum scroll offset. That maximum is not stable on
-     iOS Safari: it is `scrollHeight - innerHeight`, and innerHeight swings by
-     the chrome's height as the URL bar retracts. Measured on an iPhone 17 Pro
-     simulator: scrollHeight 3770, innerHeight 714↔754, so the maximum moves
-     between 3056 and 3016 while Connect's snap point is fixed at 3016.
-
-     Safari then has to resolve a mandatory snap against a boundary that is
-     moving underneath it, and lands wherever the timing leaves it — traced
-     resting at 2958 (58px short, no snap), at 3056 (40px past, no snap), and
-     once correcting 2958→3016 in a single frame after the scroll had already
-     stopped, which is the ~50px lurch this fixes. Every other section snaps
-     against a stable interior offset and lands exactly, every time.
-
-     A chrome's worth of room past the last snap point is enough to take that
-     point off the boundary in both toolbar states, so the snap resolves the
-     way it does for the other four. It collapses to 0 wherever lvh and svh
-     agree — every desktop browser, and any mobile browser without retracting
-     chrome — and it carries no scroll-snap-align, so it is headroom and never
-     a stop. Graphite on graphite under a graphite section, so it is invisible.
-
-     Safari-only because Safari is the only engine that resizes the layout
-     viewport for its chrome; Chrome and Firefox on iOS leave innerHeight alone
-     and land the last section correctly without it. */
-  @media (max-width: 1023.98px) {
-    html[data-browser='safari'] .connect-tail {
-      height: var(--connect-tail, calc((100lvh - 100svh) * 3));
-    }
+    flex: 1 1 0%;
   }
 
   /* Mobile Work/About body (rem-based so it respects user zoom / OS text size).

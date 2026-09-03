@@ -2,22 +2,22 @@
 
 import { createContext, useContext, useState } from 'react'
 
-// Shared nav state. At lg and up the scroll owner (ScrollStage) drives both
-// fields via setTheme/setSection based on scroll position — its overlapping
-// cross-dissolve sections all sit in the viewport at once, so a per-section
-// IntersectionObserver can't tell them apart there.
+// Shared nav state. SectionStage owns both fields at every tier: it maps the
+// active panel's index to a declared theme and pushes it here. Nothing measures
+// anything — a per-section observer never could, since the panels are stacked
+// and all occupy the viewport at once.
 //
-// Below lg the sections are sequential and the stage is disengaged, so an
-// observer is fine: WorkMobile uses one to flip the bar graphite over its
-// light-world cover. Anything that drives `theme` at that tier must also set it
-// back to 'dark' on the way out — the other mobile sections never set it.
+// Only the engaged stage writes. The two stages' media queries partition, so
+// exactly one is engaged, and a disengaging stage deliberately writes nothing
+// rather than resetting — otherwise crossing the lg breakpoint would stomp the
+// values the incoming tier had just set.
 //
 // theme   — nav colour (dark bg → light text, and vice versa).
-// section — id of the section currently on stage, or null when the stage is
-//           disengaged (below lg). The hero renders its own chrome, so the Nav
-//           uses this to hide its bar there. Defaults to 'home' to match
-//           ScrollStage's starting index: a null default would paint the bar
-//           before the first effect ran and flash it over the hero.
+// section — hash of the panel currently on stage. The hero renders its own
+//           chrome, so the Nav uses this to hide its bar there, and the mobile
+//           menu uses it to mark the active row. Defaults to 'home' to match the
+//           stage's starting index: a null default would paint the bar before
+//           the first effect ran and flash it over the hero.
 const NavThemeContext = createContext({ theme: 'dark', setTheme: () => {}, section: 'home', setSection: () => {} })
 
 export const useNavTheme = () => useContext(NavThemeContext)

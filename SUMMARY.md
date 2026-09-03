@@ -40,7 +40,8 @@ Installed: `framer-motion`, `@react-spring/web`
 | navigation          | Framer Motion  | `ui/Nav` (AnimatePresence mobile menu) |
 | buttons-cta         | Framer Motion  | `ui/ArrowButton`, `ui/Pill` (whileHover/Tap, `layoutId` sliding pill) |
 | images              | Framer Motion  | `sections/Work` (AnimatePresence crossfade on media/page change) |
-| scroll-animations   | Framer Motion + CSS | `useInView` entrance in `Work` + `About`; `ui/SectionFade` scroll-linked crossfade; CSS scroll-snap |
+| section transitions | GSAP (Observer + timeline) | `ui/SectionStage` — fixed panels, index-driven; dissolve on desktop, finger-following snap on mobile. The page itself never scrolls |
+| scroll-animations   | Framer Motion  | `useInView` / `whileInView` entrances in `Work`, `About`, the category sheets |
 | text-effects        | Framer Motion  | `About` (staggered line reveal) |
 | background-effects  | Framer Motion  | Hero animated scroll-line indicator |
 
@@ -55,12 +56,13 @@ Installed: `framer-motion`, `@react-spring/web`
 
 ## Reusable UI Components
 
-- `components/ui/Nav.jsx` — single fixed nav shared by all sections; theme (light/dark text) adapts via IntersectionObserver reading each section's `data-nav-theme`.
+- `components/ui/Nav.jsx` — single fixed nav shared by all sections; theme (light/dark text) follows the panel on stage, pushed by `SectionStage` from each panel's declared theme.
 - `components/ui/ArrowButton.jsx` — square bordered arrow control; used for Work image up/down nav (light theme) and reusable elsewhere.
 - `components/ui/Pill.jsx` — Work category tab with `layoutId` sliding active fill.
 - `components/ui/LangToggle.jsx` — EN/IT toggle button (used in desktop nav + mobile menu).
 - `components/ui/Preloader.jsx` — full-screen loading overlay.
-- `components/ui/SectionFade.jsx` — one scroll-snap slide; opacity-only scroll-linked crossfade so adjacent sections dissolve through the dark page background.
+- `components/ui/SectionStage.jsx` — the section engine at every tier: GSAP `Observer` turns wheel/touch into an index change, a timeline runs the clip-wipe. Owns the nav theme, the URL hash and the deep-link seed.
+- `components/ui/PanelScroll.jsx` — per-panel scroll region, inert until its content outgrows the panel.
 
 ## Complexity Notes
 
@@ -69,12 +71,14 @@ Installed: `framer-motion`, `@react-spring/web`
   - **Adaptive Flesh** — 3 projects: `adaptiveFlesh/b_1`, `b_2`, `b_3` (b_2 leads with its `.mp4` motion study).
   - **Physical** — 1 project (`physicalworks/misc`) with 4 images. (A "Coming soon" placeholder state still exists in code for any project whose media is a `placeholder` item, but Physical now has real images.)
 - **About redesigned (revision).** The original blur-band treatment (and `useBlurBands`) was removed. About is now a left-image / right-text split per the supplied reference: `aboutPage.jpg` anchored left (`object-left`) dissolving into the dark text field via a token gradient (`from-transparent ... to-oxidized-graphite to-[58%]` on desktop), with ABOUT label → large bio → ARTIST STATEMENT label → statement → social links. Social links (Email / Instagram / X) live in `copy.json` under `about.social` with placeholder hrefs.
-- **Full-viewport sections + scroll snap (revision).** Sections now fill exactly one viewport using `100svh` (small-viewport units — fixes mobile overflow caused by `100vh` + browser chrome; `min-h-[600px]` was removed). `html` uses `scroll-snap-type: y mandatory`; each section is wrapped in `SectionFade` (`snap-start`) which both provides the `100svh` height and applies the scroll-linked opacity crossfade. Mandatory snap guarantees rest states land centred (opacity 1), so sections never sit dimmed.
-- **Section crossfade.** `SectionFade` uses `useScroll` + `useTransform` mapping scroll progress → opacity `[0.15, 1, 1, 0.15]`. Opacity only (no transform) so the hero's `fixed` preloader and the `fixed` nav stay viewport-fixed (transform on an ancestor would have re-anchored them).
+- **Fixed section stage, no page scroll (revision).** Replaced mobile scroll-snap. `y mandatory` snapping, a smooth fragment scroll, an rAF offset hold and a document whose height changed on scroll idle all wrote to the same scroll position, and the nav landed on whichever section the timing left it on — the bug was intermittent by construction. Sections are now panels stacked in a `position: fixed` root and moved by index, so there is no scroll position to disagree about. This also retired the whole viewport-unit cluster (`100lvh`/`svh`/`dvh`, the bottom-edge transform, the trailing spacer and the Safari UA sniff): with nothing to scroll, the URL bar never retracts and the viewport never resizes.
+- **Two transitions, one engine.** Desktop dissolves through the ground on `autoAlpha` (opposed eases, 1s); mobile drags a vertical track with the finger and snaps (0.5s settle, clamped to one section per gesture, rubber-banded at the ends). Both are GSAP core — the drag uses `Observer`'s own `onDragStart/onDrag/onDragEnd` rather than `Draggable` + `InertiaPlugin`, because a strict one-section rule discards Inertia's landing prediction anyway, and keeping one gesture reader is what lets the inner-scroller handoff stay in a single place.
+- **The transform lives inside the stage.** `Nav` and the preloader are fixed siblings outside it, so nothing fixed sits under a transformed ancestor. Keep it that way — `.stage-root` is itself `position: fixed`, so a transform on any ancestor would break its sizing too.
+- **Only the panel on stage is reachable.** The fade tier gets this from `autoAlpha` (opacity 0 implies `visibility: hidden`); the snap tier cannot, since its neighbours are deliberately visible so one can be dragged into view, so both tiers mark it explicitly with `aria-hidden` + `inert`.
 - **Work images at native resolution (revision).** Images render `object-contain` at their natural aspect (no longer `object-cover` full-bleed, which upscaled/cropped and looked granulated) and use `unoptimized` so the original file resolution is served. Desktop shows two images side-by-side; the up/down arrows page through the project in steps of `perPage`.
 - **Full-screen mobile menu (revision).** The nav's mobile menu is now a `fixed inset-0` overlay with large centred links + language toggle (was a dropdown), with body-scroll lock while open and the hamburger morphing into an X.
 - **Animated hero scroll line.** The static scroll line is now a track with a light segment travelling downward on a loop (`motion.span` y-keyframes) to cue scrolling.
-- **Single fixed nav vs. per-section navs.** The mockups drew a nav inside each section; for a single scrolling page this was consolidated into one fixed `Nav` that switches text colour based on the section under it (`data-nav-theme` + IntersectionObserver).
+- **Single fixed nav vs. per-section navs.** The mockups drew a nav inside each section; this was consolidated into one fixed `Nav` that switches text colour with the panel on stage (each panel declares its theme; `SectionStage` pushes it by index).
 - **Tonal gradient overlays** (Hero, Work vignette, About right-anchor) were re-expressed as token-based Tailwind gradient classes rather than the mockups' raw `rgba()` linear-gradients, to keep colours on design tokens.
 - **`writing-mode: vertical-rl`** for the Hero "Scroll" label has no Tailwind equivalent — added as a `.vertical-text` utility in `globals.css`.
 - **Cormorant weight 200 → 300** (see Design System).

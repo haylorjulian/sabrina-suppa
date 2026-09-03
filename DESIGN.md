@@ -151,11 +151,15 @@ Controls are minimal and instrumental — thin lines, tracked caps — that rece
 ### Navigation
 - **Style:** Single fixed bar, transparent, `px-6 py-7` (`md:px-[52px]`). No background, no border — it floats over whichever world is beneath it.
 - **Typography:** Copperplate, 14px, uppercase, tracking 0.20–0.28em.
-- **States:** Links rest at ~55–65% ink opacity and rise to full on hover/focus (300ms), catching a soft flesh underglow behind the label (`--glow-underlay`, `.nav-link::after`) — the type catches the light rather than snapping on. Color auto-flips via `data-nav-theme` + IntersectionObserver reading the section below.
+- **States:** Links rest at ~55–65% ink opacity and rise to full on hover/focus (300ms), catching a soft flesh underglow behind the label (`--glow-underlay`, `.nav-link::after`) — the type catches the light rather than snapping on. Color auto-flips with the panel on stage: each panel declares its world and `SectionStage` pushes it to `NavThemeProvider` by index (`data-nav-theme` remains on the section as the declarative marker). Nothing is measured — the panels are stacked, so an observer could never tell them apart.
 - **Mobile:** Hamburger (two 1px rules) morphs into an X; opens a full-screen `oxidized-graphite` overlay with large centered Copperplate links (staggered entrance) and social icons at the base. Body scroll locks while open.
 
 ### Signature: The Section Dissolve
-- Each full-viewport section is wrapped in a scroll-linked crossfade (`SectionFade`): opacity maps to scroll progress `[0.15, 1, 1, 0.15]`, opacity-only so fixed elements (nav, preloader) stay anchored. Adjacent sections dissolve *through* the dark ground rather than sliding — the membrane logic of the work, expressed as page transition.
+- The page does not scroll. Every full-viewport section is a panel in a fixed root (`SectionStage`), and a gesture advances an index rather than a scroll offset. Both tiers share one engine, one input layer and one navigation contract; only the transition differs, because a pointer and a finger are not the same instrument.
+- **Desktop — the dissolve.** Both panels animate over 1s with opposed eases (`power2.out` leaving, `power2.in` arriving) so they never overlap: at the midpoint each sits near 0.1 and the graphite ground carries the crossing. Adjacent sections dissolve *through* the dark ground rather than sliding — the membrane logic of the work, expressed as page transition. It is also the only treatment that stays legible: every panel puts a heading and a paragraph in the same place, so a true cross-dissolve superimposes two of each and neither can be read.
+- **Mobile — the snap.** The panels are a vertical track that follows the finger 1:1 and settles on a section boundary in 0.5s when released. A drag past 18% of the screen, or any flick, commits; anything less springs back. It is clamped to exactly one section per gesture in both directions, and rubber-bands at Home and Connect. On a phone the finger expects the surface to move with it — a dissolve reads as a jump cut, and there is no cursor to hold your place.
+- Driven by GSAP (`Observer` for input, timelines for the motion) — the one place GSAP is used. Everything inside a panel is still Framer Motion.
+- Sections that outgrow a panel (a long bio, a raised category sheet on a short phone) get a scroll region of their own (`PanelScroll`); the stage stands down for as long as that region has somewhere to go.
 
 ## 6. Do's and Don'ts
 

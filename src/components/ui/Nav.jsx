@@ -8,8 +8,8 @@ import { useNav } from '@/hooks/useNav'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNavTheme } from '@/components/NavThemeProvider'
 import { setSectionTarget } from '@/lib/sectionTarget'
-import { scrollToSection } from '@/lib/scrollToSection'
-import { DURATION } from '@/components/ui/ScrollStage'
+import { acquireScrollLock } from '@/lib/scrollLock'
+import { DURATION } from '@/components/ui/SectionStage'
 import { SocialIcon } from '@/components/ui/icons'
 import { staggerContainer, fadeInUp } from '@/lib/animations'
 
@@ -42,12 +42,12 @@ export default function Nav() {
   const pathname = usePathname()
   const hamburgerRef = useRef(null)
 
-  // Lock page scroll while the full-screen menu is open.
+  // Hold the page still while the full-screen menu is open. Ref-counted, because
+  // the stage holds a lock of its own for as long as it is engaged — a plain
+  // `body.style.overflow = ''` here would release theirs along with ours.
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
+    if (!open) return
+    return acquireScrollLock()
   }, [open])
 
   // Escape closes the menu from anywhere while it's open (the focus trap lives
@@ -61,11 +61,11 @@ export default function Nav() {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [open, closeMenu])
 
-  // The nav is mounted globally. `theme`/`section` are only driven by ScrollStage
-  // on home (and persist stale after navigating away), so off the home route we
-  // ignore them: project pages are dark-world, and the desktop ProjectHeader owns
-  // the top bar there — so the global bar steps aside at md+ and only its mobile
-  // hamburger remains.
+  // The nav is mounted globally. `theme`/`section` are only driven by the home
+  // page's stage (and persist stale after navigating away), so off the home route
+  // we ignore them: project pages are dark-world, and the desktop ProjectHeader
+  // owns the top bar there — so the global bar steps aside at md+ and only its
+  // mobile hamburger remains.
   const isHome = pathname === '/'
   const isDark = isHome ? theme === 'dark' : true
   const barDark = isDark || open
@@ -75,19 +75,13 @@ export default function Nav() {
   // home page via setSectionTarget (see sectionTarget.js).
   const resolveHref = (href) => (isHome || !href.startsWith('#') ? href : `/${href}`)
 
-  // On home, below lg, the fragment jump is driven by hand — the page's
-  // mandatory snap arrests the browser's own animated scroll partway, which is
-  // what made these links land on the wrong section (see scrollToSection).
-  // At lg+ ScrollStage intercepts hash clicks itself and there is no page
-  // scroll to drive; off home the link is a real navigation and the target
-  // section is handed over through sessionStorage instead.
+  // On home the stage intercepts #section clicks itself, at every tier, and
+  // moves by index — there is no page scroll to drive and nothing here to do but
+  // close the menu. Off home the link is a real navigation, so the target
+  // section is handed over through sessionStorage (see sectionTarget).
   const handleNavClick = (e, href) => {
     if (!isHome && href.startsWith('#')) setSectionTarget(href.slice(1))
     closeMenu()
-    if (!isHome || !href.startsWith('#')) return
-    if (window.matchMedia('(min-width: 1024px)').matches) return
-    e.preventDefault()
-    scrollToSection(href.slice(1))
   }
 
   const linkColor = barDark
@@ -158,12 +152,8 @@ export default function Nav() {
         </div>
 
         {/* Mobile hamburger */}
-        {/* data-nav-ink: WorkMobile measures this to decide whether a light-world
-            cover still sits behind the bar (see reachesBar there). It is tagged
-            rather than assumed because the bar's top padding tracks the notch. */}
         <button
           ref={hamburgerRef}
-          data-nav-ink=""
           type="button"
           onClick={toggleMenu}
           aria-label={open ? t.nav.closeLabel : t.nav.menuLabel}
@@ -224,32 +214,14 @@ function MobileMenu({ isHome, resolveHref, onNavClick, onClose, returnFocusRef }
   // icon row rather than being rendered twice.
   const socials = (t.connect.social ?? []).filter((s) => !s.href.startsWith('mailto:'))
 
-  // Which section row reads at full porcelain. NavThemeProvider's `section` is no
-  // use here: ScrollStage only drives it from lg up and sets it to null below,
-  // which is exactly where this menu lives. Off home we're inside a project, so
-  // Works is the section; on home the mobile sections are ordinary full-height
-  // elements carrying the same ids the nav links point at, so the one occupying
-  // most of the viewport is the one we're on. Measured once on open — the page
-  // is scroll-locked behind the overlay, so it cannot change while we're here.
-  const [activeHref, setActiveHref] = useState(isHome ? null : '#work')
-  useEffect(() => {
-    if (!isHome) return
-    const vh = window.innerHeight
-    let best = null
-    let bestVisible = 0
-    for (const link of t.nav.links) {
-      if (!link.href.startsWith('#')) continue
-      const el = document.getElementById(link.href.slice(1))
-      if (!el) continue
-      const r = el.getBoundingClientRect()
-      const visible = Math.min(r.bottom, vh) - Math.max(r.top, 0)
-      if (visible > bestVisible) {
-        bestVisible = visible
-        best = link.href
-      }
-    }
-    setActiveHref(best)
-  }, [isHome, t.nav.links])
+  // Which section row reads at full porcelain. The stage drives `section` at
+  // every tier now, so it simply is the answer. This used to measure which
+  // section occupied most of the viewport, because the stage only ran at lg+ and
+  // set `section` to null below it. Stacked panels make that measurement wrong
+  // rather than merely redundant — they all report a full-viewport rect, so the
+  // first one always wins. Off home we're inside a project, so Works is it.
+  const { section } = useNavTheme()
+  const activeHref = isHome ? (section ? `#${section}` : null) : '#work'
 
   // Focus trap. The overlay is the only interactive surface while it's open, so
   // Tab cycles within it and focus returns to the hamburger on close.

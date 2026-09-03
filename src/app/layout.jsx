@@ -44,32 +44,12 @@ export default function RootLayout({ children }) {
       <head>
         {/* Adobe Fonts (Typekit) — provides "futura-pt" for the Descriptor/Label tier */}
         <link rel="stylesheet" href="https://use.typekit.net/kbo0jje.css" />
-        {/* Marks Safari on <html> so CSS can hold one rule back from it — the
-            bottom-edge lift in globals.css, which overshoots there because
-            Safari paints page content below the viewport it reports.
-
-            A user-agent test, reluctantly: on iOS every browser is WebKit, so
-            no feature query can separate Safari from Chrome/Firefox/Edge on the
-            same device. The UA string is the only thing that differs.
-
-            Inline and render-blocking on purpose — it must run before first
-            paint or Safari would paint one frame with the lift applied. It only
-            sets an attribute on <html>, which React does not own, so there is
-            no hydration mismatch. With JS off, no attribute is set and the lift
-            applies, which is the pre-Safari-fix behaviour.
-
-            The negative list is what does the work: Android Chrome carries both
-            "Chrome" and "Android", and the iOS builds carry CriOS / FxiOS /
-            EdgiOS. Minor iOS WebKit browsers (Opera, DuckDuckGo) fall through
-            as Safari — the right side to err on, since they share its painting
-            behaviour. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{if(/^((?!chrome|android|crios|fxios|edgios).)*safari/i.test(navigator.userAgent))" +
-              "document.documentElement.setAttribute('data-browser','safari')}catch(e){}",
-          }}
-        />
+        {/* A `data-browser="safari"` UA sniff used to be set here, before first
+            paint, so two CSS rules could be held back from Safari — the
+            bottom-edge lift and the trailing scroll room under the last section.
+            Both existed because the document scrolled and Safari resized its
+            layout viewport as the URL bar moved. The stage does not scroll, so
+            the bar never moves, and the sniff had no readers left. */}
       </head>
       <body className="font-neue-haas-display bg-oxidized-graphite text-bone-porcelain antialiased">
         <Providers>
