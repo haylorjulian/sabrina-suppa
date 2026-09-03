@@ -94,13 +94,20 @@ export default function About({ sectionId }) {
           doesn't scroll, so the phone's URL bar never retracts and there is no
           moving chrome left to compensate for. */}
       <div className="section-fullscreen relative flex flex-col overflow-hidden bg-oxidized-graphite lg:hidden">
-        {/* Cover takes whatever the sheet leaves, down to a floor. Past that the
-            section grows taller than the panel and PanelScroll takes the
-            overflow. That used to be the page's job, and a nested scroll region
-            was rejected because it would have fought the page scroll for the same
-            drag — there is no page scroll left to fight, and on a short phone
-            this bio needs the region (see PanelScroll). */}
-        <div className="relative min-h-[32vh] flex-1">
+        {/* Cover takes whatever the sheet leaves — and only that. It used to hold
+            a `min-h-[32vh]` floor, which is what made this section scroll: the
+            sheet is a constant 465px at this width, so once the floor stopped the
+            cover shrinking the pair could no longer fit a panel shorter than
+            ~686px. Measured on an iPhone 12 in Chrome (a ~660px viewport once its
+            two toolbars are out) that overflowed by 16px, and every one of those
+            pixels turned the panel into a scroller — which is what stopped a
+            swipe from moving the stage.
+
+            No floor, so the cover is purely the remainder and the section is
+            always exactly one panel. The sheet is `shrink-0` for the same reason:
+            both were flexible, so the browser was free to compress the copy
+            instead of the photograph. */}
+        <div className="relative min-h-0 flex-1">
           {/* backgroundMobile falls back to the desktop image at build time when
               the editor leaves it blank (see scripts/build-content.mjs). */}
           <Image src={assets.about.backgroundMobile} alt={c.bgAlt} fill sizes="100vw" className="object-cover" />
@@ -119,7 +126,7 @@ export default function About({ sectionId }) {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           style={{ backgroundColor: 'rgba(26,26,28,0.86)', borderTopColor: 'rgba(243,238,232,0.18)' }}
-          className="relative z-10 flex flex-col gap-[18px] border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
+          className="relative z-10 flex shrink-0 flex-col gap-[18px] border-t px-6 pb-[max(46px,env(safe-area-inset-bottom))] pt-6"
         >
           {/* The sheet's shimmer rule. There is no second state here, so it
               rides the entrance stagger with everything else rather than
