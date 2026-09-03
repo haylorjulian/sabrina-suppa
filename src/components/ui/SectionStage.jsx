@@ -325,6 +325,35 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
     let dragFrom = 0
     let dragStartY = 0
     let dragOffset = 0
+    // True while this gesture is the stage's rather than an inner scroller's.
+    // Decided at touchstart from whether the touch landed in a region that has
+    // anywhere to scroll, and refined by onDragStart once the direction is known.
+    let ownsGesture = false
+
+    // Safari treats a downward drag as a request to show its toolbars, and
+    // showing them resizes the viewport. That lands mid-transition, and the
+    // resize handler below then re-places the track for the new panel height —
+    // which reads as the section changing instantly, with no slide at all. It
+    // only ever happened going back, because only a downward drag reveals
+    // chrome, which is exactly the asymmetry that was reported.
+    //
+    // Cancelling the moves we own stops Safari acting on them. It is deliberately
+    // narrower than the reference implementation's blanket `preventDefault: true`:
+    // a gesture that belongs to a panel's scroll region is left alone so it still
+    // scrolls natively, and a second finger is always let through so pinch-zoom
+    // survives.
+    const onTouchStart = (e) => {
+      const region = e.target?.closest?.('[data-panel-scroll]')
+      const live = region && region.scrollHeight - region.clientHeight > 1
+      ownsGesture = !live
+    }
+    const onTouchMove = (e) => {
+      if (e.touches && e.touches.length > 1) return // pinch: hand it back
+      if ((ownsGesture || dragging) && e.cancelable) e.preventDefault()
+    }
+    const onTouchEnd = () => {
+      ownsGesture = false
+    }
 
     const settle = (to, from) => {
       // Used when the drag is released without committing: the index has not
@@ -350,7 +379,11 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       // `dragging`, so every later onDrag is a no-op and the browser scrolls the
       // region natively (touch-action: pan-y on it, see PanelScroll).
       const dir = y < dragStartY ? 1 : -1
-      if (shouldIgnore(dir, self.event)) return
+      if (shouldIgnore(dir, self.event)) {
+        ownsGesture = false // the region has somewhere to go; let it scroll
+        return
+      }
+      ownsGesture = true
       tlRef.current?.kill()
       dragging = true
       dragFrom = indexRef.current
@@ -434,8 +467,24 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
     // as a transition.
     const onResize = () => {
       if (!snap || dragging) return
-      trackY.current = -indexRef.current * panelHeight()
-      renderTrack()
+      const y = -indexRef.current * panelHeight()
+      // Re-target rather than snap. A resize can still arrive mid-transition
+      // (a rotation, or browser chrome that got in despite the above), and
+      // jumping the track to the new geometry is precisely the instant cut this
+      // is meant to avoid — so carry on animating to the corrected position.
+      if (tlRef.current?.isActive()) {
+        tlRef.current.kill()
+        tlRef.current = gsap.to(trackY, {
+          current: y,
+          duration: SNAP_DURATION,
+          ease: SNAP_EASE,
+          onUpdate: renderTrack,
+          overwrite: true,
+        })
+      } else {
+        trackY.current = y
+        renderTrack()
+      }
     }
 
     const engage = () => {
@@ -477,6 +526,12 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
           if (!shouldIgnore(-1, self.event)) goTo(indexRef.current - 1)
         },
       })
+      if (snap) {
+        root.addEventListener('touchstart', onTouchStart, { passive: true })
+        root.addEventListener('touchmove', onTouchMove, { passive: false })
+        root.addEventListener('touchend', onTouchEnd, { passive: true })
+        root.addEventListener('touchcancel', onTouchEnd, { passive: true })
+      }
       // Capture: scroll doesn't bubble.
       root.addEventListener('scroll', onInnerScroll, true)
       window.addEventListener('keydown', onKey)
@@ -498,6 +553,10 @@ export default function SectionStage({ media, panels, transition = 'fade', disab
       dragging = false
       observer?.kill()
       observer = null
+      root?.removeEventListener('touchstart', onTouchStart)
+      root?.removeEventListener('touchmove', onTouchMove)
+      root?.removeEventListener('touchend', onTouchEnd)
+      root?.removeEventListener('touchcancel', onTouchEnd)
       root?.removeEventListener('scroll', onInnerScroll, true)
       window.removeEventListener('keydown', onKey)
       window.removeEventListener('hashchange', onHash)
