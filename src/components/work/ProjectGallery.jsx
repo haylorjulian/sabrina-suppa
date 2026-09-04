@@ -143,11 +143,11 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="pb-16 pl-4 pr-4 pt-14 sm:pl-6 sm:pr-6 md:pb-24 lg:pl-[128px] lg:pr-10"
+        className="pb-10 pl-4 pr-4 pt-10 sm:pl-6 sm:pr-6 md:pb-24 lg:pl-[128px] lg:pr-10"
       >
         <motion.h1
           variants={fadeInUp}
-          className="-ml-1 flex items-center gap-4 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
+          className="-ml-1 flex items-center gap-2 font-neue-haas-display text-[clamp(30px,5vw,44px)] font-light italic leading-[1.05] tracking-[0.01em]"
         >
           <span className="opacity-80">
             {project.title}
@@ -170,7 +170,7 @@ export default function ProjectGallery({ project, media, siblings = [], nextProj
               <ShimmerLine
                 tone="light"
                 orientation="horizontal"
-                className="w-9 transition-transform duration-300 group-hover:translate-x-1"
+                className="relative top-[2px] w-9 transition-transform duration-300 group-hover:translate-x-1"
               />
             </Link>
           )}
