@@ -7,28 +7,34 @@
   "comingSoon": "",
   "media": [
     {
+      "src": "https://media.sabrinasuppa.com/uploads/back_02.jpg",
+      "alt": "",
+      "hideOnMobile": false
+    },
+    {
       "src": "https://media.sabrinasuppa.com/uploads/fronnt_01.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/back_01.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/front_side_03.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/close_up_02.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     },
     {
       "src": "https://media.sabrinasuppa.com/uploads/close_up_01 copy.jpg",
-      "alt": ""
-    },
-    {
-      "src": "https://media.sabrinasuppa.com/uploads/back_02.jpg",
-      "alt": ""
+      "alt": "",
+      "hideOnMobile": false
     }
   ]
 }
