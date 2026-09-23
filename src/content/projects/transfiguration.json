@@ -17,17 +17,12 @@
       "hideOnMobile": true
     },
     {
+      "src": "https://media.sabrinasuppa.com/uploads/trio1.webp",
+      "alt": "",
+      "hideOnMobile": true
+    },
+    {
       "src": "https://media.sabrinasuppa.com/uploads/horiz_01.webp",
-      "alt": "",
-      "hideOnMobile": false
-    },
-    {
-      "src": "adaptiveFlesh/Transfiguration/19.jpg",
-      "alt": "",
-      "hideOnMobile": false
-    },
-    {
-      "src": "adaptiveFlesh/Transfiguration/5.jpg",
       "alt": "",
       "hideOnMobile": false
     },
@@ -72,17 +67,17 @@
       "hideOnMobile": false
     },
     {
-      "src": "https://media.sabrinasuppa.com/uploads/trio1.webp",
-      "alt": "",
-      "hideOnMobile": true
-    },
-    {
       "src": "adaptiveFlesh/Transfiguration/14.jpg",
       "alt": "",
       "hideOnMobile": false
     },
     {
       "src": "adaptiveFlesh/Transfiguration/18.jpg",
+      "alt": "",
+      "hideOnMobile": false
+    },
+    {
+      "src": "adaptiveFlesh/Transfiguration/19.jpg",
       "alt": "",
       "hideOnMobile": false
     }
